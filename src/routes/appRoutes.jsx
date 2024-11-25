@@ -4,44 +4,44 @@ import { CadastroAtleta, Chamada, ErrorPage, Home, HomeAtleta, LoginAtleta, Logi
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
-    errorElement: <ErrorPage/>,
+    errorElement: <ErrorPage />,
     children: [
       {
-        path: '/',
+        path: "/",
         index: true,
-        element: <Home/>,
+        element: <Home />,
       },
       {
-        path: '/profile-select',
+        path: "/profile-select",
         index: true,
-        element: <ProfileSelect/>,
+        element: <ProfileSelect />,
       },
       {
-        path: '/login-atleta',
+        path: "/login-atleta",
         index: true,
-        element: <LoginAtleta/>,
+        element: <LoginAtleta />,
       },
       {
-        path: '/login-professor',
+        path: "/login-professor",
         index: true,
-        element: <LoginProfessor/>,
+        element: <LoginProfessor />,
       },
       {
-        path: '/login-gestor',
+        path: "/login-gestor",
         index: true,
-        element: <LoginGestor/>,
+        element: <LoginGestor />,
       },
       {
         path: "/chamada",
         index: true,
-        element: <Chamada/>,
+        element: <Chamada />,
       },
       {
         path: "/home-atleta",
         index: true,
-        element: <HomeAtleta/>,
+        element: <HomeAtleta />,
       },
       {
         path: "/cadastro-atleta",

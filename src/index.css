@@ -4,6 +4,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Jockey+One&family=Inter:wght@400;700&display=swap');
 
+
 .font-jockey {
   font-family: 'Jockey One', sans-serif;
 }
@@ -75,6 +76,7 @@
     @apply border-border;
   }
   body {
+    font-family: 'Inter', sans-serif;
     @apply bg-background text-foreground;
   }
 }

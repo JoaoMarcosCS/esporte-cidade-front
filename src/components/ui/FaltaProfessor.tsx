@@ -6,7 +6,7 @@ interface ProfessorAbsenceProps {
   userType: UserType;
 }
 
-const ProfessorAbsence: React.FC<ProfessorAbsenceProps> = ({ userType }) => {
+const FaltaProfessor: React.FC<ProfessorAbsenceProps> = ({ userType }) => {
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const professors = ['Professor 1', 'Professor 2', 'Professor 3', 'Professor 4'];
 
@@ -17,7 +17,7 @@ const ProfessorAbsence: React.FC<ProfessorAbsenceProps> = ({ userType }) => {
 
   return (
     <div className="">
-      {userType === 'atleta' ? (
+      {userType === 'gestor' ? (
         <select
           multiple
           className="w-full p-2 rounded border border-gray-300 shadow-sm focus:outline-none focus:border-blue-500"
@@ -31,7 +31,7 @@ const ProfessorAbsence: React.FC<ProfessorAbsenceProps> = ({ userType }) => {
           ))}
         </select>
       ) : (
-        <p className="p-2 bg-white rounded shadow-md">
+        <p className="p-2 rounded border border-black bg-[#F4F6FF] shadow-md">
           {selectedProfessors.length > 0
             ? selectedProfessors.join(', ')
             : 'Não há ausência de professor'}
@@ -41,4 +41,4 @@ const ProfessorAbsence: React.FC<ProfessorAbsenceProps> = ({ userType }) => {
   );
 };
 
-export default ProfessorAbsence;
+export default FaltaProfessor;

@@ -53,7 +53,7 @@ const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userTyp
   };
 
   return (
-    <div className="bg-white p-2 rounded-md shadow-md">
+    <div className="bg-[#F4F6FF] p-2 rounded shadow-md border border-black ">
 
 
       {userType === "gestor" && (
