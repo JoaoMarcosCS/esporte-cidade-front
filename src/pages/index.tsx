@@ -7,3 +7,4 @@ export {default as LoginAtleta} from "./LoginAtleta";
 export {default as LoginGestor} from "./LoginGestor";
 export {default as LoginProfessor} from "./LoginProfessor";
 export {default as ProfileSelect} from "./ProfileSelect";
+export {default as AtletaFaltas} from "./AtletaFaltas";
