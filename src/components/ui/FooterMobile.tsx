@@ -1,85 +1,41 @@
 import React from "react";
-import AgendaSemanal from "../components/ui/AgendaSemanal";
-import FaltaAtleta from "../components/ui/FaltaAtleta";
-import FaltaProfessor from "../components/ui/FaltaProfessor";
-import CalendarioCompromissos from "../components/ui/CalendarioCompromissos";
-import useNavigateTo from "../hooks/useNavigateTo";
-import HeaderBasic from "../components/ui/HeaderBasic";
-import FooterMobile from "../components/ui/FooterMobile";
+import { useLocation, useNavigate } from "react-router-dom";
+import useNavigateTo from "../../hooks/useNavigateTo";
 
+interface FooterMobileProps {
+  links?: { label: string; path: string; icon?: JSX.Element }[]; // Ícones opcionais
+}
 
-
-const HomeAtleta: React.FC = () => {
+const FooterMobile: React.FC<FooterMobileProps> = ({ links = [] }) => {
+  const location = useLocation();
   const GoTo = useNavigateTo();
-  const userType = "atleta"
-  const user = {
-    name: "",
-    profilePicture: "",
+
+  // Links baseados na rota atual
+  const dynamicLinks = () => {
+    switch (location.pathname) {
+      case "/home-atleta":
+        return [
+          { label: "Início", path: "/", icon: <i className="fas fa-home"></i> },
+          {
+            label: "Perfil",
+            path: "/editar-perfil",
+            icon: <i className="fas fa-user-circle"></i>,
+          },
+        ];
+      case "/chamada":
+        return [
+          { label: "Início", path: "/", icon: <i className="fas fa-home"></i> },
+          { label: "Chamada", path: "/chamada", icon: <i className="fas fa-list"></i> },
+        ];
+      default:
+        return links; // Links passados como props, se existirem
+    }
   };
 
+  const allLinks = dynamicLinks();
+
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center pb-16">
-      {/* Cabeçalho: visível apenas em telas md ou maiores */}
-      {/*<header className="w-full bg-[#F4F6FF] flex items-center justify-between px-6 py-4 shadow md:flex">
-        <div className="flex items-center space-x-4">
-          <img src="https://lh3.googleusercontent.com/proxy/X-B99B9HsP3Lo4ae0nDQMozyMHTcxxdcPINH959IZlOUhqK7j0tdAK-sz09ISiS2c0ew2N4wyhXsHyR5EZ1vqwJKbh0VhZBj7gEfvT4DeFZkKw" alt="" className="h-10" />
-          <h1 className="text-xl font-jockey">ESPORTE NA CIDADE</h1>
-        </div>
-        <div className="hidden md:flex items-center space-x-6">
-          <button onClick={() => GoTo("/faltas-atleta")} className="text-black font-bold hover:text-[#EB8317] transition-transform">Faltas</button>
-          <button onClick={() => GoTo("/modalidade")} className="text-black font-bold hover:text-[#EB8317] transition-transform">Modalidades</button>
-          <button onClick={() => GoTo("/horarios")} className="text-black font-bold hover:text-[#EB8317] transition-transform">Horário</button>
-          <div className="text-[#EB8317] w-10 h-10 rounded-full flex items-center justify-center">
-            <i className="material-icons"></i>
-          </div>
-        </div>
-      </header>*/}
-      
-      <HeaderBasic 
-          user={user}
-          links={[
-            { label: "Faltas", path: "/faltas-atleta" },
-            { label: "Modalidades", path: "/modalidade" },
-            { label: "Horário", path: "/horarios" },
-          ]}
-          
-      />
-        
-
-      {/* Conteúdo Principal */}
-      <main className="max-w-7xl mx-auto mt-8 p-4">
-        <h2 className="text-2xl font-bold mb-4 text-left">
-          Olá, <span className="text-[#EB8317]">Atleta!</span>
-        </h2>
-
-        {/* Layout principal usando grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          <div className="col-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-4 md:mr-4">
-            <h3 className="font-semibold mb-2">HORÁRIO SEMANAL</h3>
-            <AgendaSemanal userType={userType} />
-          </div>
-
-          <div className="row-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0 md:mr-4">
-            <h3 className="font-semibold mb-2">CALENDÁRIO DE COMPROMISSOS</h3>
-            <CalendarioCompromissos userType={userType} />
-          </div>
-
-          <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0">
-              <h3 className="font-semibold mb-2">AUSÊNCIA DE PROFESSOR</h3>
-              <FaltaProfessor userType={userType} />
-            </div>
-
-            <div className="bg-[#d9d9d9] p-4 rounded border border-black shadow-md md:mr-4">
-              <h3 className="font-semibold mb-2">FALTAS</h3>
-              <FaltaAtleta subject="Judô" absences={4} maxAbsences={10} />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Menu Inferior: visível apenas em telas menores que md */}
-      {/*<footer className="fixed bottom-0 w-full bg-[#F4F6FF] border-t border-gray-200 shadow-inner flex justify-around py-3 md:hidden gap-4">
+    <footer className="fixed bottom-0 w-full bg-[#F4F6FF] border-t border-gray-200 shadow-inner flex justify-around py-3 md:hidden gap-4">
         <button onClick={() => GoTo("/home")} className=" bg-[#d9d9d9] flex-1 flex flex-col items-center text-black shadow-md rounded-md py-1 bg-[#F4F6FF] border border-black ml-2 hover:bg-[#EB8317] transition-transform">
           <i className="material-icons"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 48 48">
             <path d="M39.5,43h-9c-1.381,0-2.5-1.119-2.5-2.5v-9c0-1.105-0.895-2-2-2h-4c-1.105,0-2,0.895-2,2v9c0,1.381-1.119,2.5-2.5,2.5h-9	C7.119,43,6,41.881,6,40.5V21.413c0-2.299,1.054-4.471,2.859-5.893L23.071,4.321c0.545-0.428,1.313-0.428,1.857,0L39.142,15.52	C40.947,16.942,42,19.113,42,21.411V40.5C42,41.881,40.881,43,39.5,43z"></path>
@@ -104,11 +60,8 @@ const HomeAtleta: React.FC = () => {
           </svg></i>
           <span className="text-xs">Calendário</span>
         </button>
-      </footer>*/}
-      <FooterMobile />
-      
-    </div>
+      </footer>
   );
 };
 
-export default HomeAtleta;
+export default FooterMobile;

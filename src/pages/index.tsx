@@ -7,3 +7,4 @@ export {LoginAtleta} from "./LoginAtleta";
 export {LoginGestor} from "./LoginGestor";
 export {LoginProfessor} from "./LoginProfessor";
 export {default as ProfileSelect} from "./ProfileSelect";
+export { default as EditarPerfil } from "./EditarPerfil";

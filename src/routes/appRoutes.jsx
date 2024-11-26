@@ -11,6 +11,7 @@ import {
   LoginProfessor,
   LoginGestor,
   ProfileSelect,
+  EditarPerfil
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -58,6 +59,11 @@ const router = createBrowserRouter([
         path: "/cadastro-atleta",
         index: true,
         element: <CadastroAtleta />,
+      },
+      {
+        path: "/editar-perfil",
+        index: true,
+        element: <EditarPerfil />,
       },
     ],
   },
