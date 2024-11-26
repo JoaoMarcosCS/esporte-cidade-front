@@ -2,8 +2,7 @@ import useNavigateTo from "../../hooks/useNavigateTo";
 
 const HeaderBasic = () => {
     const GoTo = useNavigateTo();
-
-
+    
     return (
         <header className="w-full bg-white flex items-center justify-between px-6 py-4 mb-10 shadow md:flex">
         <div className="flex items-center space-x-4">
