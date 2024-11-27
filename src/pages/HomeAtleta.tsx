@@ -1,8 +1,8 @@
 import React from "react";
-import AgendaSemanal from "../components/ui/AgendaSemanal";
-import FaltaAtleta from "../components/ui/FaltaAtleta";
-import FaltaProfessor from "../components/ui/FaltaProfessor";
-import CalendarioCompromissos from "../components/ui/CalendarioCompromissos";
+import AgendaSemanal from "../components/AgendaSemanal";
+import FaltaAtleta from "../components/FaltaAtleta";
+import FaltaProfessor from "../components/FaltaProfessor";
+import CalendarioCompromissos from "../components/CalendarioCompromissos";
 import useNavigateTo from "../hooks/useNavigateTo";
 
 const HomeAtleta: React.FC = () => {

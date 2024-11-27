@@ -1,5 +1,5 @@
 import React from "react";
-import useNavigateTo from "../../hooks/useNavigateTo";
+import useNavigateTo from "../hooks/useNavigateTo";
 
 interface StudentAbsencesProps {
   subject: string;
