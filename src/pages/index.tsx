@@ -8,3 +8,4 @@ export {LoginGestor} from "./LoginGestor";
 export {LoginProfessor} from "./LoginProfessor";
 export {default as ProfileSelect} from "./ProfileSelect";
 export {default as AtletaFaltas} from "./AtletaFaltas";
+export {default as GestaoDeProfessores} from "./GestaoDeProfessores"
