@@ -1,11 +1,11 @@
 import React from "react";
-import AgendaSemanal from "../components/ui/AgendaSemanal";
-import FaltaAtleta from "../components/ui/FaltaAtleta";
-import FaltaProfessor from "../components/ui/FaltaProfessor";
-import CalendarioCompromissos from "../components/ui/CalendarioCompromissos";
+import AgendaSemanal from "../components/AgendaSemanal";
+import FaltaAtleta from "../components/FaltaAtleta";
+import FaltaProfessor from "../components/FaltaProfessor";
+import CalendarioCompromissos from "../components/CalendarioCompromissos";
 import useNavigateTo from "../hooks/useNavigateTo";
-import HeaderBasic from "../components/ui/HeaderBasic";
-import FooterMobile from "../components/ui/FooterMobile";
+import HeaderBasic from "../components/navigation/HeaderBasic";
+import FooterMobile from "../components/navigation/FooterMobile";
 
 
 
@@ -38,6 +38,7 @@ const HomeAtleta: React.FC = () => {
       <HeaderBasic 
           user={user}
           links={[
+            { label: "Home", path: "/home-atleta" },
             { label: "Faltas", path: "/faltas-atleta" },
             { label: "Modalidades", path: "/modalidade" },
             { label: "Horário", path: "/horarios" },

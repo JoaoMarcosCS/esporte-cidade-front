@@ -6,7 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
-import HeaderBasic from "../components/ui/HeaderBasic";
+import HeaderBasic from "../components/navigation/HeaderBasic";
 
 
 const Login = async (email: any, password: any) => {
@@ -155,12 +155,7 @@ export const LoginProfessor: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                        <div className="flex flex-col text-center">
-                            <p className="font-inter">Ainda não tem uma conta?</p>
-                            <a href="" className="font-inter text-blue-600">
-                                Criar conta
-                            </a>
-                        </div>
+                       
                     </div>
                 </main>
 

@@ -6,7 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
-import HeaderBasic from "../components/ui/HeaderBasic";
+import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom'; 
 

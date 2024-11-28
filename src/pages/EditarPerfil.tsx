@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import HeaderBasic from "../components/ui/HeaderBasic";
-import ModuloConfirmacao from "../components/ui/ModuloConfirmacao";
+import HeaderBasic from "../components/navigation/HeaderBasic";
+import ModuloConfirmacao from "../components/ModuloConfirmacao";
+import FooterMobile from "../components/navigation/FooterMobile";
 
 interface UserProfile {
   name: string;
@@ -11,9 +12,9 @@ interface UserProfile {
 
 const EditarPerfil: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile>({
-    name: "Gabriel Bastarz",
-    email: "gabebastarz@gmail.com",
-    phone: "12987654321",
+    name: "",
+    email: "",
+    phone: "",
     password: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,9 +42,23 @@ const EditarPerfil: React.FC = () => {
     setIsEditing(false);
   };
 
+  const user = {
+    name: "",
+    profilePicture: "",
+  };
+
   return (
     <>
-      <HeaderBasic />
+      <HeaderBasic 
+          user={user}
+          links={[
+            { label: "Home", path: "/home-atleta" },
+            { label: "Faltas", path: "/faltas-atleta" },
+            { label: "Modalidades", path: "/modalidade" },
+            { label: "Horário", path: "/horarios" },
+          ]}
+          
+      />
       <div className="p-6 bg-[#F4F6FF] min-h-screen">
         <h1 className="text-xl text-center font-bold mb-6">Editar Perfil</h1>
 
@@ -132,7 +147,7 @@ const EditarPerfil: React.FC = () => {
           </div>
         </div>
       </div>
-
+      <FooterMobile />
       {/* Modal de Confirmação */}
       <ModuloConfirmacao
         isOpen={isModalOpen}

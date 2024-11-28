@@ -83,3 +83,16 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user }) => {
 };
 
 export default HeaderBasic;
+
+
+{/*
+  <HeaderBasic 
+          user={user}
+          links={[
+            { label: "Faltas", path: "/faltas-atleta" },
+            { label: "Modalidades", path: "/modalidade" },
+            { label: "Horário", path: "/horarios" },
+          ]}
+          
+  />
+*/ }
