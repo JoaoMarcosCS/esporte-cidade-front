@@ -11,15 +11,14 @@ import {
   LoginProfessor,
   LoginGestor,
   ProfileSelect,
-  AtletasLista,
-  HomeProfessor
+  EditarPerfil
 } from "../pages";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
-    errorElement: <ErrorPage />,
+    errorElement: <ErrorPage/>,
     children: [
       {
         path: "/",
@@ -62,14 +61,9 @@ const router = createBrowserRouter([
         element: <CadastroAtleta />,
       },
       {
-        path: "/home-professor",
+        path: "/editar-perfil",
         index: true,
-        element: <HomeProfessor />,
-      },
-      {
-        path: "/lista-atletas",
-        index: true,
-        element: <AtletasLista />,
+        element: <EditarPerfil />,
       },
     ],
   },
