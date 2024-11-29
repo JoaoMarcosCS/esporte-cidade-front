@@ -42,7 +42,7 @@ const HomeGestor = () => {
                             { label: "Professores", path: "/home-gestor/cadastrar-professor" },
                         ]} />
 
-                    <div className="  ml-20 mt-32">
+                    <div className="  ml-20 mt-32 pb-6">
                         <h2 className="text-2xl font-bold mb-4 text-left ">
                             Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
                         </h2>
