@@ -15,6 +15,7 @@ import {
   AtletasLista,
   FaltasAtleta,
   EditarPerfil,
+  HomeGestor,
 
 } from "../pages";
 
@@ -86,7 +87,12 @@ const router = createBrowserRouter([
         element: <Chamada />,
       },
 
- 
+      // Rotas Gestor
+      {
+        path: "/home-Gestor",
+        index: true,
+        element: <HomeGestor/>,
+      },
     ],
   },
 ]);
