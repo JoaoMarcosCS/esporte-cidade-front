@@ -38,8 +38,8 @@ const HomeGestor = () => {
                     <HeaderBasic type="usuario" user={user}
                         links={[
                             { label: "Home", path: "/home-gestor" },
-                            { label: "Comunicados", path: "/home-gestor/Comunicados" },
-                            { label: "Professores", path: "/home-gestor/Professores" },
+                            { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
+                            { label: "Professores", path: "/home-gestor/cadastrar-professor" },
                         ]} />
 
                     <div className="  ml-20 mt-32">

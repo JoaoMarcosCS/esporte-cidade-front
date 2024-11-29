@@ -10,7 +10,7 @@ interface HeaderBasicProps {
   type?: "usuario" | "visitante"; // define o tipo de usuario para a sidebar saber se pode renderizar
 }
 
-
+// não mexi tanto so coloquei o sidebar trigger e coloquei ele para renderizar nos dois tipos de usuario, mas não mudou nada quase fora isso
 
 
 const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user, type }) => {
@@ -25,7 +25,8 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user, type }) => 
   const handleLogout = () => {
     // Implementar lógica de logout
     console.log("Logout realizado");
-    GoTo("/login"); // Exemplo: redirecionar para a página de login
+    GoTo("/"); // Exemplo: redirecionar para a página de login 
+    //troquei para ir para a página inicial
   };
 
   

@@ -6,9 +6,10 @@ interface FooterMobileProps {
   links?: { label: string; path: string; icon?: JSX.Element }[]; // Ícones opcionais
 }
 
-//imagems
-//atleta
-//professor
+// aqui eui mexi bastante basicamente troquei aqui para ter as trotas que estavam faltando e renderizar de acordo com o usuario mas to usando a mesma logica de usar 
+// as rotas como uma forma de determinar o acesso o que o usuario deve ver tem como trocar as coisas se mexer no dynamic links como imagens e rotas mas acredito que não va precisar
+// e troquei as rotas quase todas para acomodar com essa abordagem agr todas as paginas relacionadas a um usuario vem com um "prefixo" exemplo a rota para chamada:
+// passou de /chamada para home-prrofessor/chamada    // para lidar com a renderização se quiser ver melhor abre o AppRoutes
 
 //codigo
 
@@ -100,14 +101,14 @@ const FooterMobile: React.FC<FooterMobileProps> = ({ links = [] }) => {
           ), },
           {
             label: "Comunicados",
-            path: "/home-gestor/comunicados",
+            path: "/home-gestor/cadastrar-comunicado",
             icon: (
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 512 512"><path d="M480 32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9L381.7 53c-48 48-113.1 75-181 75l-8.7 0-32 0-96 0c-35.3 0-64 28.7-64 64l0 96c0 35.3 28.7 64 64 64l0 128c0 17.7 14.3 32 32 32l64 0c17.7 0 32-14.3 32-32l0-128 8.7 0c67.9 0 133 27 181 75l43.6 43.6c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-147.6c18.6-8.8 32-32.5 32-60.4s-13.4-51.6-32-60.4L480 32zm-64 76.7L416 240l0 131.3C357.2 317.8 280.5 288 200.7 288l-8.7 0 0-96 8.7 0c79.8 0 156.5-29.8 215.3-83.3z" /></svg>
             ),
           },
           {
             label: "Professores",
-            path: "/home-gestor/professores",
+            path: "/home-gestor/cadastrar-professor",
             icon: (
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 640 512"><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304l91.4 0C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7L29.7 512C13.3 512 0 498.7 0 482.3zM609.3 512l-137.8 0c5.4-9.4 8.6-20.3 8.6-32l0-8c0-60.7-27.1-115.2-69.8-151.8c2.4-.1 4.7-.2 7.1-.2l61.4 0C567.8 320 640 392.2 640 481.3c0 17-13.8 30.7-30.7 30.7zM432 256c-31 0-59-12.6-79.3-32.9C372.4 196.5 384 163.6 384 128c0-26.8-6.6-52.1-18.3-74.3C384.3 40.1 407.2 32 432 32c61.9 0 112 50.1 112 112s-50.1 112-112 112z" /></svg>
             ),
