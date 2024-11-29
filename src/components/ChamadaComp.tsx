@@ -74,12 +74,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
 
   return (
     <div className="p-6  min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-xl flex items-center">
-          <span className="font-jockey text-xl mr-2">ESPORTE NA CIDADE</span>
-          <span className="font-inter text-sm ">| Chamada</span>
-        </h1>
-      </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
