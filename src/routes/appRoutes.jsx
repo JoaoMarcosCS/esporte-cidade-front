@@ -28,14 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         index: true,
-        element: <Home />,
-      },
-
-      {
-        path: "/profile-select",
-        index: true,
         element: <ProfileSelect />,
       },
+
+     
 
       // Rotas login
       {

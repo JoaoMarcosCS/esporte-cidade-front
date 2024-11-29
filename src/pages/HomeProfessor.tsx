@@ -44,6 +44,7 @@ const HomeProfessor: React.FC = () => {
             <SidebarInset>
                 <div className="min-h-screen bg-gray-100">
                     <HeaderBasic
+                        type="usuario"
                         user={user}
                         links={[
                             { label: "Home", path: "/home-professor" },

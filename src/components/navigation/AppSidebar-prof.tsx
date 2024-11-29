@@ -34,8 +34,8 @@ const navLinksAtleta = [
 
 const navLinksGestor = [
   { href: "/home-gestor", text: "Home" },
-  { href: "/home-gestor/chamada", text: "professores" },
-  { href: "/home-gestor/lista-atletas", text: "comunicados" },
+  { href: "/home-gestor/cadastrar-professor", text: "professores" },
+  { href: "/home-gestor/cadastrar-comunicado", text: "comunicados" },
 ];
 
 interface SidebarProps {

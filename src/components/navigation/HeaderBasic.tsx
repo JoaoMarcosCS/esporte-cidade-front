@@ -7,13 +7,18 @@ import { useIsMobile } from "../../hooks/use-mobile";
 interface HeaderBasicProps {
   links?: { label: string; path: string }[]; // Define links dinamicamente
   user?: { name: string; profilePicture: string }; // Dados do usuário logado
+  type?: "usuario" | "visitante"; // define o tipo de usuario para a sidebar saber se pode renderizar
 }
 
 
 
-const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user }) => {
+
+const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user, type }) => {
   const [menuOpen, setMenuOpen] = useState(false); // Estado do menu
   const GoTo = useNavigateTo();
+
+  //define se o usuario pode ver ou não a sidebar
+  const headerLeft:boolean = type === "usuario" ? true : false;
 
   const handleMenuToggle = () => setMenuOpen((prev) => !prev);
 
@@ -23,12 +28,16 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user }) => {
     GoTo("/login"); // Exemplo: redirecionar para a página de login
   };
 
+  
+
   return (
     <header className="w-full bg-white flex items-center justify-between gap-4 px-6 py-4 shadow">
       {/* Logo e título */}
       <div className="flex items-center md:gap-0  gap-2">
-        
-      <CustomSidebarTrigger />
+
+        {headerLeft?
+        <CustomSidebarTrigger />:
+        <></>}
         <img
           src="https://lh3.googleusercontent.com/proxy/X-B99B9HsP3Lo4ae0nDQMozyMHTcxxdcPINH959IZlOUhqK7j0tdAK-sz09ISiS2c0ew2N4wyhXsHyR5EZ1vqwJKbh0VhZBj7gEfvT4DeFZkKw"
           alt="Logo"
@@ -39,7 +48,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user }) => {
           onClick={() => GoTo("/")}
         >
           ESPORTE NA CIDADE
-        </h1> 
+        </h1>
       </div>
 
 

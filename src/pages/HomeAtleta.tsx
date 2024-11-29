@@ -31,6 +31,7 @@ const HomeAtleta: React.FC = () => {
           {/*<header> ... </header>*/}
   
           <HeaderBasic
+            type="usuario"
             user={user}
             links={[
               { label: "Home", path: "/home-atleta" },

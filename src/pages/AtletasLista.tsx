@@ -26,6 +26,7 @@ const AtletasLista: React.FC = () => {
             <SidebarInset>
                 <div className="min-h-screen pb-24 bg-gray-100">
                     <HeaderBasic
+                        type="usuario"
                         user={user}
                         links={[
                             { label: "Home", path: "/home-professor" },
@@ -46,7 +47,7 @@ const AtletasLista: React.FC = () => {
                     <FooterMobile />
                 </div>
             </SidebarInset>
-        </SidebarProvider>
+            </SidebarProvider>
     );
 };
 

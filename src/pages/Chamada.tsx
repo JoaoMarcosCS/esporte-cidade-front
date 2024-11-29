@@ -5,6 +5,12 @@ import HeaderBasic from "../components/navigation/HeaderBasic"
 import useNavigateTo from "../hooks/useNavigateTo";
 import { AppSidebar } from '../components/navigation/AppSidebar-prof';
 import FooterMobile from "../components/navigation/FooterMobile";
+
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "../components/ui/sidebar"
+
 const Chamada: React.FC = () => {
   const userType = "professor"
   const user = {
@@ -12,20 +18,28 @@ const Chamada: React.FC = () => {
     profilePicture: "",
   };
   return (
-    <div className="min-h-screen bg-gray-100">
-      <HeaderBasic
-        user={user}
-        links={[
-          { label: "Home", path: "/home-professor" },
-          { label: "Chamada", path: "/home-professor/chamada" },
-          { label: "Atletas", path: "/home-professor/lista-atletas" },
-        ]}
 
-      />
-      <ChamadaComp userType={userType} />
+    <SidebarProvider>
+      <AppSidebar type="professor" />
+      <SidebarInset>
+        <div className="min-h-screen bg-gray-100">
+          
+          <HeaderBasic
+            type='usuario'
+            user={user}
+            links={[
+              { label: "Home", path: "/home-professor" },
+              { label: "Chamada", path: "/home-professor/chamada" },
+              { label: "Atletas", path: "/home-professor/lista-atletas" },
+            ]}
 
-      <FooterMobile/>
-    </div>
+          />
+          <ChamadaComp userType={userType} />
+
+          <FooterMobile />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 
