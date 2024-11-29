@@ -7,7 +7,7 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { Escala } from "../components/Escala";
 import { AppSidebar } from '../components/navigation/AppSidebar-prof';
-import {CalendarioCompromissos} from '../components/Comunicados';
+import { CalendarioCompromissos } from '../components/Comunicados';
 
 import {
     SidebarInset,
@@ -43,17 +43,17 @@ const HomeGestor = () => {
                         ]} />
 
                     <div className="  ml-20 mt-32 pb-6">
-                        <h2 className="text-2xl font-bold mb-4 text-left ">
+                        <h2 className="text-4xl font-bold pb-2">
                             Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
                         </h2>
-                        <div className="lg:items-start items-center flex gap-5 flex-col lg:flex-row">
+                        <div className="xl:items-start items-center flex flex-col xl:flex-row">
                             <div className="mt-12">
                                 <Escala />
                             </div>
-                            <div className="mt-16">
-                                <CalendarioCompromissos/>
+                            <div className="mt-12">
+                                <CalendarioCompromissos type="EnableEdit"  />
                             </div>
-                       </div>
+                        </div>
                     </div>
                     <FooterMobile />
                 </div>

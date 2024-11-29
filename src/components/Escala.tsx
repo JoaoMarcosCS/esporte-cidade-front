@@ -96,12 +96,12 @@ export const Escala = () => {
   const totalPages = Math.ceil(totalActivities / itemsPerPage);
 
   return (
-    <div className="mr-16">
+    <div className="mr-16 lg:mr-6">
       <div className="w-full max-w-6xl mx-auto">
         <h2 className="text-lg font-semibold mb-1">Escala Semanal</h2>
 
         <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
-          <div className="grid grid-cols-6 gap-2 lg:gap-10 font-semibold mb-2">
+          <div className="grid grid-cols-6 gap-2 lg:gap-6 font-semibold mb-2">
             <p className="border-b-2 border-black pb-2">Segunda-Feira</p>
             <p className="border-b-2 border-black pb-2">Terça-Feira</p>
             <p className="border-b-2 border-black pb-2">Quarta-Feira</p>
