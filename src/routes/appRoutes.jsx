@@ -16,6 +16,7 @@ import {
   FaltasAtleta,
   EditarPerfil,
   HomeGestor,
+  CadastroComunicados,
 
 } from "../pages";
 
@@ -88,6 +89,11 @@ const router = createBrowserRouter([
         path: "/home-Gestor",
         index: true,
         element: <HomeGestor/>,
+      },
+      {
+        path: "/home-Gestor/cadastrar-comunicado",
+        index: true,
+        element: <CadastroComunicados/>,
       },
     ],
   },

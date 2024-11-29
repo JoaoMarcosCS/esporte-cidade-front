@@ -19,7 +19,7 @@ import {
 const nomeDoGestor = "maria"
 
 
-const HomeGestor = () => {
+const CadastroComunicados = () => {
 
     const GoTo = useNavigateTo();
     const userType = "gestor"
@@ -42,16 +42,17 @@ const HomeGestor = () => {
                             { label: "Professores", path: "/home-gestor/cadastrar-professor" },
                         ]} />
 
-                    <div className="  ml-20 mt-32 pb-6">
-                        <h2 className="text-4xl font-bold pb-2">
-                            Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
-                        </h2>
-                        <div className="xl:items-start items-center flex flex-col xl:flex-row">
-                            <div className="mt-12">
-                                <Escala />
-                            </div>
-                            <div className="mt-12">
-                                <CalendarioCompromissos type="DisableEdit"  />
+                    <div className="  ml-20 mt-10 pb-6">
+
+
+                        <div className=" items-center flex flex-col ">
+
+                            <div className="mt-12"> 
+
+                                <h2 className="text-start text-4xl font-bold  mb-8">
+                                    Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
+                                </h2>
+                                <CalendarioCompromissos type="EnableEdit" />
                             </div>
                         </div>
                     </div>
@@ -62,4 +63,4 @@ const HomeGestor = () => {
     );
 };
 
-export default HomeGestor;
+export default CadastroComunicados;

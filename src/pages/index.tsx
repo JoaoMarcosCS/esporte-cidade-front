@@ -1,4 +1,5 @@
 export {default as CadastroAtleta} from "./CadastroAtleta";
+export {default as CadastroComunicados} from "./CadastroComunicados";
 export {default as Chamada} from "./Chamada";
 export {default as ErrorPage} from "./ErrorPage";
 export {default as Home} from "./Home";

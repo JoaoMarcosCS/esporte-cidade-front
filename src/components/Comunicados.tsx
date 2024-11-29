@@ -136,9 +136,9 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
       {type === "EnableEdit" && (
         <>
           <div className="mr-6">
-            <div className="flex flex-col h-[700px] mx-auto">
-              <h2 className="text-lg font-semibold mb-1">Criar um novo comunicado</h2>
-              <div className="border rounded-md border-black sm:w-[400px] md:w-[600px] h-full bg-[#d9d9d9] p-4 shadow">
+            <div className="flex  flex-col h-[700px] mx-auto">
+              <h2 className="text-lg ml-1  font-semibold mb-5">Criar um novo comunicado</h2>
+              <div className="border rounded-md border-black w-[500px] md:w-[650px] bg-gray-100 lg:w-[900px] h-full  p-4 shadow-md">
                 <form
                   className="flex flex-col h-full"
                   onSubmit={handleSubmit(onSubmit)}
@@ -156,16 +156,10 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
                         <input
                           type="text"
                           id="horario"
-                          className="flex-1 w-full h-12 px-4 bg-white border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
+                          className="bg-[#d9d9d9] flex-1 w-full h-12 px-4  border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
                           {...registerWithMask("horario", "99/99/9999 99:99")}
                         />
-                        <button
-                          type="button"
-                          // Função para abrir o calendário
-                          className="h-12 w-12 flex items-center justify-center bg-orange-600 text-white rounded-md hover:bg-orange-700 transition"
-                        >
-                          <Calendar size={20} />
-                        </button>
+                       
                       </div>
                       {/* Espaço reservado para o erro */}
                       <p className="text-xs text-red-400 mt-1 min-h-[20px]">
@@ -184,7 +178,7 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
                         type="text"
                         id="titulo"
                         placeholder="Título do comunicado"
-                        className="w-full h-12 px-4 bg-white border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
+                        className="bg-[#d9d9d9] w-full h-12 px-4  border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
                         {...register("titulo")}
                       />
                     </div>
@@ -201,7 +195,7 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
                     <textarea
                       id="conteudo"
                       placeholder="Digite o conteúdo do comunicado"
-                      className="w-full h-full px-4 py-2 bg-white border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40 resize-none"
+                      className="bg-[#d9d9d9] w-full h-full px-4 py-2  border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40 resize-none"
                       {...register("conteudo")}
                     />
                     <p className="text-xs text-red-400 mt-1 absolute -bottom-5 left-0">
