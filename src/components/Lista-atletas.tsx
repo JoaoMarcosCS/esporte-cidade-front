@@ -34,7 +34,7 @@ export const Lista: React.FC<PaginatedListProps> = ({ items, itemsPerPage }) => 
   
     return (
         <div className="mt-4 max-w-7xl mx-20">
-            <div className="border rounded-md border-black bg-[#d9d9d9] p-4 min-w-[550px] shadow">
+            <div className="border rounded-md border-black bg-[#d9d9d9] p-4  shadow">
                 <div className="grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
                     <p className="border-b-2 border-black pb-2">Nome</p>
                     <p className="border-b-2 border-black pb-2">CPF</p>
@@ -43,10 +43,10 @@ export const Lista: React.FC<PaginatedListProps> = ({ items, itemsPerPage }) => 
                 {currentItems.map((item, index) => (
                     <Popover key={index}>
                         <PopoverTrigger asChild>
-                            <div className="grid grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200 cursor-pointer hover:bg-gray-100">
-                                <p>{item.nome}</p>
-                                <p>{item.cpf}</p>
-                                <p>{item.email}</p>
+                            <div className="grid grid-cols-3 gap-2 lg:gap-10 py-2 border-t  border-gray-200 cursor-pointer hover:bg-gray-100">
+                                <p className="break-words">{item.nome}</p>
+                                <p className="break-words">{item.cpf}</p>
+                                <p className="break-words">{item.email}</p>
                             </div>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -80,9 +80,11 @@ export const Lista: React.FC<PaginatedListProps> = ({ items, itemsPerPage }) => 
                     <ChevronRight className="h-4 w-4" />
                     <span className="sr-only">Próxima página</span>
                 </Button>
+
             </div>
         </div>
     )
+
 }
 
 export const atletas: Atleta[] = [

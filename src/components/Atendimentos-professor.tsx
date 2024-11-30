@@ -2,11 +2,10 @@
 import React, { useState, useMemo } from "react"
 import { Card, CardContent } from "./ui/card"
 import { Button } from "../components/ui/button";
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown,  } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { format } from "date-fns"
-
 
 import {
     Select,
@@ -23,8 +22,6 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "./ui/carousel"
-
-
 
 
 export const VisualizarAtendimentos = () => {
@@ -213,7 +210,7 @@ export const AtendimentosAnteriores = () => {
     )
 
     return (
-        <div className="w-full mt-4 max-w-2xl mx-auto min-w-[400px]">
+        <div className="w-full mt-4 max-w-2xl mx-auto ">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
             <div className="flex gap-4 mb-4">
                 <Popover>

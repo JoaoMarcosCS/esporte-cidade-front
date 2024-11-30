@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox } from 'lucide-react'
+import { Calendar, Home, Inbox, LogOut } from 'lucide-react'
 import { CustomSidebarTrigger } from "../ui/custom-trigger"
 import {
   Sidebar,
@@ -13,17 +13,40 @@ import {
 } from "../ui/sidebar"
 
 const iconItems = [
-  { title: "Sair", url: "/", icon: Home },
+  { title: "Sair", url: "/", icon: LogOut },
   { title: "Calendario", url: "#", icon: Calendar },
 ];
 
-const navLinks = [
-  { href: "#", text: "Home" },
-  { href: "/chamada", text: "Chamada" },
-  { href: "/lista-atletas", text: "Atletas" },
+const navLinksProfessor = [
+  { href: "/home-professor", text: "Home" },
+  { href: "/home-professor/chamada", text: "Chamada" },
+  { href: "/home-professor/lista-atletas", text: "Atletas" },
 ];
 
-export function AppSidebar() {
+
+const navLinksAtleta = [
+  { href: "/home-atleta", text: "Home" },
+  { href: "/home-atleta/chamada", text: "faltas" },
+  { href: "/home-atleta/lista-atletas", text: "modalidades" },
+  { href: "/home-atleta/calendario", text: "calendario" },
+];
+
+
+const navLinksGestor = [
+  { href: "/home-gestor", text: "Home" },
+  { href: "/home-gestor/cadastrar-professor", text: "professores" },
+  { href: "/home-gestor/cadastrar-comunicado", text: "comunicados" },
+];
+
+interface SidebarProps {
+  type: "professor" | "atleta" | "gestor";
+}
+
+export const AppSidebar: React.FC<SidebarProps> = ({type}) => {
+  
+
+  const navLinks = type === "professor" ?  navLinksProfessor : type === "atleta" ? navLinksAtleta : navLinksGestor;
+  
   return (
     <Sidebar>
       <SidebarHeader>
@@ -59,6 +82,8 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
+           
+           
             <SidebarMenu>
               {navLinks.map((link, index) => (
                 <SidebarMenuItem key={index}>

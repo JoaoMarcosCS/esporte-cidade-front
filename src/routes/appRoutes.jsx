@@ -1,5 +1,5 @@
-import { createBrowserRouter } from 'react-router-dom';
-import App from '../App';
+import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
 
 import {
   CadastroAtleta,
@@ -7,29 +7,34 @@ import {
   Chamada,
   ErrorPage,
   HomeAtleta,
+  HomeProfessor,
   LoginAtleta,
   LoginProfessor,
   LoginGestor,
   ProfileSelect,
-  EditarPerfil
+  AtletasLista,
+  FaltasAtleta,
+  EditarPerfil,
+  HomeGestor,
+  CadastroComunicados,
+
 } from "../pages";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
-    errorElement: <ErrorPage/>,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
         index: true,
-        element: <Home />,
-      },
-      {
-        path: "/profile-select",
-        index: true,
         element: <ProfileSelect />,
       },
+
+     
+
+      // Rotas login
       {
         path: "/login-atleta",
         index: true,
@@ -45,28 +50,52 @@ const router = createBrowserRouter([
         index: true,
         element: <LoginGestor />,
       },
-      {
-        path: "/chamada",
-        index: true,
-        element: <Chamada />,
-      },
+
+      // Rotas atleta
       {
         path: "/home-atleta",
-        index: true,
         element: <HomeAtleta />,
       },
       {
-        path: "/cadastro-atleta",
-        index: true,
+        path: "/home-atleta/faltas-atleta",
+        element: <FaltasAtleta />,
+      },
+      {
+        path: "/home-atleta/cadastro",
         element: <CadastroAtleta />,
       },
       {
-        path: "/editar-perfil",
-        index: true,
+        path: "/home-atleta/editar-perfil",
         element: <EditarPerfil />,
+      },
+
+      // Rotas de professor
+      {
+        path: "/home-professor",
+        element: <HomeProfessor />,
+      },
+      {
+        path: "/home-professor/lista-atletas",
+        element: <AtletasLista />,
+      },
+      {
+        path: "/home-professor/chamada",
+        index: true,
+        element: <Chamada />,
+      },
+
+      // Rotas Gestor
+      {
+        path: "/home-Gestor",
+        index: true,
+        element: <HomeGestor/>,
+      },
+      {
+        path: "/home-Gestor/cadastrar-comunicado",
+        index: true,
+        element: <CadastroComunicados/>,
       },
     ],
   },
 ]);
-
 export default router;
