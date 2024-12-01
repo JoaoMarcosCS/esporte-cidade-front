@@ -23,8 +23,8 @@ const ProfessoresCadastrados: React.FC<Props> = ({ professores, onEdit, onDelete
         <tbody>
           {professores.map((professor) => (
             <tr key={professor.id}>
-              <td className="border border-gray-300 px-4 py-2">{professor.nome}</td>
-              <td className="border border-gray-300 px-4 py-2">{professor.modalidade}</td>
+              <td className="border border-gray-300 px-4 py-2">{professor.name}</td>
+              <td className="border border-gray-300 px-4 py-2">{professor.photo_url}</td>
               <td className="border border-gray-300 px-4 py-2">{professor.email}</td>
               <td className="border border-gray-300 px-4 py-2 space-x-2">
                 <button onClick={() => onEdit(professor)} className="text-blue-500">

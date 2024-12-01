@@ -30,14 +30,30 @@ const CadastroAtleta: React.FC = () => {
     password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-
-    let formattedValue = value;
-
-    if (name === "phoneNumber" || name === "motherPhoneNumber" || name === "fatherPhoneNumber") {
-      formattedValue = formattedValue.replace(/\D/g, '');
-
+  const formatInputValue = (name: string, value: string): string => {
+    let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+  
+    if (name === "cpf") {
+      if (formattedValue.length <= 3) {
+        return formattedValue;
+      } else if (formattedValue.length <= 6) {
+        formattedValue = `${formattedValue.slice(0, 3)}.${formattedValue.slice(3)}`;
+      } else if (formattedValue.length <= 9) {
+        formattedValue = `${formattedValue.slice(0, 3)}.${formattedValue.slice(3, 6)}.${formattedValue.slice(6)}`;
+      } else {
+        formattedValue = `${formattedValue.slice(0, 3)}.${formattedValue.slice(3, 6)}.${formattedValue.slice(6, 9)}-${formattedValue.slice(9, 11)}`;
+      }
+    } else if (name === "rg") {
+      if (formattedValue.length <= 2) {
+        return formattedValue;
+      } else if (formattedValue.length <= 5) {
+        formattedValue = `${formattedValue.slice(0, 2)}.${formattedValue.slice(2)}`;
+      } else if (formattedValue.length <= 8) {
+        formattedValue = `${formattedValue.slice(0, 2)}.${formattedValue.slice(2, 5)}.${formattedValue.slice(5)}`;
+      } else {
+        formattedValue = `${formattedValue.slice(0, 2)}.${formattedValue.slice(2, 5)}.${formattedValue.slice(5, 8)}-${formattedValue.slice(8, 9)}`;
+      }
+    } else if (name === "phone") {
       if (formattedValue.length <= 2) {
         formattedValue = `(${formattedValue}`;
       } else if (formattedValue.length <= 6) {
@@ -48,7 +64,13 @@ const CadastroAtleta: React.FC = () => {
         formattedValue = `(${formattedValue.slice(0, 2)}) ${formattedValue.slice(2, 7)}-${formattedValue.slice(7, 11)}`;
       }
     }
-
+  
+    return formattedValue;
+  };
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const formattedValue = formatInputValue(name, value);
     setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
   };
 

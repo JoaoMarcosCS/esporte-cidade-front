@@ -31,7 +31,6 @@ export const saveProfessor = async (professor: Professor): Promise<Professor> =>
     }
 };
 
-// Função para excluir um professor
 export const deleteProfessor = async (id: number): Promise<void> => {
     try {
         await axios.delete(`${API_URL}/${id}`);

@@ -1,10 +1,13 @@
 export interface Professor {
     id: number;
-    nome: string;
-    dataNascimento: string;
-    endereco: string;
-    telefone: string;
-    modalidade: string;
+    name: string;
+    password: string;
     cpf: string;
+    rg: string;
+    birthday: string;
+    phone: string;
+    photo_url: string;
     email: string;
+    about: string;
+    modality: number;
 }
