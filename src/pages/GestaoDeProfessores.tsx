@@ -8,31 +8,37 @@ const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [professorEdicao, setProfessorEdicao] = useState<Professor | null>(null);
 
-  useEffect(() => {
-    const fetchProfessores = async () => {
+  const fetchProfessores = async () => {
+    try {
       const data = await getProfessores();
       setProfessores(data);
-    };
+    } catch (error) {
+      console.error("Erro ao buscar professores:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchProfessores();
   }, []);
 
-  const handleAddOrEdit = async (professor: Professor) => {
+  const handleAddOrEdit = async (professor: Professor): Promise<void> => {
     try {
-      const savedProfessor = await saveProfessor(professor);
-      setProfessores((prev) =>
-        professor.id === 0 ? [...prev, savedProfessor] : prev.map((p) => (p.id === professor.id ? savedProfessor : p))
-      );
+      const professorToSave: Partial<Professor> = { ...professor };
+      console.log(professorToSave);
+      
+      await saveProfessor(professorToSave as Professor);
+      await fetchProfessores();
       setProfessorEdicao(null);
     } catch (error) {
       console.error("Erro ao salvar professor:", error);
     }
   };
 
+
   const handleDelete = async (id: number) => {
     try {
       await deleteProfessor(id);
-      setProfessores((prev) => prev.filter((prof) => prof.id !== id));
+      await fetchProfessores(); // Atualiza a lista de professores após exclusão
     } catch (error) {
       console.error("Erro ao excluir professor:", error);
     }

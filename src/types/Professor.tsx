@@ -1,3 +1,5 @@
+import { Modality } from "./Modality";
+
 export interface Professor {
     id: number;
     name: string;
@@ -9,5 +11,5 @@ export interface Professor {
     photo_url: string;
     email: string;
     about: string;
-    modality: number;
+    modality: Modality | null;
 }

@@ -11,7 +11,7 @@ interface Props {
 
 const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onCancelEdit }) => {
   const [formData, setFormData] = useState<Professor>({
-    id: 0,
+    id: -1,
     name: "",
     password: "",
     cpf: "",
@@ -21,7 +21,7 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
     photo_url: "",
     email: "",
     about: "",
-    modality: 0,
+    modality: null,
   });
 
   const [modalities, setModalities] = useState<Modality[]>([]);
@@ -41,7 +41,7 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
   }, []);
 
   const formatInputValue = (name: string, value: string): string => {
-    let formattedValue = value; // Remove caracteres não numéricos
+    let formattedValue = value;
 
     if (name === "cpf") {
       formattedValue = value.replace(/\D/g, "");
@@ -93,7 +93,7 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
     e.preventDefault();
     await onSubmit(formData);
     setFormData({
-      id: 0,
+      id: -1,
       name: "",
       password: "",
       cpf: "",
@@ -103,7 +103,7 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
       photo_url: "",
       email: "",
       about: "",
-      modality: 0,
+      modality: null,
     });
   };
 
@@ -155,10 +155,21 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
         required
       />
 
+      {/* URL da Foto */}
+      <input
+        type="url"
+        name="photo_url"
+        value={formData.photo_url}
+        onChange={handleChange}
+        placeholder="URL da foto"
+        className="border p-2 w-full"
+      />
+
+
       {/* Modalidade */}
       <select
         name="modality"
-        value={formData.modality}
+        value={formData.modality != null ? formData.modality.id : 0}
         onChange={handleChange}
         className="border p-2 w-full"
         required

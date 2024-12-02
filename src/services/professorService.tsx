@@ -15,8 +15,8 @@ export const getProfessores = async (): Promise<Professor[]> => {
 
 export const saveProfessor = async (professor: Professor): Promise<Professor> => {
     try {
-        const method = professor.id === 0 ? "POST" : "PUT";
-        const url = professor.id === 0 ? API_URL : `${API_URL}/${professor.id}`;
+        const method = professor.id === -1 ? "POST" : "PUT";
+        const url = professor.id === -1 ? API_URL : `${API_URL}/${professor.id}`;
 
         const response = await axios({
             method,
@@ -26,7 +26,7 @@ export const saveProfessor = async (professor: Professor): Promise<Professor> =>
 
         return response.data;
     } catch (error) {
-        console.error(professor.id === 0 ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
+        console.error(professor.id === -1 ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
         throw error;
     }
 };

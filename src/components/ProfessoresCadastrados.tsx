@@ -8,6 +8,9 @@ interface Props {
 }
 
 const ProfessoresCadastrados: React.FC<Props> = ({ professores, onEdit, onDelete }) => {
+
+  
+
   return (
     <div>
       <h2 className="text-lg font-bold">Professores Cadastrados</h2>
@@ -17,25 +20,28 @@ const ProfessoresCadastrados: React.FC<Props> = ({ professores, onEdit, onDelete
             <th className="border border-gray-300 px-4 py-2">Nome</th>
             <th className="border border-gray-300 px-4 py-2">Modalidade</th>
             <th className="border border-gray-300 px-4 py-2">Email</th>
+            <th className="border border-gray-300 px-4 py-2">Telefone</th>
             <th className="border border-gray-300 px-4 py-2">Ações</th>
           </tr>
         </thead>
         <tbody>
-          {professores.map((professor) => (
-            <tr key={professor.id}>
-              <td className="border border-gray-300 px-4 py-2">{professor.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{professor.photo_url}</td>
-              <td className="border border-gray-300 px-4 py-2">{professor.email}</td>
-              <td className="border border-gray-300 px-4 py-2 space-x-2">
-                <button onClick={() => onEdit(professor)} className="text-blue-500">
-                  Editar
-                </button>
-                <button onClick={() => onDelete(professor.id)} className="text-red-500">
-                  Excluir
-                </button>
-              </td>
-            </tr>
-          ))}
+          {professores.map((professor) => {
+            return (
+              <tr key={professor.id}>
+                <td className="border border-gray-300 px-4 py-2">{professor.name}</td>
+                <td className="border border-gray-300 px-4 py-2">{professor.modality != null && professor.modality.name}</td>
+                <td className="border border-gray-300 px-4 py-2">{professor.email}</td>
+                <th className="border border-gray-300 px-4 py-2">{professor.phone}</th>
+                <td className="border border-gray-300 px-4 py-2 space-x-2">
+                  <button onClick={() => onEdit(professor)} className="text-blue-500">
+                    Editar
+                  </button>
+                  <button onClick={() => onDelete(professor.id)} className="text-red-500">
+                    Excluir
+                  </button>
+                </td>
+              </tr>)
+          })}
         </tbody>
       </table>
     </div>
