@@ -23,10 +23,7 @@ const GestaoDeProfessor: React.FC = () => {
 
   const handleAddOrEdit = async (professor: Professor): Promise<void> => {
     try {
-      const professorToSave: Partial<Professor> = { ...professor };
-      console.log(professorToSave);
-      
-      await saveProfessor(professorToSave as Professor);
+      await saveProfessor(professor);
       await fetchProfessores();
       setProfessorEdicao(null);
     } catch (error) {
@@ -45,21 +42,7 @@ const GestaoDeProfessor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6">
-      <header className="flex justify-between items-center pb-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-700">Esporte na Cidade</h1>
-        <nav className="space-x-4">
-          <a href="/" className="text-gray-500 hover:text-gray-700">
-            Início
-          </a>
-          <a href="/comunicados" className="text-gray-500 hover:text-gray-700">
-            Comunicados
-          </a>
-          <a href="/professores" className="text-gray-500 hover:text-gray-700">
-            Professores
-          </a>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-[#F4F6FF] px-52 py-6">
 
       <main className="space-y-8 mt-6">
         <section>

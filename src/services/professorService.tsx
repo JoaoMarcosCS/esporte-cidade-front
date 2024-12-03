@@ -18,12 +18,17 @@ export const saveProfessor = async (professor: Professor): Promise<Professor> =>
         const method = professor.id === -1 ? "POST" : "PUT";
         const url = professor.id === -1 ? API_URL : `${API_URL}/${professor.id}`;
 
+        const professorToSave: Partial<Professor> = { ...professor };
+        delete professorToSave.id;
+
         const response = await axios({
             method,
             url,
-            data: professor,
+            data: {...professorToSave, modality: professor.modality?.id},
         });
 
+        console.log(response.data);
+        
         return response.data;
     } catch (error) {
         console.error(professor.id === -1 ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);

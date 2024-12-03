@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Professor } from "@/types/Professor";
 import { Modality } from "@/types/Modality";
 import { getModalities } from "../services/modalityService";
+import Textbox from "./Textbox";
+import Datepicker from "./Datepicker";
+import Dropdown from "./Dropdown";
 
 interface Props {
   professorEdicao?: Professor | null; // Dados do professor sendo editado
@@ -108,138 +111,57 @@ const FormularioProfessores: React.FC<Props> = ({ professorEdicao, onSubmit, onC
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-lg font-bold">{professorEdicao ? "Editar Professor" : "Cadastrar Professor"}</h2>
+    <>
+      <h2 className="font-bold text-3xl mb-10 mt-20">{professorEdicao ? "Editar Professor" : "Cadastrar Professor"}</h2>
+      <form onSubmit={handleSubmit} className="flex justify-between gap-x-20">
 
-      {/* Nome */}
-      <input
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Nome completo"
-        className="border p-2 w-full"
-        required
-      />
+        <section className="w-2/4 gap-10">
+          <Textbox value={formData.name} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" />
 
-      {/* Data de Nascimento */}
-      <input
-        type="date"
-        name="birthday"
-        value={formData.birthday}
-        onChange={handleChange}
-        className="border p-2 w-full"
-        required
-      />
+          <Datepicker label="Data de nascimento" name="birthday" value={formData.birthday} onChange={handleChange} iconPath="/icon/date.svg" />
 
-      {/* Senha */}
-      <input
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        placeholder="Senha"
-        className="border p-2 w-full"
-        required
-      />
+          <Textbox value={formData.password} onChange={handleChange} name="password" label="Senha" iconPath="/icon/id.svg" placeholder="Insira a senha" type="password" />
 
-      {/* Telefone */}
-      <h2>Telefone</h2>
-      <input
-        type="text"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        placeholder="(XX) XXXXX-XXXX"
-        className="border p-2 w-full"
-        required
-      />
+          <Textbox value={formData.phone} onChange={handleChange} name="phone" label="Telefone" iconPath="/icon/phone.svg" placeholder="(__)_____-____" type="text" />
 
-      {/* URL da Foto */}
-      <input
-        type="url"
-        name="photo_url"
-        value={formData.photo_url}
-        onChange={handleChange}
-        placeholder="URL da foto"
-        className="border p-2 w-full"
-      />
+          <Textbox value={formData.photo_url} onChange={handleChange} name="photo_url" label="URL da foto" iconPath="/icon/mailbox.svg" placeholder="Insira o link da foto" type="url" />
 
+          <Dropdown label="Modalidade" name="modality" onChange={handleChange} value={formData.modality != null ? formData.modality.id : 0} iconPath="/icon/soccer.svg">
+            <option value="">Selecione a modalidade</option>
+            {modalities.map((modality) => (
+              <option key={modality.id} value={modality.id}>
+                {modality.name}
+              </option>
+            ))}
+          </Dropdown>
+        </section>
 
-      {/* Modalidade */}
-      <select
-        name="modality"
-        value={formData.modality != null ? formData.modality.id : 0}
-        onChange={handleChange}
-        className="border p-2 w-full"
-        required
-      >
-        <option value="">Selecione a modalidade</option>
-        {modalities.map((modality) => (
-          <option key={modality.id} value={modality.id}>
-            {modality.name}
-          </option>
-        ))}
-      </select>
+        <section className="w-2/4">
+          <Textbox value={formData.cpf} onChange={handleChange} name="cpf" label="CPF" iconPath="/icon/id.svg" placeholder="Insira o CPF" type="text" />
 
-      {/* CPF */}
-      <input
-        type="text"
-        name="cpf"
-        value={formData.cpf}
-        onChange={handleChange}
-        placeholder="CPF"
-        className="border p-2 w-full"
-        required
-      />
+          <Textbox value={formData.rg} onChange={handleChange} name="rg" label="RG" iconPath="/icon/id.svg" placeholder="Insira o RG" type="text" />
 
-      {/* RG */}
-      <input
-        type="text"
-        name="rg"
-        value={formData.rg}
-        onChange={handleChange}
-        placeholder="RG"
-        className="border p-2 w-full"
-        required
-      />
+          <Textbox value={formData.email} onChange={handleChange} name="email" label="E-mail do professor" iconPath="/icon/mail.svg" placeholder="Insira o e-mail" type="text" />
 
-      {/* Email */}
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        placeholder="Email"
-        className="border p-2 w-full"
-        required
-      />
+          <Textbox value={formData.about} onChange={handleChange} name="about" label="Sobre o professor" iconPath="/icon/id.svg" placeholder="Descreva o professor" type="text" multiline={true} />
 
-      {/* Sobre */}
-      <textarea
-        name="about"
-        value={formData.about}
-        onChange={handleChange}
-        placeholder="Sobre o professor"
-        className="border p-2 w-full"
-        required
-      />
-
-      <div className="flex justify-between">
-        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-          {professorEdicao ? "Salvar Alterações" : "Cadastrar"}
-        </button>
-        {professorEdicao && (
-          <button
-            type="button"
-            className="bg-gray-500 text-white py-2 px-4 rounded"
-            onClick={onCancelEdit}
-          >
-            Cancelar
-          </button>
-        )}
-      </div>
-    </form>
+          <div className="flex justify-between">
+            <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+              {professorEdicao ? "Salvar Alterações" : "Cadastrar"}
+            </button>
+            {professorEdicao && (
+              <button
+                type="button"
+                className="bg-gray-500 text-white py-2 px-4 rounded"
+                onClick={onCancelEdit}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
+        </section >
+      </form>
+    </>
   );
 };
 
