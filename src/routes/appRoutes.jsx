@@ -1,6 +1,24 @@
-import { createBrowserRouter } from 'react-router-dom';
-import App from '../App';
-import { CadastroAtleta, Chamada, ErrorPage, Home, HomeAtleta, LoginAtleta, LoginGestor, LoginProfessor, ProfileSelect, AtletaFaltas, GestaoDeProfessores } from '../pages/index';
+import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
+
+import {
+  CadastroAtleta,
+  Home,
+  Chamada,
+  ErrorPage,
+  HomeAtleta,
+  HomeProfessor,
+  LoginAtleta,
+  LoginProfessor,
+  LoginGestor,
+  ProfileSelect,
+  AtletasLista,
+  FaltasAtleta,
+  EditarPerfil,
+  HomeGestor,
+  CadastroComunicados,
+
+} from "../pages";
 
 const router = createBrowserRouter([
   {
@@ -11,13 +29,12 @@ const router = createBrowserRouter([
       {
         path: "/",
         index: true,
-        element: <Home />,
-      },
-      {
-        path: "/profile-select",
-        index: true,
         element: <ProfileSelect />,
       },
+
+     
+
+      // Rotas login
       {
         path: "/login-atleta",
         index: true,
@@ -33,33 +50,52 @@ const router = createBrowserRouter([
         index: true,
         element: <LoginGestor />,
       },
-      {
-        path: "/chamada",
-        index: true,
-        element: <Chamada />,
-      },
+
+      // Rotas atleta
       {
         path: "/home-atleta",
-        index: true,
         element: <HomeAtleta />,
       },
       {
-        path: "/cadastro-atleta",
-        index: true,
+        path: "/home-atleta/faltas-atleta",
+        element: <FaltasAtleta />,
+      },
+      {
+        path: "/home-atleta/cadastro",
         element: <CadastroAtleta />,
       },
       {
-        path: "/atleta-faltas",
-        index: true,
-        element: <AtletaFaltas />,
+        path: "/home-atleta/editar-perfil",
+        element: <EditarPerfil />,
+      },
+
+      // Rotas de professor
+      {
+        path: "/home-professor",
+        element: <HomeProfessor />,
       },
       {
-        path: "/gestao-de-professores",
+        path: "/home-professor/lista-atletas",
+        element: <AtletasLista />,
+      },
+      {
+        path: "/home-professor/chamada",
         index: true,
-        element: <GestaoDeProfessores />,
-      }
+        element: <Chamada />,
+      },
+
+      // Rotas Gestor
+      {
+        path: "/home-Gestor",
+        index: true,
+        element: <HomeGestor/>,
+      },
+      {
+        path: "/home-Gestor/cadastrar-comunicado",
+        index: true,
+        element: <CadastroComunicados/>,
+      },
     ],
   },
 ]);
-
 export default router;

@@ -5,10 +5,10 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
+import useNavigateTo from "../hooks/useNavigateTo";
+import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom'; 
-import useNavigateTo from "../hooks/useNavigateTo";
-import HeaderBasic from "../components/ui/HeaderBasic";
 
 
 
@@ -140,7 +140,7 @@ export const LoginAtleta: React.FC = () => {
                             <div className="py-10 flex justify-end gap-7">
                                 <button
                                     type="button"
-                                    onClick={() => GoTo("/profile-select")}
+                                    onClick={() => GoTo("/")}
                                     className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
                                 >
                                     Voltar
