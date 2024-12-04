@@ -27,6 +27,7 @@ const Datepicker: React.FC<DatepickerProps> = ({
                     </span>
                 )}
                 <input
+                    required={true} 
                     type="date"
                     name={name}
                     value={value}

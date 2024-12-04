@@ -39,16 +39,12 @@ const CadastroComunicados = () => {
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+                            { label: "Professores", path: "/home-gestor/professores" },
                         ]} />
 
                     <div className="  ml-20 mt-10 pb-6">
-
-
                         <div className=" items-center flex flex-col ">
-
                             <div className="mt-12"> 
-
                                 <h2 className="text-start text-4xl font-bold  mb-8">
                                     Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
                                 </h2>

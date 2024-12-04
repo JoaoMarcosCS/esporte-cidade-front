@@ -96,10 +96,10 @@ const router = createBrowserRouter([
         element: <CadastroComunicados/>,
       },
       {
-        path: "/gestao-de-professores",
+        path: "/home-Gestor/professores",
         index: true,
         element: <GestaoDeProfessores/>,
-      },
+      },      
     ],
   },
 ]);

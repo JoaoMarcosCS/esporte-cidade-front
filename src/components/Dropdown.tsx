@@ -25,16 +25,16 @@ const Dropdown: React.FC<DropdownProps> = ({
             <div className="relative">
                 {icon && (
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <img src={icon} alt="" className="w-7"/>
+                        <img src={icon} alt="" className="w-7" />
                     </span>
                 )}
                 <select
+                    required={true}
                     name={name}
                     value={value}
                     onChange={onChange}
-                    className={`pl-12 pr-4 py-3 bg-[#d9d9d9] mt-1 block w-full border ${
-                        errorMessage ? "border-red-500" : "border-black"
-                    } rounded-sm`}
+                    className={`pl-12 pr-4 py-3 bg-[#d9d9d9] mt-1 block w-full border ${errorMessage ? "border-red-500" : "border-black"
+                        } rounded-sm`}
                 >
                     {children}
                 </select>

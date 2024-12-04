@@ -5,6 +5,7 @@ import { getModalities } from "../services/modalityService";
 import Textbox from "./Textbox";
 import Datepicker from "./Datepicker";
 import Dropdown from "./Dropdown";
+import { Button } from "./ui/button";
 
 interface Props {
   professorEdicao?: Professor | null; // Dados do professor sendo editado
@@ -131,8 +132,8 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
 
         <form ref={ref} onSubmit={handleSubmit} className="">
           <h2 className="font-bold text-3xl mb-4 mt-20">{professorEdicao ? "Editar Professor" : "Cadastrar Professor"}</h2>
-          <div className="md:flex justify-between gap-x-20">
-            <section className="md:w-2/4 gap-10">
+          <div className="md:flex md:flex-wrap justify-start gap-x-10 gap-y-10">
+            <section className="md:w-2/5 gap-10">
               <Textbox value={formData.name} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" />
 
               <Datepicker label="Data de nascimento" name="birthday" value={formData.birthday} onChange={handleChange} iconPath="/icon/date.svg" />
@@ -153,7 +154,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
               </Dropdown>
             </section>
 
-            <section className="md:w-2/4">
+            <section className="md:w-2/5">
               <Textbox value={formData.cpf} onChange={handleChange} name="cpf" label="CPF" iconPath="/icon/id.svg" placeholder="Insira o CPF" type="text" />
 
               <Textbox value={formData.rg} onChange={handleChange} name="rg" label="RG" iconPath="/icon/id.svg" placeholder="Insira o RG" type="text" />
@@ -161,22 +162,19 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
               <Textbox value={formData.email} onChange={handleChange} name="email" label="E-mail do professor" iconPath="/icon/mail.svg" placeholder="Insira o e-mail" type="text" />
 
               <Textbox value={formData.about} onChange={handleChange} name="about" label="Sobre o professor" iconPath="/icon/id.svg" placeholder="Descreva o professor" type="text" multiline={true} />
-
-              <div className="flex justify-between">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-                  {professorEdicao ? "Salvar Alterações" : "Cadastrar"}
-                </button>
-                {professorEdicao && (
-                  <button
-                    type="button"
-                    className="bg-gray-500 text-white py-2 px-4 rounded"
-                    onClick={onCancelEdit}
-                  >
-                    Cancelar
-                  </button>
-                )}
-              </div>
             </section >
+
+            <div className="w-full flex justify-between">
+              <Button variant="default" type="submit">
+                {professorEdicao ? "Salvar Alterações" : "Cadastrar"}
+              </Button>
+
+              {professorEdicao && (
+                <Button variant="destructive" type="button" onClick={onCancelEdit}>
+                  Cancelar
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </div>

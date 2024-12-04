@@ -36,6 +36,7 @@ const Textbox: React.FC<TextboxProps> = ({
                 )}
                 {multiline ? (
                     <textarea
+                        required={true}
                         name={name}
                         value={value}
                         onChange={onChange}
@@ -47,6 +48,7 @@ const Textbox: React.FC<TextboxProps> = ({
                     />
                 ) : (
                     <input
+                        required={true}
                         type={type}
                         name={name}
                         value={value}

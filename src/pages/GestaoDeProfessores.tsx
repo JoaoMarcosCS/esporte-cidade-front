@@ -3,6 +3,8 @@ import { Professor } from "@/types/Professor";
 import ProfessoresCadastrados from "../components/ProfessoresCadastrados";
 import FormularioProfessores from "../components/FormularioProfessores";
 import { getProfessores, saveProfessor, deleteProfessor } from "../services/professorService";
+import HeaderBasic from "../components/navigation/HeaderBasic";
+import FooterMobile from "../components/navigation/FooterMobile";
 
 const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
@@ -48,28 +50,41 @@ const GestaoDeProfessor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6FF] xl:px-36 md:px-11 px-5 py-6">
+    <section className="bg-[#F4F6FF] pb-20">
+      <HeaderBasic type="visitante" user={{
+        name: "",
+        profilePicture: "",
+      }}
+        links={[
+          { label: "Home", path: "/home-gestor" },
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
+          { label: "Professores", path: "/home-gestor/professores" },
+        ]} />
 
-      <main className="space-y-8 mt-6">
-        <section>
-          <ProfessoresCadastrados
-            professores={professores}
-            onEdit={handleEditClick}
-            onDelete={handleDelete}
-            professorEdicao={professorEdicao}
-          />
-        </section>
+      <FooterMobile/>
 
-        <section>
-          <FormularioProfessores
-            ref={formularioRef}
-            professorEdicao={professorEdicao}
-            onSubmit={handleAddOrEdit}
-            onCancelEdit={() => setProfessorEdicao(null)}
-          />
-        </section>
-      </main>
-    </div>
+      <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
+        <main className="space-y-8 mt-6">
+          <section>
+            <ProfessoresCadastrados
+              professores={professores}
+              onEdit={handleEditClick}
+              onDelete={handleDelete}
+              professorEdicao={professorEdicao}
+            />
+          </section>
+
+          <section>
+            <FormularioProfessores
+              ref={formularioRef}
+              professorEdicao={professorEdicao}
+              onSubmit={handleAddOrEdit}
+              onCancelEdit={() => setProfessorEdicao(null)}
+            />
+          </section>
+        </main>
+      </div>
+    </section>
   );
 };
 
