@@ -17,7 +17,7 @@ import {
   EditarPerfil,
   HomeGestor,
   CadastroComunicados,
-
+  GestaoDeProfessores
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -95,6 +95,11 @@ const router = createBrowserRouter([
         index: true,
         element: <CadastroComunicados/>,
       },
+      {
+        path: "/home-Gestor/professores",
+        index: true,
+        element: <GestaoDeProfessores/>,
+      },      
     ],
   },
 ]);

@@ -39,7 +39,7 @@ const HomeGestor = () => {
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+                            { label: "Professores", path: "/home-gestor/professores" },
                         ]} />
 
                     <div className="  ml-20 mt-32 pb-6">

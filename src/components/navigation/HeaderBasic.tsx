@@ -72,7 +72,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user, type }) => 
             <img
               src={user.profilePicture}
               alt={`${user.name}'s profile`}
-              className="h-10 w-10 rounded-full border border-gray-300 shadow-md cursor-pointer"
+              className="h-10 w-10 border border-black cursor-pointer"
               onClick={handleMenuToggle}
             />
             {menuOpen && (
