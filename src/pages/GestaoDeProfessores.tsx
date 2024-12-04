@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Professor } from "@/types/Professor";
 import ProfessoresCadastrados from "../components/ProfessoresCadastrados";
 import FormularioProfessores from "../components/FormularioProfessores";
@@ -7,6 +7,8 @@ import { getProfessores, saveProfessor, deleteProfessor } from "../services/prof
 const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [professorEdicao, setProfessorEdicao] = useState<Professor | null>(null);
+
+  const formularioRef = useRef<HTMLFormElement>(null);
 
   const fetchProfessores = async () => {
     try {
@@ -31,6 +33,10 @@ const GestaoDeProfessor: React.FC = () => {
     }
   };
 
+  const handleEditClick = (professor: Professor) => {
+    setProfessorEdicao(professor);
+    formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -42,19 +48,21 @@ const GestaoDeProfessor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6FF] px-52 py-6">
+    <div className="min-h-screen bg-[#F4F6FF] xl:px-36 md:px-11 px-5 py-6">
 
       <main className="space-y-8 mt-6">
         <section>
           <ProfessoresCadastrados
             professores={professores}
-            onEdit={(prof) => setProfessorEdicao(prof)}
+            onEdit={handleEditClick}
             onDelete={handleDelete}
+            professorEdicao={professorEdicao}
           />
         </section>
 
         <section>
           <FormularioProfessores
+            ref={formularioRef}
             professorEdicao={professorEdicao}
             onSubmit={handleAddOrEdit}
             onCancelEdit={() => setProfessorEdicao(null)}
