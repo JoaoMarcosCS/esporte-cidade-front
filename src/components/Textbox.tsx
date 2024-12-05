@@ -11,6 +11,7 @@ interface TextboxProps {
     type?: string; // Tipo do input (text, password, etc.)
     multiline?: boolean; // Define se o componente será uma textarea
     rows?: number; // Número de linhas para a textarea
+    required?: boolean; // Define se o campo é obrigatório
 }
 
 const Textbox: React.FC<TextboxProps> = ({
@@ -24,6 +25,7 @@ const Textbox: React.FC<TextboxProps> = ({
     type = "text",
     multiline = false,
     rows = 4, // Número padrão de linhas para a textarea
+    required = false, // Valor padrão é falso
 }) => {
     return (
         <div className="relative my-5">
@@ -36,7 +38,7 @@ const Textbox: React.FC<TextboxProps> = ({
                 )}
                 {multiline ? (
                     <textarea
-                        required={true}
+                        required={required}
                         name={name}
                         value={value}
                         onChange={onChange}
@@ -48,7 +50,7 @@ const Textbox: React.FC<TextboxProps> = ({
                     />
                 ) : (
                     <input
-                        required={true}
+                        required={required}
                         type={type}
                         name={name}
                         value={value}

@@ -21,6 +21,9 @@ export const saveProfessor = async (professor: Professor): Promise<Professor> =>
         const professorToSave: Partial<Professor> = { ...professor };
         delete professorToSave.id;
 
+        if (method === "PUT" && professorToSave.password === "")
+            delete professorToSave.password;
+
         console.log("Professor to save: ");
         console.log(professorToSave);
 

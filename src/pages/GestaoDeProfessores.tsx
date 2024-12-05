@@ -36,6 +36,7 @@ const GestaoDeProfessor: React.FC = () => {
   };
 
   const handleEditClick = (professor: Professor) => {
+    professor.password = "";
     setProfessorEdicao(professor);
     formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -61,7 +62,7 @@ const GestaoDeProfessor: React.FC = () => {
           { label: "Professores", path: "/home-gestor/professores" },
         ]} />
 
-      <FooterMobile/>
+      <FooterMobile />
 
       <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
         <main className="space-y-8 mt-6">
