@@ -32,7 +32,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], user, type }) => 
   
 
   return (
-    <header className="w-full bg-white flex items-center justify-between gap-4 px-6 py-4 shadow">
+    <header className="w-full bg-white flex items-center justify-between gap-4 px-6 py-4 shadow sticky top-0 z-50">
       {/* Logo e título */}
       <div className="flex items-center md:gap-0  gap-2">
 

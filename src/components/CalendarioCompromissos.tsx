@@ -92,8 +92,8 @@ const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userTyp
           {compromissos.map((comp) => (
             <li key={comp.id} className="bg-white p-2 rounded-md flex justify-between items-center">
               <div>
-                <p className="font-semibold">{comp.data}</p>
-                <p>{comp.descricao}</p>
+                <span className="font-semibold block">{comp.data}</span>
+                <span className="block">{comp.descricao}</span>
               </div>
               {userType === "gestor" && (
                 <div className="flex space-x-2">

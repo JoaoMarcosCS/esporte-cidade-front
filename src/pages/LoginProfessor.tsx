@@ -7,19 +7,9 @@ import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
-
-
-const Login = async (email: any, password: any) => {
-    
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // dados para simulação 
-    
-    if (email === "teste@gmail.com" && password === "123456") {
-        return true; 
-    }
-    return false;
-};
+import { useHookFormMask } from "use-mask-input";
+import { Link } from 'react-router-dom';
+import { loginTeacher } from "../services/auth";
 
 export const LoginProfessor: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -33,30 +23,32 @@ export const LoginProfessor: React.FC = () => {
         resolver: zodResolver(userSchema),
     });
 
-
     async function onSubmit(data: FieldValues) {
-        console.log("Formulário enviado:", data);
+        try {
+            const { email, password } = data;
+            
+            const response = await loginTeacher({
+                email,
+                password
+            });
 
-        const { email, password } = data;
+            // Salvar token e dados do usuário
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('teacher', JSON.stringify(response.data.teacher));
 
-        // chamando função de login com dados mockados
-        const loginSuccess = await Login(email, password);
-
-        if (loginSuccess) {
             GoTo("/home-professor");
 
-        } else {
-            toast.error("email ou senha inválidos.");
-            toast.error("digite \n email:teste@gmail.com \n senha:123456.");
+        } catch (error: any) {
+            console.error("Erro no login:", error);
+            toast.error(error.message);
         }
     }
+
     return (
         <>
-        <Toaster/>
+            <Toaster />
             <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-
-                <HeaderBasic/>
-
+                <HeaderBasic />
                 <main className="flex flex-col items-center flex-1">
                     <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
                         <div className="text-start px-8 mb-8">
@@ -77,12 +69,12 @@ export const LoginProfessor: React.FC = () => {
                                             htmlFor="email"
                                             className="block text-sm pb-2 font-medium text-gray-600"
                                         >
-                                           Email
+                                            Email
                                         </label>
                                         <input
-                                            type="text"
+                                            type="email"
                                             id="email"
-                                            placeholder="Preencha com seu Email"
+                                            placeholder="Preencha com seu email"
                                             {...register("email")}
                                             className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
                                         />
@@ -92,8 +84,7 @@ export const LoginProfessor: React.FC = () => {
                                             </p>
                                         )}
                                     </div>
-
-                                    <div className="mb-4">
+                                    <div className="mb4">
                                         <label
                                             htmlFor="password"
                                             className="block text-sm pb-2 font-medium text-gray-600"
@@ -110,9 +101,7 @@ export const LoginProfessor: React.FC = () => {
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    setIsPasswordVisible(!isPasswordVisible)
-                                                }
+                                                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                                                 className="absolute right-3 top-3 text-gray-600"
                                             >
                                                 {isPasswordVisible ? (
@@ -121,12 +110,12 @@ export const LoginProfessor: React.FC = () => {
                                                     <EyeOffIcon size={20} />
                                                 )}
                                             </button>
-                                            {errors.password && (
-                                                <p className="text-xs text-red-400 mt-1">
-                                                    {errors.password?.message as string}
-                                                </p>
-                                            )}
                                         </div>
+                                        {errors.password && (
+                                            <p className="text-xs text-red-400 mt-1">
+                                                {errors.password?.message as string}
+                                            </p>
+                                        )}
                                         <a href="#" className="text-blue-600 mt-2 block">
                                             Esqueci minha senha
                                         </a>
@@ -137,7 +126,7 @@ export const LoginProfessor: React.FC = () => {
                             <div className="py-10 flex justify-end gap-7">
                                 <button
                                     type="button"
-                                    onClick={()=> GoTo("/")} 
+                                    onClick={() => GoTo("/")}
                                     className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
                                 >
                                     Voltar
@@ -155,18 +144,21 @@ export const LoginProfessor: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                       
+                        <div className="flex flex-col text-center">
+                            <p className="font-inter">Ainda não tem uma conta?</p>
+                            <Link to="/cadastro-professor" className="font-inter text-blue-600">
+                                Criar conta
+                            </Link>
+                        </div>
                     </div>
                 </main>
 
                 <footer className="w-full text-center mt-auto">
                     <p className="text-sm text-gray-500">
-                        © 2024 Esporte na cidade. All rights reserved.
+                        2024 Esporte na cidade. All rights reserved.
                     </p>
                 </footer>
             </div>
         </>
     );
 };
-
-

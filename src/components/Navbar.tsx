@@ -5,8 +5,8 @@ const Navbar = () => {
         <nav className="flex items-center justify-between px-24 py-5 bg-[#F4F6FF] shadow-md">
             <div className="text-lg font-jockey">ESPORTE NA CIDADE</div>
             <div className="flex gap-6 items-center font-bold">
-                <a href="/inicio" className="text-gray-700 hover:text-orange-500">
-                    Início
+                <a href="/home-atleta" className="text-gray-700 hover:text-orange-500">
+                    Home
                 </a>
                 <a href="/faltas" className="text-gray-700 hover:text-orange-500">
                     Faltas

@@ -3,22 +3,11 @@ import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
-
-const Login = async (email: any, password: any) => {
-    
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // dados para simulação 
-    
-    if (email === "teste@gmail.com" && password === "123456") {
-        return true; 
-    }
-    return false;
-};
+import { loginManager } from "../services/auth";
+import { userSchema } from "../lib/schemaLoginUser";
 
 export const LoginGestor: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -32,29 +21,34 @@ export const LoginGestor: React.FC = () => {
         resolver: zodResolver(userSchema),
     });
 
-
     async function onSubmit(data: FieldValues) {
-        console.log("Formulário enviado:", data);
+        try {
+            const { email, password } = data;
+            
+            const response = await loginManager({
+                email,
+                password
+            });
 
-        const { email, password } = data;
-
-        // chamando função de login com dados mockados
-        const loginSuccess = await Login(email, password);
-
-        if (loginSuccess) {
-            GoTo("/home-gestor");
-
-        } else {
-            toast.error("email ou senha inválidos.");
+            if (response.success) {
+                // Armazenar token no localStorage
+                localStorage.setItem('accessToken', response.data.accessToken);
+                localStorage.setItem('manager', JSON.stringify(response.data.manager));
+                
+                GoTo("/home-gestor");
+            } else {
+                toast.error(response.message || "Erro ao fazer login");
+            }
+        } catch (error: any) {
+            console.error("Erro no login:", error);
+            toast.error(error.response?.data?.message || "Erro ao fazer login");
         }
     }
-
 
     return (
         <>
         <Toaster/>
             <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-
                 <HeaderBasic/>
 
                 <main className="flex flex-col items-center flex-1">
@@ -74,7 +68,7 @@ export const LoginGestor: React.FC = () => {
                                 <div className="grid grid-cols-1 gap-6">
                                     <div className="mb4">
                                         <label
-                                            htmlFor="cpf"
+                                            htmlFor="email"
                                             className="block text-sm pb-2 font-medium text-gray-600"
                                         >
                                             Email
@@ -137,7 +131,7 @@ export const LoginGestor: React.FC = () => {
                             <div className="py-10 flex justify-end gap-7">
                                 <button
                                     type="button"
-                                    onClick={()=> GoTo("/")} 
+                                    onClick={() => GoTo("/")} 
                                     className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
                                 >
                                     Voltar
@@ -155,17 +149,15 @@ export const LoginGestor: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                        
                     </div>
                 </main>
 
                 <footer className="w-full text-center mt-auto">
                     <p className="text-sm text-gray-500">
-                        © 2024 Esporte na cidade. All rights reserved.
+                        2024 Esporte na cidade. All rights reserved.
                     </p>
                 </footer>
             </div>
         </>
     );
 };
-

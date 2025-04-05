@@ -17,7 +17,8 @@ import {
   EditarPerfil,
   HomeGestor,
   CadastroComunicados,
-  GestaoDeProfessores
+  GestaoDeProfessores,
+  AtletaFaltas
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/home-atleta/faltas-atleta",
-        element: <FaltasAtleta />,
+        element: <AtletaFaltas />,
       },
       {
         path: "/home-atleta/cadastro",

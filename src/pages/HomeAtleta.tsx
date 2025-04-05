@@ -26,7 +26,7 @@ const HomeAtleta: React.FC = () => {
     <SidebarProvider>
       <AppSidebar type="atleta" />
       <SidebarInset>
-        <div className="min-h-screen bg-white flex flex-col items-center pb-16">
+        {/* <div className="min-h-screen bg-white flex flex-col items-center pb-16"> */}
           {/* Cabeçalho: visível apenas em telas md ou maiores */}
           {/*<header> ... </header>*/}
   
@@ -42,7 +42,7 @@ const HomeAtleta: React.FC = () => {
           />
   
           {/* Conteúdo Principal */}
-          <main className="max-w-7xl mx-auto mt-8 p-4">
+          <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
             <h2 className="text-2xl font-bold mb-4 text-left">
               Olá, <span className="text-[#EB8317]">Atleta!</span>
             </h2>
@@ -73,8 +73,8 @@ const HomeAtleta: React.FC = () => {
             </div>
           </main>
 
-          <FooterMobile />
-        </div>
+          {/* <FooterMobile /> */}
+        {/* </div> */}
       </SidebarInset>
     </SidebarProvider>
   );
