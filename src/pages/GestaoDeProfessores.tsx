@@ -8,7 +8,7 @@ import FooterMobile from "../components/navigation/FooterMobile";
 
 const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
-  const [professorEdicao, setProfessorEdicao] = useState<Professor | null>(null);
+  const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
 
   const formularioRef = useRef<HTMLFormElement>(null);
 
@@ -25,11 +25,11 @@ const GestaoDeProfessor: React.FC = () => {
     fetchProfessores();
   }, []);
 
-  const handleAddOrEdit = async (professor: Professor): Promise<void> => {
+  const handleAddOrEdit = async (professor: Professor) => {
     try {
       await saveProfessor(professor);
       await fetchProfessores();
-      setProfessorEdicao(null);
+      setSelectedProfessor(null);
     } catch (error) {
       console.error("Erro ao salvar professor:", error);
     }
@@ -37,30 +37,29 @@ const GestaoDeProfessor: React.FC = () => {
 
   const handleEditClick = (professor: Professor) => {
     professor.password = "";
-    setProfessorEdicao(professor);
+    setSelectedProfessor(professor);
     formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
-      await deleteProfessor(id);
-      await fetchProfessores(); // Atualiza a lista de professores após exclusão
+      await deleteProfessor(Number(id));
+      setProfessores(prev => prev.filter(prof => prof.id === id));
     } catch (error) {
-      console.error("Erro ao excluir professor:", error);
+      console.error('Erro ao deletar professor:', error);
     }
   };
 
   return (
     <section className="bg-[#F4F6FF] pb-20">
-      <HeaderBasic type="visitante" user={{
-        name: "",
-        profilePicture: "",
-      }}
+      <HeaderBasic
+        type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
           { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-          { label: "Professores", path: "/home-gestor/professores" },
-        ]} />
+          { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+        ]}
+      />
 
       <FooterMobile />
 
@@ -71,16 +70,16 @@ const GestaoDeProfessor: React.FC = () => {
               professores={professores}
               onEdit={handleEditClick}
               onDelete={handleDelete}
-              professorEdicao={professorEdicao}
+              professorEdicao={selectedProfessor}
             />
           </section>
 
           <section>
             <FormularioProfessores
               ref={formularioRef}
-              professorEdicao={professorEdicao}
+              professorEdicao={selectedProfessor}
               onSubmit={handleAddOrEdit}
-              onCancelEdit={() => setProfessorEdicao(null)}
+              onCancelEdit={() => setSelectedProfessor(null)}
             />
           </section>
         </main>

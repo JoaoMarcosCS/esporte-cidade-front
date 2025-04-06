@@ -1,12 +1,13 @@
 import React from 'react';
-import HomeAtleta from './pages/HomeAtleta'
-import Chamada from './pages/Chamada';
+import { AuthProvider } from './contexts/AuthContext';
 import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
     <div className="">
-      <Outlet/>
+      <AuthProvider>
+        <Outlet/>
+      </AuthProvider>
     </div>
   );
 }

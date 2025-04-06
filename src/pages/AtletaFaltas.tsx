@@ -1,50 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
+import { useUser } from '../hooks/useAuth';
+import api from '../services/api';
+
+interface Falta {
+  data: string;
+  modalidade: string;
+  professor: string;
+  local: string;
+}
 
 const AtletaFaltas = () => {
   const GoTo = useNavigateTo();
-  const userType = "atleta";
-  const user = {
-    name: "",
-    profilePicture: "",
-  };
-  const [faltas, setFaltas] = useState([
-    {
-      data: "2024-01-01",
-      modalidade: "Futebol",
-      professor: "João Silva",
-      local: "Quadra A",
-    },
-    {
-      data: "2024-01-02",
-      modalidade: "Basquete",
-      professor: "Maria Santos",
-      local: "Quadra B",
-    },
-    {
-      data: "2024-01-03",
-      modalidade: "Vôlei",
-      professor: "Carlos Oliveira",
-      local: "Quadra A",
-    },
-    {
-      data: "2024-01-04",
-      modalidade: "Futebol",
-      professor: "João Silva",
-      local: "Quadra B",
-    },
-    {
-      data: "2024-01-05",
-      modalidade: "Basquete",
-      professor: "Maria Santos",
-      local: "Quadra A",
-    },
-  ]);
-
+  const user = useUser();
+  const [faltas, setFaltas] = useState<Falta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     data: "",
     modalidade: "",
@@ -53,7 +28,41 @@ const AtletaFaltas = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
 
-  // Format date in Brazilian format
+  useEffect(() => {
+    const fetchFaltas = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        if (!user?.id) return;
+
+        const response = await api.get<Falta[]>(`/faltas/${user.id}`);
+        setFaltas(response.data);
+      } catch (error: any) {
+        console.error('Erro ao buscar faltas:', error);
+        setError(error.message || 'Erro ao carregar faltas');
+        // Se falhar, usa dados padrão
+        setFaltas([
+          {
+            data: "2024-04-05",
+            modalidade: "Judô",
+            professor: "João Silva",
+            local: "Quadra A",
+          },
+          {
+            data: "2024-04-04",
+            modalidade: "Atletismo",
+            professor: "Maria Santos",
+            local: "Quadra B",
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFaltas();
+  }, [user?.id]);
+
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -72,7 +81,7 @@ const AtletaFaltas = () => {
 
   const filteredFaltas = faltas.filter((falta) => {
     return (
-      (filters.data === "" || falta.data === filters.data) &&
+      (filters.data === "" || formatDate(falta.data).includes(filters.data)) &&
       (filters.modalidade === "" || falta.modalidade === filters.modalidade) &&
       (filters.local === "" || falta.local === filters.local)
     );
@@ -86,14 +95,101 @@ const AtletaFaltas = () => {
 
   const totalPages = Math.ceil(filteredFaltas.length / itemsPerPage);
 
+  if (loading) {
+    return (
+      <SidebarProvider>
+        <AppSidebar type="atleta" />
+        <SidebarInset>
+          <div className="bg-[#F4F6FF]">
+            <div className="animate-pulse">
+              <div className="px-4 py-6 md:px-8 w-full lg:w-3/4 m-auto">
+                <div className="text-4xl font-bold my-10 text-center md:text-left">
+                  <div className="h-4 bg-gray-200 rounded mb-2 w-1/4"></div>
+                </div>
+                
+                <div className="mb-8 p-6 rounded-lg border-black border bg-[#D9D9D9]">
+                  <div className="text-xl font-bold mb-4">
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
+                  </div>
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="text-6xl font-bold text-[#EB8317] text-center md:text-left">
+                      <div className="h-8 bg-gray-200 rounded mb-2 w-1/6"></div>
+                    </div>
+                    <div className="text-gray-600 text-center md:text-left">
+                      <div className="h-4 bg-gray-200 rounded mb-2 w-1/4"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <section className="mb-8">
+                  <div className="text-xl font-bold mb-4">
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-1/4"></div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="w-full px-4 py-2 rounded-md border-black border bg-[#D9D9D9]">
+                      <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                    </div>
+                    <div className="w-full px-4 py-2 rounded-md border-black border bg-[#D9D9D9]">
+                      <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                    </div>
+                    <div className="w-full px-4 py-2 rounded-md border-black border bg-[#D9D9D9]">
+                      <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="p-6 border-black border bg-[#D9D9D9]">
+                  <div className="w-full">
+                    <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                  </div>
+                </section>
+
+                <section className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="font-bold text-sm">
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-1/4"></div>
+                  </div>
+                  <div className="flex justify-center md:justify-end items-center gap-2">
+                    <div className="px-4 py-2 rounded-l-md border border-black bg-[#D9D9D9]">
+                      <div className="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                    <div className="px-4 py-2 rounded-r-md border border-black bg-[#D9D9D9]">
+                      <div className="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
+  if (error) {
+    return (
+      <SidebarProvider>
+        <AppSidebar type="atleta" />
+        <SidebarInset>
+          <div className="bg-[#F4F6FF]">
+            <div className="px-4 py-6 md:px-8 w-full lg:w-3/4 m-auto">
+              <div className="text-red-500 text-center py-8">
+                {error}
+              </div>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar type="atleta" />
       <SidebarInset>
-        <div className=" bg-[#F4F6FF]">
+        <div className="bg-[#F4F6FF]">
           <HeaderBasic
             type="usuario"
-            user={user}
             links={[
               { label: "Home", path: "/home-atleta" },
               { label: "Faltas", path: "/home-atleta/faltas-atleta" },
@@ -128,9 +224,9 @@ const AtletaFaltas = () => {
                   onChange={(e) => setFilters({ ...filters, data: e.target.value })}
                 >
                   <option value="">Data</option>
-                  {Array.from(new Set(faltas.map((f) => f.data))).map((data) => (
-                    <option key={data} value={data}>
-                      {formatDate(data)}
+                  {Array.from(new Set(faltas.map((f) => formatDate(f.data)))).map((date) => (
+                    <option key={date} value={date}>
+                      {date}
                     </option>
                   ))}
                 </select>

@@ -16,10 +16,6 @@ const AtletasLista: React.FC = () => {
     const GoTo = useNavigateTo()
     const isMobile = useIsMobile();
     const userType = "professor"
-    const user = {
-        name: "",
-        profilePicture: "",
-    };
     return (
         <SidebarProvider>
             <AppSidebar type="professor" />
@@ -27,13 +23,11 @@ const AtletasLista: React.FC = () => {
                 <div className="min-h-screen pb-24 bg-gray-100">
                     <HeaderBasic
                         type="usuario"
-                        user={user}
                         links={[
                             { label: "Home", path: "/home-professor" },
                             { label: "Chamada", path: "/home-professor/chamada" },
                             { label: "Atletas", path: "/home-professor/lista-atletas" },
                         ]}
-
                     />
                     <div className="max-w-7xl pb-5 ml-24 mr-10 mt-12 ">
                         <h1 className="text-2xl font-bold">

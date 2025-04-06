@@ -1,16 +1,16 @@
 import * as React from "react"
 import HeaderBasic from "../components/navigation/HeaderBasic"
-
-import { VisualizarAtendimentos, QuantidadeAtendimentos, AtendimentosAnteriores } from "../components/Atendimentos-professor";
+import { useUser, useAuthStatus } from '../hooks/useAuth';
 import useNavigateTo from "../hooks/useNavigateTo";
+import { VisualizarAtendimentos, QuantidadeAtendimentos, AtendimentosAnteriores } from "../components/Atendimentos-professor";
 import { AppSidebar } from '../components/navigation/AppSidebar-prof';
 import FooterMobile from "../components/navigation/FooterMobile";
 import {
     SidebarInset,
     SidebarProvider,
 } from "../components/ui/sidebar"
-
-
+import { useAuth } from '../contexts/AuthContext';
+import { useDecodedToken } from '../hooks/useDecodedToken';
 
 export function useMediaQuerie() {
     const customBreakpoint = 854
@@ -28,36 +28,37 @@ export function useMediaQuerie() {
 
 }
 
-const HomeProfessor: React.FC = () => {
+const HomeProfessor = () => {
     const isMobile = useMediaQuerie()
     const GoTo = useNavigateTo();
+    const { user } = useAuth();
     const userType = "professor"
-    const user = {
-      name: "",
-      profilePicture: "",
-    };
-
+    const userData = useUser();
+      const { fetchUser } = useAuthStatus();
+      const decodedToken = useDecodedToken();
+    
+      // Adicionando logs para debug
+      console.log('decodedToken:', decodedToken);
+      console.log('localStorage token:', localStorage.getItem('token'));
 
     return (
         <SidebarProvider>
-            <AppSidebar type="professor" />
+            <AppSidebar type={userType} />
             <SidebarInset>
                 <div className="min-h-screen bg-gray-100">
                     <HeaderBasic
                         type="usuario"
-                        user={user}
                         links={[
                             { label: "Home", path: "/home-professor" },
                             { label: "Chamada", path: "/home-professor/chamada" },
                             { label: "Atletas", path: "/home-professor/lista-atletas" },
                         ]}
-
                     />
 
                     <div className="max-w-7xl pb-24 ml-24 mr-10 mt-14 ">
 
                         <h1 className="text-2xl font-bold">
-                            Olá, Professor(a) <span className="text-orange-500">Moisés</span>
+                            Olá, Professor(a) <span className="text-[#EB8317]">{decodedToken?.name || 'Usuário'}</span>!
                         </h1>
 
                         {isMobile ? (
@@ -67,11 +68,9 @@ const HomeProfessor: React.FC = () => {
                                 <AtendimentosAnteriores />
                             </div>
                         ) : (
-                            <div className="mt-4 grid grid-cols-2 mr-6 gap-14 space-x-10">
-                                <div className="flex flex-col">
-                                    <VisualizarAtendimentos />
-                                    <QuantidadeAtendimentos />
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <VisualizarAtendimentos />
+                                <QuantidadeAtendimentos />
                                 <AtendimentosAnteriores />
                             </div>
                         )}

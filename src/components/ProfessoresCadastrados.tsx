@@ -5,7 +5,7 @@ interface Props {
   professores: Professor[];
   professorEdicao: Professor | null;
   onEdit: (professor: Professor) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 const ProfessoresCadastrados: React.FC<Props> = ({ professores, professorEdicao, onEdit, onDelete }) => {
@@ -43,7 +43,7 @@ const ProfessoresCadastrados: React.FC<Props> = ({ professores, professorEdicao,
                         className="w-full"
                       />
                     </button>
-                    <button onClick={() => onDelete(professor.id)} className={`w-7 ${professorEdicao?.id === professor.id && "opacity-35"}`} disabled={professorEdicao?.id === professor.id}>
+                    <button onClick={() => onDelete(professor.id.toString())} className={`w-7 ${professorEdicao?.id === professor.id && "opacity-35"}`} disabled={professorEdicao?.id === professor.id}>
                       <img
                         src="/icon/trash.svg"
                         alt="Deletar"

@@ -15,27 +15,19 @@ export const getProfessores = async (): Promise<Professor[]> => {
 
 export const saveProfessor = async (professor: Professor): Promise<Professor> => {
     try {
-        const method = professor.id === -1 ? "POST" : "PUT";
-        const url = professor.id === -1 ? API_URL : `${API_URL}/${professor.id}`;
+        const method = professor.id === "-1" ? "POST" : "PUT";
+        const url = professor.id === "-1" ? API_URL : `${API_URL}/${professor.id}`;
 
         const professorToSave: Partial<Professor> = { ...professor };
         delete professorToSave.id;
 
-        if (method === "PUT" && professorToSave.password === "")
-            delete professorToSave.password;
-
-        console.log("Professor to save: ");
-        console.log(professorToSave);
-
-        const response = await axios({
-            method,
-            url,
-            data: { ...professorToSave, modality: professor.modality?.id || professor.modality },
-        });
+        const response = method === "POST" 
+            ? await axios.post(url, professorToSave)
+            : await axios.put(url, professorToSave);
 
         return response.data;
     } catch (error) {
-        console.error(professor.id === -1 ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
+        console.error(professor.id === "-1" ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
         throw error;
     }
 };

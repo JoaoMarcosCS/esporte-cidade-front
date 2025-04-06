@@ -1,7 +1,9 @@
-
-import React, { useState, useMemo } from "react"
+import React, { useState, useEffect, useMemo, useCallback } from "react"
 import { Card, CardContent } from "./ui/card"
 import { Button } from "../components/ui/button";
+import api from "../services/api";
+import { useAuth } from '../contexts/AuthContext';
+
 import { ChevronLeft, ChevronRight, ChevronDown,  } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
@@ -23,66 +25,49 @@ import {
     CarouselPrevious,
 } from "./ui/carousel"
 
-
-export const VisualizarAtendimentos = () => {
-    const content = [
-        {
-            title: "Aulas de Hoje",
-            items: [
-                { name: "Ginásio", time: "12:00" },
-                { name: "Campinho", time: "14:30" },
-                { name: "Raspadão", time: "18:30" },
-            ],
-        },
-        {
-            title: "Aulas de Amanhã",
-            items: [
-                { name: "Mergulho", time: "11:30" },
-                { name: "Futebol", time: "13:00" },
-                { name: "Volley", time: "17:40" },
-            ],
-        },
-    ];
-
-    return (
-        <>
-            {content.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mt-4  ">
-                    <h2 className="text-lg font-semibold text-start">{section.title}</h2>
-                    <Carousel
-                        opts={{
-                            align: "start",
-                        }}
-                        className="mt-4 w-full max-w-3xl"
-                    >
-                        <CarouselContent>
-                            {section.items.map((item, itemIndex) => (
-                                <CarouselItem
-                                    key={itemIndex}
-                                    className="basis-1/2 min-w-36"
-                                >
-                                    <div className="p-1">
-                                        <Card>
-                                            <CardContent className="p-6  border rounded-md border-black bg-[#d9d9d9]">
-                                                <p>{item.name}</p>
-                                                <p className="text-orange-500">
-                                                    {item.time}
-                                                </p>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none  hover:bg-orange-500  " />
-                        <CarouselNext className="bg-[#d9d9d9] shadow-none border-none  hover:bg-orange-500  "/>
-                    </Carousel>
-                </div>
-            ))}
-        </>
-    );
+interface ScheduleItem {
+    name: string;
+    time: string;
+    date: string;
 }
 
+interface ScheduleSection {
+    title: string;
+    items: ScheduleItem[];
+}
+
+interface BackendSchedule {
+    name: string;
+    time: string;
+    date: Date;
+}
+
+interface BackendScheduleResponse {
+    today: BackendSchedule[];
+    tomorrow: BackendSchedule[];
+}
+
+interface FullSchedule {
+    id: number;
+    name: string;
+    time: string;
+    date: Date;
+    teacher: {
+        id: number;
+        name: string;
+    };
+}
+
+interface FullScheduleResponse {
+    today: FullSchedule[];
+    tomorrow: FullSchedule[];
+}
+
+interface Attendance {
+    data: string;
+    local: string;
+    atendimento: string;
+}
 
 interface CardItem {
     modalidade: string
@@ -93,6 +78,235 @@ interface ContentItem {
     title: string
     items: CardItem[]
 }
+
+const attendances: Attendance[] = [
+    { data: "10/12/2023", local: "Raspadão", atendimento: "Futebol" },
+    { data: "11/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
+    { data: "12/12/2023", local: "Piscina Olímpica", atendimento: "Natação" },
+    { data: "13/12/2023", local: "Raspadão", atendimento: "Futebol" },
+    { data: "14/12/2023", local: "Quadra de Tênis", atendimento: "Tênis" },
+    { data: "15/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
+    { data: "16/12/2023", local: "Ginásio", atendimento: "Vôlei" },
+    { data: "17/12/2023", local: "Raspadão", atendimento: "Futebol" },
+    { data: "18/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
+    { data: "19/12/2023", local: "Piscina Olímpica", atendimento: "Natação" },
+    { data: "20/12/2023", local: "Quadra de Tênis", atendimento: "Tênis" },
+    { data: "21/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
+]
+
+const locations = Array.from(new Set(attendances.map(a => a.local)))
+
+export const VisualizarAtendimentos = () => {
+    const [schedule, setSchedule] = useState<ScheduleSection[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedLocation, setSelectedLocation] = useState<string>('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const { user, isAuthenticated, fetchUser } = useAuth();
+
+    // Log component state when it mounts
+    useEffect(() => {
+        console.log('VisualizarAtendimentos component mounted');
+        console.log('Current user:', user);
+        console.log('Is authenticated:', isAuthenticated);
+
+        // Try to fetch user data if not authenticated
+        if (!isAuthenticated && !user) {
+            console.log('Attempting to fetch user data');
+            fetchUser().catch(err => {
+                console.error('Error fetching user data:', err);
+            });
+        }
+    }, [isAuthenticated, user, fetchUser]);
+
+    const fetchSchedule = useCallback(async () => {
+        try {
+            console.log('Attempting to fetch schedule');
+            console.log('Current auth state:', { isAuthenticated, user });
+
+            if (!isAuthenticated) {
+                console.log('User is not authenticated');
+                return;
+            }
+
+            if (!user?.id) {
+                console.log('User ID not found:', user);
+                return;
+            }
+
+            console.log('Fetching schedule for user:', user.id);
+            
+            // Log the API endpoint being called
+            const endpoint = `/schedule/teacher/${user.id}`;
+            console.log('Calling API endpoint:', endpoint);
+
+            try {
+                const response = await api.get(endpoint);
+                console.log('API Response:', response.data);
+                
+                // Check if response data exists
+                if (!response.data) {
+                    console.error('No data received from API');
+                    setSchedule([
+                        {
+                            title: "Aulas de Hoje",
+                            items: []
+                        },
+                        {
+                            title: "Aulas de Amanhã",
+                            items: []
+                        }
+                    ]);
+                    return;
+                }
+
+                // Transform the backend response to match our component's expected format
+                const todaySchedules = response.data.today ? response.data.today.map((schedule: any) => ({
+                    name: schedule.name,
+                    time: schedule.time,
+                    date: new Date(schedule.date).toISOString().split('T')[0]
+                })) : [];
+
+                const tomorrowSchedules = response.data.tomorrow ? response.data.tomorrow.map((schedule: any) => ({
+                    name: schedule.name,
+                    time: schedule.time,
+                    date: new Date(schedule.date).toISOString().split('T')[0]
+                })) : [];
+
+                console.log('Transformed schedules:', {
+                    today: todaySchedules,
+                    tomorrow: tomorrowSchedules
+                });
+
+                setSchedule([
+                    {
+                        title: "Aulas de Hoje",
+                        items: todaySchedules
+                    },
+                    {
+                        title: "Aulas de Amanhã",
+                        items: tomorrowSchedules
+                    }
+                ]);
+
+            } catch (error: unknown) {
+                console.error('Erro ao carregar o horário:', error);
+                console.error('Error details:', {
+                    message: error instanceof Error ? error.message : 'Unknown error',
+                    stack: error instanceof Error ? error.stack : undefined
+                });
+                
+                setSchedule([
+                    {
+                        title: "Aulas de Hoje",
+                        items: []
+                    },
+                    {
+                        title: "Aulas de Amanhã",
+                        items: []
+                    }
+                ]);
+            }
+        } catch (error: unknown) {
+            console.error('Erro ao carregar o horário:', error);
+            console.error('Error details:', {
+                message: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined
+            });
+            
+            setSchedule([
+                {
+                    title: "Aulas de Hoje",
+                    items: []
+                },
+                {
+                    title: "Aulas de Amanhã",
+                    items: []
+                }
+            ]);
+        }
+    }, [isAuthenticated, user?.id]);
+
+    useEffect(() => {
+        console.log('Auth state changed:', { isAuthenticated, user });
+        
+        if (isAuthenticated && user?.id) {
+            console.log('Starting schedule fetch with interval');
+            fetchSchedule();
+            const intervalId = setInterval(fetchSchedule, 60000);
+            return () => {
+                console.log('Clearing schedule fetch interval');
+                clearInterval(intervalId);
+            };
+        } else {
+            console.log('Not authenticated or no user ID, clearing schedule');
+            setSchedule([
+                {
+                    title: "Aulas de Hoje",
+                    items: []
+                },
+                {
+                    title: "Aulas de Amanhã",
+                    items: []
+                }
+            ]);
+        }
+    }, [isAuthenticated, user?.id, fetchSchedule]);
+
+    if (!isAuthenticated || !user) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <p className="text-gray-500">Carregando dados do usuário...</p>
+            </div>
+        );
+    }
+
+    
+
+    return (
+        <div className="flex flex-col gap-8">
+            {schedule.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="mt-4">
+                    <h2 className="text-lg font-semibold text-start mb-4">{section.title}</h2>
+                    {section.items.length === 0 ? (
+                        <p className="text-gray-500 text-center">Nenhuma aula agendada</p>
+                    ) : (
+                        <>
+                            <p className="text-gray-500 text-center mb-4">Total de aulas: {section.items.length}</p>
+                            <Carousel
+                                opts={{
+                                    align: "start",
+                                }}
+                                className="w-full max-w-3xl"
+                            >
+                                <CarouselContent>
+                                    {section.items.map((item, itemIndex) => (
+                                        <CarouselItem
+                                            key={itemIndex}
+                                            className="basis-1/2 min-w-36"
+                                        >
+                                            <div className="p-1">
+                                                <Card>
+                                                    <CardContent className="p-6 border rounded-md border-black bg-[#d9d9d9]">
+                                                        <p>{item.name}</p>
+                                                        <p className="text-orange-500">
+                                                            {item.time}
+                                                        </p>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                                <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                            </Carousel>
+                        </>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+};
 
 export const QuantidadeAtendimentos = () => {
     const content = [
@@ -164,50 +378,24 @@ export const QuantidadeAtendimentos = () => {
 
 };
 
-
-interface Attendance {
-    data: string
-    local: string
-    atendimento: string
-}
-
-const attendances: Attendance[] = [
-    { data: "10/12/2023", local: "Raspadão", atendimento: "Futebol" },
-    { data: "11/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
-    { data: "12/12/2023", local: "Piscina Olímpica", atendimento: "Natação" },
-    { data: "13/12/2023", local: "Raspadão", atendimento: "Futebol" },
-    { data: "14/12/2023", local: "Quadra de Tênis", atendimento: "Tênis" },
-    { data: "15/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
-    { data: "16/12/2023", local: "Ginásio", atendimento: "Vôlei" },
-    { data: "17/12/2023", local: "Raspadão", atendimento: "Futebol" },
-    { data: "18/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
-    { data: "19/12/2023", local: "Piscina Olímpica", atendimento: "Natação" },
-    { data: "20/12/2023", local: "Quadra de Tênis", atendimento: "Tênis" },
-    { data: "21/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
-]
-
-const locations = Array.from(new Set(attendances.map(a => a.local)))
-
-
 export const AtendimentosAnteriores = () => {
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-    const [selectedLocation, setSelectedLocation] = useState<string | undefined>(undefined)
-    const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 10
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedLocation, setSelectedLocation] = useState<string>('all');
+    const [currentPage, setCurrentPage] = useState(1);
 
     const filteredAttendances = useMemo(() => {
         return attendances.filter(attendance => {
-            const dateMatch = selectedDate ? attendance.data === format(selectedDate, "dd/MM/yyyy") : true
+            const dateMatch = selectedDate ? attendance.data === format(selectedDate, "dd/MM/yyyy") : true;
             const locationMatch = !selectedLocation || selectedLocation === "all" || attendance.local === selectedLocation;
             return dateMatch && locationMatch;
-        })
-    }, [selectedDate, selectedLocation])
+        });
+    }, [selectedDate, selectedLocation]);
 
-    const totalPages = Math.ceil(filteredAttendances.length / itemsPerPage)
+    const totalPages = Math.ceil(filteredAttendances.length / 10);
     const currentItems = filteredAttendances.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    )
+        (currentPage - 1) * 10,
+        currentPage * 10
+    );
 
     return (
         <div className="w-full mt-4 max-w-2xl mx-auto ">

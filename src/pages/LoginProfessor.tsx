@@ -32,6 +32,10 @@ export const LoginProfessor: React.FC = () => {
                 password
             });
 
+            if (!response.data) {
+                throw new Error('Resposta inválida do servidor');
+            }
+
             // Salvar token e dados do usuário
             localStorage.setItem('token', response.data.accessToken);
             localStorage.setItem('teacher', JSON.stringify(response.data.teacher));
@@ -40,7 +44,7 @@ export const LoginProfessor: React.FC = () => {
 
         } catch (error: any) {
             console.error("Erro no login:", error);
-            toast.error(error.message);
+            toast.error(error.message || 'Erro ao fazer login');
         }
     }
 

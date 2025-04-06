@@ -32,6 +32,10 @@ export const LoginGestor: React.FC = () => {
 
             if (response.success) {
                 // Armazenar token no localStorage
+                if (!response.data) {
+                    throw new Error('Resposta inválida do servidor');
+                }
+
                 localStorage.setItem('accessToken', response.data.accessToken);
                 localStorage.setItem('manager', JSON.stringify(response.data.manager));
                 

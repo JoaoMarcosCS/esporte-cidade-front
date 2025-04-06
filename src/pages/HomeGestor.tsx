@@ -23,10 +23,6 @@ const HomeGestor = () => {
 
     const GoTo = useNavigateTo();
     const userType = "gestor"
-    const user = {
-        name: "",
-        profilePicture: "",
-    };
 
     return (
 
@@ -35,7 +31,8 @@ const HomeGestor = () => {
             <SidebarInset>
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
 
-                    <HeaderBasic type="usuario" user={user}
+                    <HeaderBasic
+                        type="usuario"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },

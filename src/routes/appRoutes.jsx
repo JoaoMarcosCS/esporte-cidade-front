@@ -29,26 +29,20 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        index: true,
         element: <ProfileSelect />,
       },
-
-     
 
       // Rotas login
       {
         path: "/login-atleta",
-        index: true,
         element: <LoginAtleta />,
       },
       {
         path: "/login-professor",
-        index: true,
         element: <LoginProfessor />,
       },
       {
         path: "/login-gestor",
-        index: true,
         element: <LoginGestor />,
       },
 
@@ -81,27 +75,28 @@ const router = createBrowserRouter([
       },
       {
         path: "/home-professor/chamada",
-        index: true,
         element: <Chamada />,
       },
 
       // Rotas Gestor
       {
         path: "/home-Gestor",
-        index: true,
         element: <HomeGestor/>,
       },
       {
         path: "/home-Gestor/cadastrar-comunicado",
-        index: true,
         element: <CadastroComunicados/>,
       },
       {
         path: "/home-Gestor/professores",
-        index: true,
         element: <GestaoDeProfessores/>,
       },      
     ],
   },
-]);
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+});
 export default router;

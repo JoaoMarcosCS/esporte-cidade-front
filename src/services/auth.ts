@@ -17,7 +17,7 @@ interface ManagerLoginCredentials {
 
 export const loginAthlete = async (credentials: LoginCredentials) => {
     try {
-        const response = await api.post('/api/v1/auth/athlete/', {
+        const response = await api.post('/auth/athlete', {
             cpf: credentials.cpf,
             password: credentials.password
         });
@@ -33,7 +33,7 @@ export const loginAthlete = async (credentials: LoginCredentials) => {
 
 export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
     try {
-        const response = await api.post('/api/v1/auth/teacher/login', {
+        const response = await api.post('/auth/teacher/login', {
             email: credentials.email,
             password: credentials.password
         });
@@ -49,7 +49,7 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
 
 export const loginManager = async (credentials: ManagerLoginCredentials) => {
     try {
-        const response = await api.post('/api/v1/auth/manager/login', {
+        const response = await api.post('/auth/manager/login', {
             email: credentials.email,
             password: credentials.password
         });
