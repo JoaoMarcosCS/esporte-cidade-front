@@ -26,25 +26,24 @@ export const LoginProfessor: React.FC = () => {
     async function onSubmit(data: FieldValues) {
         try {
             const { email, password } = data;
-            
-            const response = await loginTeacher({
-                email,
-                password
-            });
+            const response = await loginTeacher({ email, password });
 
-            if (!response.data) {
-                throw new Error('Resposta inválida do servidor');
+            // Só prossegue se tiver sucesso e dados
+            if (!response.success || !response.data) {
+                throw new Error(response.message || 'Credenciais inválidas');
             }
 
-            // Salvar token e dados do usuário
+            // Login bem sucedido
             localStorage.setItem('token', response.data.accessToken);
             localStorage.setItem('teacher', JSON.stringify(response.data.teacher));
-
             GoTo("/home-professor");
 
         } catch (error: any) {
             console.error("Erro no login:", error);
-            toast.error(error.message || 'Erro ao fazer login');
+            toast.error(error.message || 'Erro ao fazer login', {
+                duration: 3000,
+                position: 'top-center'
+            });
         }
     }
 

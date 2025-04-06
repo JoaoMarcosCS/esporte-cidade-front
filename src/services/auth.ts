@@ -38,11 +38,11 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
             password: credentials.password
         });
 
-        if (response.data.success) {
-            return response.data;
-        }
-        throw new Error(response.data.message);
+        return response.data;
     } catch (error: any) {
+        if (error.response?.status === 401) {
+            throw new Error('Senha incorreta');
+        }
         throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
 };

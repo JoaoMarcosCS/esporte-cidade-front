@@ -26,9 +26,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && window.location.pathname !== '/login-professor') {
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            localStorage.removeItem('teacher');
+            // Não redireciona se já estiver na página de login
+            if (!window.location.pathname.includes('login')) {
+                window.location.href = '/login-professor';
+            }
         }
         return Promise.reject(error);
     }
