@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react"
-import useNavigateTo from "../hooks/useNavigateTo";
+import { useNavigate } from "react-router-dom";
 import { CalendarDays } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
@@ -31,7 +31,6 @@ const comunicados = [
   { horario: "12:50", conteudo: "varias coisas" },
   { horario: "12:50", conteudo: "varias coisas" },
   { horario: "12:50", conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
   { conteudo: "varias coisas" },
   { conteudo: "varias coisas" },
   { conteudo: "varias coisas" },
@@ -83,7 +82,8 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
 
 
   //retorna a tabela com os comunicados
-  const GoTo = useNavigateTo();
+  const navigate = useNavigate();
+  const GoTo = (path: string) => navigate(path);
   return (
     <>
       {/* para visualizar apenas */}
@@ -235,5 +235,3 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
     </>
   );
 };
-
-

@@ -16,7 +16,7 @@ interface Props {
 const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
   ({ professorEdicao, onSubmit, onCancelEdit }, ref) => {
     const [formData, setFormData] = useState<Professor>({
-      id: -1,
+      id: "-1",
       name: "",
       password: "",
       cpf: "",
@@ -37,7 +37,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
       }
       else {
         setFormData({
-          id: -1,
+          id: "-1",
           name: "",
           password: "",
           cpf: "",
@@ -113,7 +113,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
       e.preventDefault();
       await onSubmit(formData);
       setFormData({
-        id: -1,
+        id: "-1",
         name: "",
         password: "",
         cpf: "",

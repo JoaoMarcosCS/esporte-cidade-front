@@ -3,7 +3,8 @@ import useNavigateTo from "../hooks/useNavigateTo";
 import { CalendarDays } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
-
+import { useUser } from '../hooks/useAuth';
+import api from '../services/api';
 
 interface Compromisso {
   id: number;
@@ -11,37 +12,60 @@ interface Compromisso {
   descricao: string;
 }
 
-interface CalendarioCompromissosProps {
-  userType: "gestor" | "atleta" | "professor";
-}
-
-const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userType }) => {
+const CalendarioCompromissos: React.FC = () => {
+  const user = useUser();
   const [compromissos, setCompromissos] = useState<Compromisso[]>([]);
   const [data, setData] = useState("");
   const [descricao, setDescricao] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedCompromissos = localStorage.getItem("compromissos");
-    if (savedCompromissos) {
-      setCompromissos(JSON.parse(savedCompromissos));
-    }
-  }, []);
+    const fetchCompromissos = async () => {
+      try {
+        setLoading(true);
+        if (!user?.id || !user?.isGestor) return;
+
+        const response = await api.get(`/compromissos/${user.id}`);
+        setCompromissos(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar compromissos:', error);
+        // Se falhar, usa os dados do localStorage como fallback
+        const savedCompromissos = localStorage.getItem("compromissos");
+        if (savedCompromissos) {
+          setCompromissos(JSON.parse(savedCompromissos));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompromissos();
+  }, [user?.id, user?.isGestor]);
 
   useEffect(() => {
     localStorage.setItem("compromissos", JSON.stringify(compromissos));
   }, [compromissos]);
 
-  const handleAddOrEditCompromisso = () => {
-    if (editId !== null) {
-      setCompromissos(compromissos.map(comp => comp.id === editId ? { id: editId, data, descricao } : comp));
-      setEditId(null);
-    } else {
-      const newCompromisso = { id: Date.now(), data, descricao };
-      setCompromissos([...compromissos, newCompromisso]);
+  const handleAddOrEditCompromisso = async () => {
+    try {
+      if (editId !== null) {
+        const updatedCompromissos = compromissos.map(comp => 
+          comp.id === editId ? { id: editId, data, descricao } : comp
+        );
+        await api.put(`/compromissos/${editId}`, { data, descricao });
+        setCompromissos(updatedCompromissos);
+        setEditId(null);
+      } else {
+        const newCompromisso = { id: Date.now(), data, descricao };
+        await api.post('/compromissos', { ...newCompromisso, userId: user?.id });
+        setCompromissos([...compromissos, newCompromisso]);
+      }
+      setData("");
+      setDescricao("");
+    } catch (error) {
+      console.error('Erro ao salvar compromisso:', error);
     }
-    setData("");
-    setDescricao("");
   };
 
   const handleEdit = (id: number) => {
@@ -53,18 +77,33 @@ const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userTyp
     }
   };
 
-  const handleDelete = (id: number) => {
-    setCompromissos(compromissos.filter(comp => comp.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/compromissos/${id}`);
+      setCompromissos(compromissos.filter(comp => comp.id !== id));
+    } catch (error) {
+      console.error('Erro ao excluir compromisso:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-[#d9d9d9] p-2 rounded shadow-md border border-black">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <h2 className="text-lg font-semibold mb-1">Calendário compromissos</h2>
 
-      <div className="bg-[#d9d9d9] p-2 rounded shadow-md border border-black ">
-
-
-        {userType === "gestor" && (
+      <div className="bg-[#d9d9d9] p-2 rounded shadow-md border border-black">
+        {user?.isGestor && (
           <div className="mb-4">
             <input
               type="date"
@@ -88,14 +127,13 @@ const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userTyp
           </div>
         )}
         <ul className="space-y-2">
-
           {compromissos.map((comp) => (
             <li key={comp.id} className="bg-white p-2 rounded-md flex justify-between items-center">
               <div>
-                <p className="font-semibold">{comp.data}</p>
-                <p>{comp.descricao}</p>
+                <span className="font-semibold block">{comp.data}</span>
+                <span className="block">{comp.descricao}</span>
               </div>
-              {userType === "gestor" && (
+              {user?.isGestor && (
                 <div className="flex space-x-2">
                   <button onClick={() => handleEdit(comp.id)} className="text-blue-500">Editar</button>
                   <button onClick={() => handleDelete(comp.id)} className="text-red-500">Excluir</button>
@@ -105,7 +143,6 @@ const CalendarioCompromissos: React.FC<CalendarioCompromissosProps> = ({ userTyp
           ))}
           {compromissos.length === 0 && <p>Nenhum compromisso adicionado</p>}
         </ul>
-
       </div>
     </>
   );

@@ -35,12 +35,14 @@ const CadastroComunicados = () => {
             <SidebarInset>
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
 
-                    <HeaderBasic type="usuario" user={user}
+                    <HeaderBasic
+                        type="usuario"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/professores" },
-                        ]} />
+                            { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+                        ]}
+                    />
 
                     <div className="  ml-20 mt-10 pb-6">
                         <div className=" items-center flex flex-col ">

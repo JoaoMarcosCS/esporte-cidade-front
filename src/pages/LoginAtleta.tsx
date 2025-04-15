@@ -8,21 +8,8 @@ import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
-import { Link } from 'react-router-dom'; 
-
-
-
-const Login = async (cpf: any, password: any) => {
-    
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // dados para simulação 
-    
-    if (cpf === "111.111.111-11" && password === "123456") {
-        return true; 
-    }
-    return false;
-};
+import { Link } from 'react-router-dom';
+import { loginAthlete } from "../services/auth";
 
 export const LoginAtleta: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -39,19 +26,26 @@ export const LoginAtleta: React.FC = () => {
     const registerWithMask = useHookFormMask(register);
 
     async function onSubmit(data: FieldValues) {
-        console.log("Formulário enviado:", data);
+        try {
+            const { cpf, password } = data;
+            
+            // Remover pontos e traços do CPF
+            const cleanCpf = cpf.replace(/[\.|\-]/g, '');
+            
+            const response = await loginAthlete({
+                cpf: cleanCpf,
+                password
+            });
 
-        const { cpf, password } = data;
+            // Salvar token e dados do usuário
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('athlete', JSON.stringify(response.data.athlete));
 
-        // chamando função de login com dados mockados
-        const loginSuccess = await Login(cpf, password);
-
-        if (loginSuccess) {
             GoTo("/home-atleta");
 
-        } else {
-            toast.error("CPF ou senha inválidos.");
-            toast.error("digite \n cpf:111.111.111-11 \n senha:123456.");
+        } catch (error: any) {
+            console.error("Erro no login:", error);
+            toast.error(error.message);
         }
     }
 
@@ -95,11 +89,10 @@ export const LoginAtleta: React.FC = () => {
                                             </p>
                                         )}
                                     </div>
-
-                                    <div className="mb-4">
+                                    <div className="mb4">
                                         <label
                                             htmlFor="password"
-                                            className="block text-sm pb-2 font-medium text-gray -600"
+                                            className="block text-sm pb-2 font-medium text-gray-600"
                                         >
                                             Senha
                                         </label>
@@ -113,9 +106,7 @@ export const LoginAtleta: React.FC = () => {
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    setIsPasswordVisible(!isPasswordVisible)
-                                                }
+                                                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                                                 className="absolute right-3 top-3 text-gray-600"
                                             >
                                                 {isPasswordVisible ? (
@@ -124,15 +115,12 @@ export const LoginAtleta: React.FC = () => {
                                                     <EyeOffIcon size={20} />
                                                 )}
                                             </button>
-                                            {errors.password && (
-                                                <p className="text-xs text-red-400 mt-1">
-                                                    {errors.password?.message as string}
-                                                </p>
-                                            )}
                                         </div>
-                                        <a href="#" className="text-blue-600 mt-2 block">
-                                            Esqueci minha senha
-                                        </a>
+                                        {errors.password && (
+                                            <p className="text-xs text-red-400 mt-1">
+                                                {errors.password?.message as string}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </section>
@@ -169,10 +157,10 @@ export const LoginAtleta: React.FC = () => {
 
                 <footer className="w-full text-center mt-auto">
                     <p className="text-sm text-gray-500">
-                        © 2024 Esporte na cidade. All rights reserved.
+                        2024 Esporte na cidade. All rights reserved.
                     </p>
                 </footer>
             </div>
         </>
     );
-}
+};
