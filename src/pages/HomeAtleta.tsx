@@ -16,60 +16,32 @@ import {
 } from "../components/ui/sidebar"
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { checkProtectedRoute } from '../services/protectedRoutes'; // Importando o serviço
+
 
 const HomeAtleta = () => {
-  const userData = useUser();
-  const { fetchUser } = useAuthStatus();
-  const decodedToken = useDecodedToken();
+  const { user, loading, isAuthenticated } = useAuth();
+  const { isLoading: authCheckLoading } = useAuthStatus("1"); // Pass "1" as string
 
-  // Adicionando logs para debug
-  console.log('decodedToken:', decodedToken);
-  console.log('localStorage token:', localStorage.getItem('token'));
+  console.log('Current auth state:', {
+      isAuthenticated,
+      loading,
+      user,
+      token: localStorage.getItem('token')
+  });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Verifica se temos um usuário logado
-        if (!userData) {
-          console.log('Sem dados do usuário');
-          // Tenta buscar os dados do usuário
-          await fetchUser();
-          return;
-        }
-
-        console.log('Tentando buscar dados do usuário com ID:', userData.id);
-        // Busca os dados do usuário pelo ID
-        const response = await api.get(`/athletes/${userData.id}`);
-        console.log('Resposta da API:', response.data);
-        
-        if (response.data) {
-          // Atualiza o contexto de autenticação
-          await fetchUser();
-        }
-      } catch (error: any) {
-        console.error('Error fetching user data:', error);
-        if (error.response) {
-          console.error('Response status:', error.response.status);
-          console.error('Response data:', error.response.data);
-        } else {
-          console.error('Error details:', error.message || error);
-        }
-      }
-    };
-
-    // Só faz a requisição se tiver dados do usuário
-    if (userData) {
-      console.log('Iniciando busca de dados do usuário');
-      fetchUserData();
-    }
-  }, [userData, fetchUser]);
-
-  const { user, isAuthenticated } = useAuth();
-
-  if (isAuthenticated === true) {
-    return <Navigate to="/" replace />;
+  if (loading || authCheckLoading) {
+      return <div>Loading...</div>;
   }
 
+  if (!isAuthenticated) {
+      console.warn('Redirecting due to:', {
+          isAuthenticated,
+          userRole: user?.role,
+          expectedRole: "1"
+      });
+      return <Navigate to="/" replace />;
+  }
   return (
     <SidebarProvider>
       <AppSidebar type="atleta" />
@@ -87,7 +59,7 @@ const HomeAtleta = () => {
 
           <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
             <h2 className="text-2xl font-bold mb-4 text-left">
-              Olá, <span className="text-[#EB8317]">{decodedToken?.name || 'Usuário'}</span>!
+              Olá, <span className="text-[#EB8317]">{useDecodedToken?.name || 'Usuário'}</span>!
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3">

@@ -27,28 +27,40 @@ export const LoginAtleta: React.FC = () => {
 
     async function onSubmit(data: FieldValues) {
         try {
+            
             const { cpf, password } = data;
             
-            // Remover pontos e traços do CPF
             const cleanCpf = cpf.replace(/[\.|\-]/g, '');
-            
-            const response = await loginAthlete({
-                cpf: cleanCpf,
-                password
+    
+            const response = await fetch("http://localhost:3002/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    type: "athlete", // <-- aqui você indica o tipo de usuário
+                    cpf: cleanCpf,
+                    password
+                })
             });
 
-            // Salvar token e dados do usuário
-            localStorage.setItem('token', response.data.accessToken);
-            localStorage.setItem('athlete', JSON.stringify(response.data.athlete));
-
+            const result = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(result.message || "Erro desconhecido");
+            }
+    
+            localStorage.setItem('token', result.accessToken);
+            localStorage.setItem('athlete', JSON.stringify(result.user));
+    
             GoTo("/home-atleta");
-
+    
         } catch (error: any) {
             console.error("Erro no login:", error);
-            toast.error(error.message);
+            toast.error(error.message || "Erro ao fazer login.");
         }
     }
-
     return (
         <>
             <Toaster />
@@ -148,7 +160,7 @@ export const LoginAtleta: React.FC = () => {
                         </form>
                         <div className="flex flex-col text-center">
                             <p className="font-inter">Ainda não tem uma conta?</p>
-                            <Link to="/cadastro-atleta" className="font-inter text-blue-600">
+                            <Link to="/home-atleta/cadastro" className="font-inter text-blue-600">
                                 Criar conta
                             </Link>
                         </div>

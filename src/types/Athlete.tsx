@@ -2,10 +2,11 @@ export interface Athlete {
     name: string;
     cpf: string;
     rg: string;
+    phone: string;
     address: string;
     fatherName: string;
     motherName: string;
-    birthDate: string;
+    birthday: string;
     phoneNumber: string;
     password: string;
     email: string;

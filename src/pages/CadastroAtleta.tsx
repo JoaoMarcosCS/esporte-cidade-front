@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
+import axios from "axios";
 
 const CadastroAtleta: React.FC = () => {
   const [athlete, setAthlete] = useState<Athlete>({
     name: "",
     cpf: "",
     rg: "",
+    phone:"",
     address: "",
     fatherName: "",
     motherName: "",
-    birthDate: "",
+    birthday: "",
     phoneNumber: "",
     password: "",
     email: "",
@@ -31,8 +33,13 @@ const CadastroAtleta: React.FC = () => {
   });
 
   const formatInputValue = (name: string, value: string): string => {
-    let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    let formattedValue = value;
   
+    if (["cpf", "rg", "phone"].includes(name)) {
+      formattedValue = value.replace(/\D/g, ""); 
+      
+    }
+
     if (name === "cpf") {
       if (formattedValue.length <= 3) {
         return formattedValue;
@@ -67,6 +74,12 @@ const CadastroAtleta: React.FC = () => {
   
     return formattedValue;
   };
+
+  //para limpar a formatação para enviar para o banco
+  const cleanInput = (value: string) => {
+    return value.replace(/[^\w\s]/gi, "").replace(/\s/g, "");
+  };
+
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -74,9 +87,28 @@ const CadastroAtleta: React.FC = () => {
     setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
   };
 
-  const handleSubmit = () => {
-    console.log("Athlete Data:", athlete);
-    // Enviar para a API
+  const handleSubmit = async () => {
+    const cleanedAthlete = {
+      ...athlete,
+      cpf: athlete.cpf.replace(/\D/g, ""),
+      rg: athlete.rg.replace(/\D/g, ""),
+      phone: athlete.phone.replace(/\D/g, ""),
+      fatherPhoneNumber: athlete.fatherPhoneNumber?.replace(/\D/g, ""),
+      motherPhoneNumber: athlete.motherPhoneNumber?.replace(/\D/g, ""),
+      phoneNumber: athlete.phoneNumber?.replace(/\D/g, ""),
+    };
+  
+    console.log("Athlete Data (clean):", cleanedAthlete);
+  
+    try {
+      const response = await axios.post("http://localhost:3002/api/register", cleanedAthlete, {
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      console.log("Cadastro realizado:", response.data);
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+    }
   };
 
   const steps = [
@@ -124,8 +156,8 @@ const CadastroAtleta: React.FC = () => {
             <label className="block text-sm font-semibold">Telefone</label>
             <input
               type="text"
-              name="phoneNumber"
-              value={athlete.phoneNumber}
+              name="phone"
+              value={athlete.phone}
               onChange={handleChange}
               className="px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="(XX) XXXXX-XXXX"
@@ -188,8 +220,8 @@ const CadastroAtleta: React.FC = () => {
             <label className="block text-sm font-medium">Data de Nascimento</label>
             <input
               type="date"
-              name="birthDate"
-              value={athlete.birthDate}
+              name="birthday"
+              value={athlete.birthday}
               onChange={handleChange}
               className="px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="Insira sua data de nascimento"

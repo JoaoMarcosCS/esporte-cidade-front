@@ -34,10 +34,9 @@ const HomeProfessor = () => {
     const { user } = useAuth();
     const userType = "professor"
     const userData = useUser();
-      const { fetchUser } = useAuthStatus();
+      //const { fetchUser } = useAuthStatus();
       const decodedToken = useDecodedToken();
-    
-      // Adicionando logs para debug
+
       console.log('decodedToken:', decodedToken);
       console.log('localStorage token:', localStorage.getItem('token'));
 
