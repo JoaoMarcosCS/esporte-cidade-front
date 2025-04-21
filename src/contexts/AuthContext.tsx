@@ -33,16 +33,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
+            console.log('[fetchUser] Token encontrado:', token);
             if (!token) throw new Error('Token não encontrado');
 
             const decoded = decodeToken(token);
+            console.log('[fetchUser] Token decodificado:', decoded);
             const userId = decoded.id;
-            const role = decoded.role.toString(); // Ensure role is string
+            const role = decoded.role?.toString(); // Ensure role is string
 
             if (!userId) throw new Error('ID do usuário não encontrado no token');
             if (!role) throw new Error('Role do usuário não encontrado no token');
 
-            console.log('AuthProvider: ID do usuário:', userId, 'Role:', role);
+            console.log('[fetchUser] ID do usuário:', userId, 'Role:', role);
 
             let response: AxiosResponse;
             if (role === "1") {
@@ -56,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             const userFromApi = response.data;
-            console.log('Resposta da API do usuário:', userFromApi);
+            console.log('[fetchUser] Resposta da API do usuário:', userFromApi);
 
             if (userFromApi) {
                 // Ensure role is preserved as string
@@ -70,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 throw new Error('Usuário não encontrado');
             }
         } catch (error) {
-            console.error('AuthProvider: Erro ao buscar dados do usuário:', error);
+            console.error('[fetchUser] Erro ao buscar dados do usuário:', error);
             throw error;
         }
     };
@@ -97,8 +99,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setError(null);
 
             const response = await loginAthlete(credentials);
+            console.log('[login] Resposta do loginAthlete:', response);
             if (response.success && response.data) {
                 const { accessToken, athlete } = response.data;
+                console.log('[login] accessToken:', accessToken);
+                console.log('[login] athlete:', athlete);
 
                 if (!athlete) throw new Error('Usuário não encontrado na resposta');
 
@@ -106,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // Store initial user data with role as string
                 const userData = {
                     ...athlete,
-                    role: athlete.role.toString()
+                    role: athlete.role?.toString()
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 setUser(userData);

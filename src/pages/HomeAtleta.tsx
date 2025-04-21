@@ -22,6 +22,7 @@ import { checkProtectedRoute } from '../services/protectedRoutes'; // Importando
 const HomeAtleta = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const { isLoading: authCheckLoading } = useAuthStatus("1"); // Pass "1" as string
+  const userData = useUser();
 
   console.log('Current auth state:', {
       isAuthenticated,
@@ -59,7 +60,7 @@ const HomeAtleta = () => {
 
           <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
             <h2 className="text-2xl font-bold mb-4 text-left">
-              Olá, <span className="text-[#EB8317]">{useDecodedToken?.name || 'Usuário'}</span>!
+              Olá, <span className="text-[#EB8317]">{userData?.name}</span>!
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3">

@@ -74,7 +74,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, user }) => 
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
               <div className="px-4 py-3 border-b border-gray-200">
-                <h3 className="font-semibold">{userData?.name || user?.name || decodedToken?.name || 'Usuário'}</h3>
+                <h3 className="font-semibold">{userData?.name  || 'Usuário'}</h3>
                 <p className="text-sm text-gray-500">{'Perfil'}</p>
               </div>
               <div className="py-1">
