@@ -131,7 +131,7 @@ const GoTo = useNavigateTo();
       });
   
       console.log("Cadastro realizado:", response.data);
-      navigate("/cadastro-sucess", { replace: true }); 
+      navigate("/redirecting", { replace: true }); 
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
     }
