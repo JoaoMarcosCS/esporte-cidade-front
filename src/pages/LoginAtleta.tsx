@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -9,11 +9,12 @@ import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom';
-import { loginAthlete } from "../services/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 export const LoginAtleta: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const GoTo = useNavigateTo();
+    const { login } = useAuth();
 
     const {
         register,
@@ -25,37 +26,20 @@ export const LoginAtleta: React.FC = () => {
 
     const registerWithMask = useHookFormMask(register);
 
+    // Redireciona para home-atleta se já estiver autenticado
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            GoTo('/home-atleta');
+        }
+    }, []);
+
     async function onSubmit(data: FieldValues) {
         try {
-            
             const { cpf, password } = data;
-            
-            const cleanCpf = cpf.replace(/[\.|\-]/g, '');
-    
-            const response = await fetch("http://localhost:3002/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    type: "athlete", // <-- aqui você indica o tipo de usuário
-                    cpf: cleanCpf,
-                    password
-                })
-            });
-
-            const result = await response.json();
-    
-            if (!response.ok) {
-                throw new Error(result.message || "Erro desconhecido");
-            }
-    
-            localStorage.setItem('token', result.accessToken);
-            localStorage.setItem('athlete', JSON.stringify(result.user));
-    
+            const cleanCpf = cpf.replace(/[.\-]/g, '');
+            await login({ cpf: cleanCpf, password });
             GoTo("/home-atleta");
-    
         } catch (error: any) {
             console.error("Erro no login:", error);
             toast.error(error.message || "Erro ao fazer login.");

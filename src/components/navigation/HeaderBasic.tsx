@@ -20,6 +20,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, user }) => 
   const { logout } = useAuth();
   const userData = useUser();
   const decodedToken = useDecodedToken();
+  const defaultProfilePicture = "../public/defaultProfilePicture.png"; 
 
   const handleMenuToggle = () => {
     setMenuOpen((prev) => !prev);
@@ -66,7 +67,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, user }) => 
         {/* Foto de perfil do usuário */}
         <div className="relative">
           <img
-            src={userData?.profilePicture || user?.profilePicture || "https://via.placeholder.com/40"}
+            src={defaultProfilePicture ||userData?.profilePicture || user?.profilePicture}
             alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
             className="h-10 w-10 border border-black cursor-pointer rounded-full"
             onClick={handleMenuToggle}

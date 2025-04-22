@@ -17,15 +17,16 @@ interface ManagerLoginCredentials {
 
 export const loginAthlete = async (credentials: LoginCredentials) => {
     try {
-        const response = await api.post('/auth/athlete', {
+        const response = await api.post('/auth/login', {
+            type: "athlete",
             cpf: credentials.cpf,
             password: credentials.password
         });
 
-        if (response.data.success) {
+        if (response.data.accessToken && response.data.user) {
             return response.data;
         }
-        throw new Error(response.data.message);
+        throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
         throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
@@ -33,12 +34,16 @@ export const loginAthlete = async (credentials: LoginCredentials) => {
 
 export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
     try {
-        const response = await api.post('/auth/teacher/login', {
+        const response = await api.post('/auth/login', {
+            type: "teacher",
             email: credentials.email,
             password: credentials.password
         });
 
-        return response.data;
+        if (response.data.accessToken && response.data.user) {
+            return response.data;
+        }
+        throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
         if (error.response?.status === 401) {
             throw new Error('Senha incorreta');
