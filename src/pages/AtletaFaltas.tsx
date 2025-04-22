@@ -3,6 +3,7 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import axios from "axios";
+import { useUser } from "../hooks/useAuth";
 
 interface Falta {
   data: string;
@@ -22,38 +23,54 @@ const AtletaFaltas = () => {
   const [totalFaltas, setTotalFaltas] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [filters, setFilters] = useState({ modalityId: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
-
+ 
+  // Get authenticated user data
+  const user = useUser();
+  console.log (user);
+ 
   useEffect(() => {
     const fetchFaltas = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const url = filters.modalityId
-          ? `http://localhost:3002/api/absences?modality=${filters.modalityId}`
-          : "http://localhost:3002/api/absences";
-
-        const response = await axios.get(url);
-
+    
+        if (!user?.name) {
+          throw new Error("User not authenticated");
+        }
+    
+        // Properly encode the athlete name in the URL
+        const url = new URL("http://localhost:3002/api/absences");
+        url.searchParams.append("athlete", encodeURIComponent(user.name));
+        
+        if (filters.modalityId) {
+          url.searchParams.append("modality", filters.modalityId);
+        }
+    
+        const response = await axios.get(url.toString(), {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+    
         setFaltas(response.data.absences || []);
         setTotalFaltas(response.data.totalAbsences || 0);
-
+        
         if (response.data.modalities && !modalities.length) {
           setModalities(response.data.modalities);
         }
       } catch (error) {
-        setError("Erro ao carregar as faltas.");
+        console.error("Fetch error:", error);
+        setError("Failed to load absences");
       } finally {
         setLoading(false);
       }
     };
 
     fetchFaltas();
-  }, [filters.modalityId]);
+  }, [filters.modalityId, user?.name]); 
 
   const filteredFaltas = faltas.filter((falta) => {
     return (
