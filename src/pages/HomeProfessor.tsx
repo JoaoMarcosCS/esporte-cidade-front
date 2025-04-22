@@ -11,6 +11,7 @@ import {
 } from "../components/ui/sidebar"
 import { useAuth } from '../contexts/AuthContext';
 import { useDecodedToken } from '../hooks/useDecodedToken';
+import { Navigate } from "react-router-dom";
 
 export function useMediaQuerie() {
     const customBreakpoint = 854
@@ -29,9 +30,10 @@ export function useMediaQuerie() {
 }
 
 const HomeProfessor = () => {
+    const { user, loading, isAuthenticated } = useAuth();
+    const { isLoading: authCheckLoading } = useAuthStatus("2");
     const isMobile = useMediaQuerie()
     const GoTo = useNavigateTo();
-    const { user } = useAuth();
     const userType = "professor"
     const userData = useUser();
       //const { fetchUser } = useAuthStatus();
@@ -40,7 +42,25 @@ const HomeProfessor = () => {
       console.log('decodedToken:', decodedToken);
       console.log('localStorage token:', localStorage.getItem('token'));
 
-    return (
+      console.log('Current auth state:', {
+        isAuthenticated,
+        loading,
+        user,
+        token: localStorage.getItem('token')
+    });
+      if (loading || authCheckLoading) {
+         return <div>Loading...</div>;
+     }
+   
+     if (!isAuthenticated) {
+         console.warn('Redirecting due to:', {
+             isAuthenticated,
+             userRole: user?.role,
+             expectedRole: "1"
+         });
+         return <Navigate to="/" replace />;
+     }
+     return (
         <SidebarProvider>
             <AppSidebar type={userType} />
             <SidebarInset>
