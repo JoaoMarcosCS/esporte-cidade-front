@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
 import axios from "axios";
+import { useFileUpload } from "../hooks/useFileConvert";
 
 const CadastroAtleta: React.FC = () => {
+  const { convertFile } = useFileUpload();
+
   const [athlete, setAthlete] = useState<Athlete>({
     name: "",
     cpf: "",
@@ -21,9 +24,9 @@ const CadastroAtleta: React.FC = () => {
     motherPhoneNumber: "",
     fatherPhoneNumber: "",
     bloodType: "",
-    frontIdPhotoUrl: "",
-    backIdPhotoUrl: "",
-    athletePhotoUrl: "",
+    frontIdPhotoUrl: null ,
+    backIdPhotoUrl: null,
+    athletePhotoUrl: null,
     foodAllergies: "",
   });
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({
@@ -80,14 +83,26 @@ const CadastroAtleta: React.FC = () => {
     return value.replace(/[^\w\s]/gi, "").replace(/\s/g, "");
   };
 
+
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const formattedValue = formatInputValue(name, value);
-    setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files && files.length > 0) {
+      setAthlete((prevState) => ({
+        ...prevState,
+        [name]: files[0],
+      }));
+    } else {
+      const formattedValue = formatInputValue(name, value);
+      setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
+    }
   };
 
   const handleSubmit = async () => {
+    const frontBase64 = await convertFile(athlete.frontIdPhotoUrl);
+    const backBase64 = await convertFile(athlete.backIdPhotoUrl);
+    const photoBase64 = await convertFile(athlete.athletePhotoUrl);
+    
     const cleanedAthlete = {
       ...athlete,
       cpf: athlete.cpf.replace(/\D/g, ""),
@@ -96,6 +111,12 @@ const CadastroAtleta: React.FC = () => {
       fatherPhoneNumber: athlete.fatherPhoneNumber?.replace(/\D/g, ""),
       motherPhoneNumber: athlete.motherPhoneNumber?.replace(/\D/g, ""),
       phoneNumber: athlete.phoneNumber?.replace(/\D/g, ""),
+
+      athletePhotoUrl: photoBase64 || undefined,
+      frontIdPhotoUrl: frontBase64 || undefined,
+      backIdPhotoUrl: backBase64 || undefined,
+
+
     };
   
     console.log("Athlete Data (clean):", cleanedAthlete);

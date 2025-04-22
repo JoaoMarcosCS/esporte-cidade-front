@@ -15,8 +15,8 @@ export interface Athlete {
     motherPhoneNumber: string;
     fatherPhoneNumber: string;
     bloodType: string;
-    frontIdPhotoUrl: string;
-    backIdPhotoUrl: string;
-    athletePhotoUrl: string;
+    frontIdPhotoUrl:File | null;
+    backIdPhotoUrl: File | null;
+    athletePhotoUrl: File | null;
     foodAllergies: string;
 }
