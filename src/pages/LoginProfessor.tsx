@@ -146,12 +146,7 @@ export const LoginProfessor: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                        <div className="flex flex-col text-center">
-                            <p className="font-inter">Ainda não tem uma conta?</p>
-                            <Link to="/cadastro-professor" className="font-inter text-blue-600">
-                                Criar conta
-                            </Link>
-                        </div>
+                       
                     </div>
                 </main>
 

@@ -18,7 +18,8 @@ import {
   HomeGestor,
   CadastroComunicados,
   GestaoDeProfessores,
-  AtletaFaltas
+  AtletaFaltas,
+  RedirecionarHome
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: "/home-Gestor/professores",
         element: <GestaoDeProfessores/>,
+      },  
+      {
+        path: "/redirecting",
+        element: <RedirecionarHome/>,
       },      
     ],
   },

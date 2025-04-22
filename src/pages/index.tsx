@@ -14,3 +14,4 @@ export {default as ProfileSelect} from "./ProfileSelect";
 export {default as AtletaFaltas} from "./AtletaFaltas";
 export {default as GestaoDeProfessores} from "./GestaoDeProfessores"
 export { default as EditarPerfil } from "./EditarPerfil";
+export { RedirecionarHome} from "./redirecionar";

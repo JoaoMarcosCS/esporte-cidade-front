@@ -3,10 +3,14 @@ import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
 import axios from "axios";
 import { useFileUpload } from "../hooks/useFileConvert";
+import { Navigate } from "react-router-dom";
+import useNavigateTo from "../hooks/useNavigateTo";
+import { useNavigate } from 'react-router-dom';
+
 
 const CadastroAtleta: React.FC = () => {
   const { convertFile } = useFileUpload();
-
+const GoTo = useNavigateTo();
   const [athlete, setAthlete] = useState<Athlete>({
     name: "",
     cpf: "",
@@ -97,7 +101,7 @@ const CadastroAtleta: React.FC = () => {
       setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
     }
   };
-
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     const frontBase64 = await convertFile(athlete.frontIdPhotoUrl);
     const backBase64 = await convertFile(athlete.backIdPhotoUrl);
@@ -127,6 +131,7 @@ const CadastroAtleta: React.FC = () => {
       });
   
       console.log("Cadastro realizado:", response.data);
+      navigate("/cadastro-sucess", { replace: true }); 
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
     }
