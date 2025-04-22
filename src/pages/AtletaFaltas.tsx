@@ -38,7 +38,7 @@ const AtletaFaltas = () => {
         setError(null);
     
         if (!user?.name) {
-          throw new Error("User not authenticated");
+          throw new Error("acesso negado");
         }
     
         // Properly encode the athlete name in the URL
@@ -63,7 +63,7 @@ const AtletaFaltas = () => {
         }
       } catch (error) {
         console.error("Fetch error:", error);
-        setError("Failed to load absences");
+        setError("falha no carregamento");
       } finally {
         setLoading(false);
       }
@@ -163,12 +163,12 @@ const AtletaFaltas = () => {
                         <th className="px-4 py-2 text-left border-b border-black">
                           Modalidade
                         </th>
-                        <th className="px-4 py-2 text-left border-b border-black">
+                        {/* <th className="px-4 py-2 text-left border-b border-black">
                           Professor
                         </th>
                         <th className="px-4 py-2 text-left border-b border-black">
                           Local
-                        </th>
+                        </th> */}
                       </tr>
                     </thead>
                     <tbody>
@@ -178,19 +178,19 @@ const AtletaFaltas = () => {
                           <td className="px-4 py-2 border-b">
                             {falta.modalidade}
                           </td>
-                          <td className="px-4 py-2 border-b">
+                          {/* <td className="px-4 py-2 border-b">
                             {falta.professor}
                           </td>
-                          <td className="px-4 py-2 border-b">{falta.local}</td>
+                          <td className="px-4 py-2 border-b">{falta.local}</td> */}
                         </tr>
                       ))}
                       {currentFaltas.length === 0 && (
                         <tr>
                           <td
-                            colSpan={4}
+                            colSpan={4} 
                             className="px-4 py-2 text-center text-gray-500"
                           >
-                            Nenhum registro encontrado.
+                            Nenhuma falta
                           </td>
                         </tr>
                       )}
