@@ -57,7 +57,7 @@ const HomeProfessor = () => {
                     <div className="max-w-7xl pb-24 ml-24 mr-10 mt-14 ">
 
                         <h1 className="text-2xl font-bold">
-                            Olá, Professor(a) <span className="text-[#EB8317]">{decodedToken?.name || 'Usuário'}</span>!
+                            Olá, Professor(a) <span className="text-[#EB8317]">{userData?.name}</span>!
                         </h1>
 
                         {isMobile ? (
