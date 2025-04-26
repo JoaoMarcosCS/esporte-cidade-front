@@ -19,7 +19,8 @@ import {
   CadastroComunicados,
   GestaoDeProfessores,
   AtletaFaltas,
-  RedirecionarHome
+  RedirecionarHome,
+  Modalidade
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/home-atleta/editar-perfil",
         element: <EditarPerfil />,
+      },
+      {
+        path: "/home-atleta/modalidade",
+        element: <Modalidade />,
       },
 
       // Rotas de professor

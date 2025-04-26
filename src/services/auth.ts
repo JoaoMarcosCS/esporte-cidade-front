@@ -19,8 +19,10 @@ export const loginAthlete = async (credentials: LoginCredentials) => {
     try {
         const response = await api.post('/auth/login', {
             type: "athlete",
-            cpf: credentials.cpf,
-            password: credentials.password
+            credentials: {
+                cpf: credentials.cpf,
+                password: credentials.password
+            }
         });
 
         if (response.data.accessToken && response.data.user) {
@@ -36,8 +38,10 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
     try {
         const response = await api.post('/auth/login', {
             type: "teacher",
-            email: credentials.email,
-            password: credentials.password
+            credentials: {
+                email: credentials.email,
+                password: credentials.password
+            }
         });
 
         if (response.data.accessToken && response.data.user) {
@@ -55,8 +59,10 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
 export const loginManager = async (credentials: ManagerLoginCredentials) => {
     try {
         const response = await api.post('/auth/manager/login', {
-            email: credentials.email,
-            password: credentials.password
+            credentials: {
+                email: credentials.email,
+                password: credentials.password
+            }
         });
 
         if (response.data.success) {
