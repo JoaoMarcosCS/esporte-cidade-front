@@ -3,6 +3,24 @@ import { useUser } from '../hooks/useAuth';
 import { useDecodedToken } from '../hooks/useDecodedToken';
 import api from '../services/api';
 
+interface Modality {
+  id: number;
+  name: string;
+  description: string;
+  days_of_week: string | string[];
+  start_time: string;
+  end_time: string;
+  class_locations: string;
+}
+
+interface Enrollment {
+  id: number;
+  athlete: any;
+  modality: Modality;
+  active: boolean;
+  approved: boolean;
+}
+
 interface DayNote {
   day: string;
   address: string;
@@ -22,8 +40,24 @@ const AgendaSemanal: React.FC = () => {
         setLoading(true);
         if (!user?.id) return;
 
-        const response = await api.get(`/schedule/${user.id}`);
-        setNotes(response.data);
+        const response = await api.get<Enrollment[]>(`/enrollment/${user.id}?approved=true`);
+        
+        // Transform the data to match our expected structure
+        const formattedNotes = response.data.map((enrollment: Enrollment) => {
+          // Convert days_of_week string to array if it's not already
+          const days = typeof enrollment.modality.days_of_week === 'string'
+            ? enrollment.modality.days_of_week.split(',').map(day => day.trim())
+            : enrollment.modality.days_of_week || [];
+          
+          return days.map((day: string) => ({
+            day,
+            modality: enrollment.modality.name,
+            schedule: enrollment.modality.start_time,
+            address: enrollment.modality.class_locations || 'Local não especificado'
+          }));
+        }).flat();
+
+        setNotes(formattedNotes);
       } catch (error) {
         console.error('Erro ao buscar horário:', error);
         // Se falhar, usa os dados padrão

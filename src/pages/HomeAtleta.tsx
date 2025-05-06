@@ -58,7 +58,7 @@ const HomeAtleta = () => {
             ]}
           />
 
-          <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
+          <main className="w-full lg:w-5/6 mx-auto mt-8 p-4">
             <h2 className="text-2xl font-bold mb-4 text-left">
               Olá, <span className="text-[#EB8317]">{userData?.name}</span>!
             </h2>
