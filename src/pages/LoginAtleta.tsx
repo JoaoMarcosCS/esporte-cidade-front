@@ -53,7 +53,7 @@ export const LoginAtleta: React.FC = () => {
           ESPORTE NA CIDADE
         </h1>
         <main className="flex flex-col items-center flex-1">
-          <div className="flex flex-col py-32 m-4 md:mx-20 p-4 md:px-24 py-7 w-full max-w-5xl">
+          <div className="flex flex-col py-32 m-4 md:mx-20 p-4 md:px-24 w-full max-w-5xl">
             <div className="text-start px-8 mb-8">
               <h2 className="text-4xl font-bold pb-2">
                 Olá, <span className="text-orange-600">Atleta!</span>

@@ -20,7 +20,8 @@ import {
   GestaoDeProfessores,
   AtletaFaltas,
   RedirecionarHome,
-  Modalidade
+  Modalidade,
+  AprovarInscricoesProfessor
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "/home-professor/chamada",
         element: <Chamada />,
+      },
+      {
+        path: "/home-professor/aprovar-inscricoes",
+        element: <AprovarInscricoesProfessor />,
       },
 
       // Rotas Gestor

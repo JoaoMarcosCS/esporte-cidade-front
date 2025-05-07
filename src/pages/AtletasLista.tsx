@@ -27,6 +27,7 @@ const AtletasLista: React.FC = () => {
                             { label: "Home", path: "/home-professor" },
                             { label: "Chamada", path: "/home-professor/chamada" },
                             { label: "Atletas", path: "/home-professor/lista-atletas" },
+                            { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" }
                         ]}
                     />
                     <div className="max-w-7xl pb-5 ml-24 mr-10 mt-12 ">

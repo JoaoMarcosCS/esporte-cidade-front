@@ -16,3 +16,4 @@ export {default as GestaoDeProfessores} from "./GestaoDeProfessores"
 export { default as EditarPerfil } from "./EditarPerfil";
 export { RedirecionarHome} from "./redirecionar";
 export { Modalidade } from './Modalidade';
+export { default as AprovarInscricoesProfessor } from './AprovarInscricoesProfessor';
