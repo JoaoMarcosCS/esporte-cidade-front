@@ -84,7 +84,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
               <div className="py-1">
                 <button
                   onClick={() => {
-                    GoTo("/editar-perfil");
+                    GoTo("/home-atleta/editar-perfil");
                     setMenuOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"

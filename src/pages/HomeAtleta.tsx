@@ -53,25 +53,19 @@ const HomeAtleta = () => {
             links={[
               { label: "Home", path: "/home-atleta" },
               { label: "Faltas", path: "/home-atleta/faltas-atleta" },
-              { label: "Modalidades", path: "/home-atleta/modalidade" },
-              { label: "Horário", path: "/home-atleta/horarios" },
+              { label: "Modalidades", path: "/home-atleta/modalidade" }
             ]}
           />
 
-          <main className="w-full lg:w-5/6 mx-auto mt-8 p-4">
+          <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
             <h2 className="text-2xl font-bold mb-4 text-left">
               Olá, <span className="text-[#EB8317]">{userData?.name}</span>!
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3">
+            <div className="grid grid-cols-1 md:grid-cols-1">
               <div className="col-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-4 md:mr-4">
                 <h3 className="font-semibold mb-2">HORÁRIO SEMANAL</h3>
                 <AgendaSemanal />
-              </div>
-
-              <div className="row-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0 md:mr-4">
-                <h3 className="font-semibold mb-2">CALENDÁRIO DE COMPROMISSOS</h3>
-                <CalendarioCompromissos />
               </div>
 
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">

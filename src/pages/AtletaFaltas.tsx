@@ -102,8 +102,7 @@ const AtletaFaltas = () => {
             links={[
               { label: "Home", path: "/home-atleta" },
               { label: "Faltas", path: "/home-atleta/faltas-atleta" },
-              { label: "Modalidades", path: "/home-atleta/modalidade" },
-              { label: "Horário", path: "/home-atleta/horarios" },
+              { label: "Modalidades", path: "/home-atleta/modalidade" }
             ]}
           />
           <main className="px-4 py-6 md:px-8 w-3/4 m-auto">

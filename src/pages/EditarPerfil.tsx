@@ -53,9 +53,8 @@ const EditarPerfil: React.FC = () => {
           user={user}
           links={[
             { label: "Home", path: "/home-atleta" },
-            { label: "Faltas", path: "/faltas-atleta" },
-            { label: "Modalidades", path: "/modalidade" },
-            { label: "Horário", path: "/horarios" },
+            { label: "Faltas", path: "/home-atleta/faltas-atleta" },
+            { label: "Modalidades", path: "/home-atleta/modalidade" }
           ]}
           
       />
