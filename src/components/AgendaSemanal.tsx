@@ -47,7 +47,10 @@ const AgendaSemanal: React.FC = () => {
         }
 
         try {
-          const response = await api.get<Enrollment[]>(`/enrollment/${user.id}?approved=true`, {
+          const response = await api.get<Enrollment[]>('/enrollment', {
+            params: {
+              approved: true
+            },
             headers: {
               Authorization: `Bearer ${token}`
             }
