@@ -4,7 +4,7 @@ import { getModalidades, getModalidadesInscritas } from "../services/modality";
 import { inscreverEmModalidade } from "../services/enrollment";
 import { useUser } from "../hooks/useAuth";
 
-function ModalidadesInscricao() {
+export default function ModalidadesInscricao() {
   const [modalidades, setModalidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [inscrevendo, setInscrevendo] = useState<number | null>(null);
@@ -111,4 +111,3 @@ function ModalidadesInscricao() {
     </main>
   );
 }
-export default ModalidadesInscricao;
