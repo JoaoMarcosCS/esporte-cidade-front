@@ -55,9 +55,15 @@ const EditarPerfil: React.FC = () => {
         const response = await api.get(`/athletes/${user?.id}`);
         const athleteData = response.data;
 
-        Object.keys(athleteData).forEach((key) => {
-          setValue(key as keyof FieldValues, athleteData[key]);
+        // Exclude the password field from being pre-filled
+        const { password, ...otherData } = athleteData;
+
+        Object.keys(otherData).forEach((key) => {
+          setValue(key as keyof FieldValues, otherData[key]);
         });
+
+        // Log the fetched data to verify
+        console.log("Fetched athlete data (excluding password):", otherData);
       } catch (error) {
         console.error("Erro ao buscar dados do atleta:", error);
         toast.error("Erro ao carregar dados do perfil.");
@@ -77,6 +83,10 @@ const EditarPerfil: React.FC = () => {
     try {
       setLoading(true);
       const formData = getValues(); // Retrieve form values
+
+      // Log the password and confirmPassword being sent to the backend
+      console.log("Password being sent to backend:", formData.password);
+      console.log("Confirm Password being sent to backend:", formData.confirmPassword);
 
       // Ensure password and confirmPassword are included in the payload only if they are not empty
       const payload = {
@@ -210,7 +220,7 @@ const EditarPerfil: React.FC = () => {
               <input
                 type="password"
                 id="password"
-                
+                {...register("password")} // Register the password field
                 disabled={!isEditing}
                 className={`w-full mt-1 p-2 border border-gray-300 rounded ${
                   !isEditing ? "bg-gray-100 text-gray-500" : ""
@@ -227,7 +237,7 @@ const EditarPerfil: React.FC = () => {
               <input
                 type="password"
                 id="confirmPassword"
-                {...register("confirmPassword")}
+                {...register("confirmPassword")} // Register the confirmPassword field
                 disabled={!isEditing}
                 className={`w-full mt-1 p-2 border border-gray-300 rounded ${
                   !isEditing ? "bg-gray-100 text-gray-500" : ""
