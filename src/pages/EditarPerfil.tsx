@@ -55,15 +55,12 @@ const EditarPerfil: React.FC = () => {
         const response = await api.get(`/athletes/${user?.id}`);
         const athleteData = response.data;
 
-        // Exclude the password field from being pre-filled
+        
         const { password, ...otherData } = athleteData;
 
         Object.keys(otherData).forEach((key) => {
           setValue(key as keyof FieldValues, otherData[key]);
         });
-
-        // Log the fetched data to verify
-        console.log("Fetched athlete data (excluding password):", otherData);
       } catch (error) {
         console.error("Erro ao buscar dados do atleta:", error);
         toast.error("Erro ao carregar dados do perfil.");
@@ -82,13 +79,8 @@ const EditarPerfil: React.FC = () => {
   const handleConfirm = async () => {
     try {
       setLoading(true);
-      const formData = getValues(); // Retrieve form values
+      const formData = getValues(); 
 
-      // Log the password and confirmPassword being sent to the backend
-      console.log("Password being sent to backend:", formData.password);
-      console.log("Confirm Password being sent to backend:", formData.confirmPassword);
-
-      // Ensure password and confirmPassword are included in the payload only if they are not empty
       const payload = {
         ...formData,
         password: formData.password?.trim() || undefined,
