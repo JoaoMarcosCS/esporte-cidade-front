@@ -42,7 +42,7 @@ const GoTo = useNavigateTo();
   const formatInputValue = (name: string, value: string): string => {
     let formattedValue = value;
   
-    if (["cpf", "rg", "phone"].includes(name)) {
+    if (["cpf", "rg", "phone", "motherPhoneNumber", "fatherPhoneNumber"].includes(name)) {
       formattedValue = value.replace(/\D/g, ""); 
       
     }
@@ -67,7 +67,7 @@ const GoTo = useNavigateTo();
       } else {
         formattedValue = `${formattedValue.slice(0, 2)}.${formattedValue.slice(2, 5)}.${formattedValue.slice(5, 8)}-${formattedValue.slice(8, 9)}`;
       }
-    } else if (name === "phone") {
+    } else if (name === "phone" || name === "motherPhoneNumber" || name === "fatherPhoneNumber") {
       if (formattedValue.length <= 2) {
         formattedValue = `(${formattedValue}`;
       } else if (formattedValue.length <= 6) {
