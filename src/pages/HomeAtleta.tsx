@@ -20,29 +20,8 @@ import { checkProtectedRoute } from '../services/protectedRoutes'; // Importando
 
 
 const HomeAtleta = () => {
-  const { user, loading, isAuthenticated } = useAuth();
-  const { isLoading: authCheckLoading } = useAuthStatus("1"); // Pass "1" as string
+  const { user} = useAuth();
   const userData = useUser();
-
-  console.log('Current auth state:', {
-      isAuthenticated,
-      loading,
-      user,
-      token: localStorage.getItem('token')
-  });
-
-  if (loading || authCheckLoading) {
-      return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-      console.warn('Redirecting due to:', {
-          isAuthenticated,
-          userRole: user?.role,
-          expectedRole: "1"
-      });
-      return <Navigate to="/" replace />;
-  }
   return (
     <SidebarProvider>
       <AppSidebar type="atleta" />
