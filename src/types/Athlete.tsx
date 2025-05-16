@@ -19,4 +19,11 @@ export interface Athlete {
     backIdPhotoUrl: File | null;
     athletePhotoUrl: File | null;
     foodAllergies: string;
+    estado: string,
+    cidade: string,
+    bairro: string,
+    rua: string,
+    numeroDaCasa: string,
+    complemento: string,
+    referencia: string,
 }
