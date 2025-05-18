@@ -15,6 +15,10 @@ export const useUser = () => {
     return user;
 };
 
+function getToken() {
+    return localStorage.getItem('token');
+}
+
 export const useAuthStatus = (requiredRole?: string) => {
     const { isAuthenticated, loading, user, fetchUser } = useAuth();
     const navigate = useNavigate();
@@ -24,7 +28,7 @@ export const useAuthStatus = (requiredRole?: string) => {
             if (loading) return;
             
             try {
-                const token = localStorage.getItem("token");
+                const token = getToken();
                 if (!token) throw new Error("No token found");
                 
                 // Convert both to string for comparison

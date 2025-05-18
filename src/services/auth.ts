@@ -58,18 +58,22 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
 
 export const loginManager = async (credentials: ManagerLoginCredentials) => {
     try {
-        const response = await api.post('/auth/manager/login', {
+        const response = await api.post('/auth/login', {
+            type: "manager",
             credentials: {
                 email: credentials.email,
                 password: credentials.password
             }
         });
 
-        if (response.data.success) {
+        if (response.data.accessToken && response.data.user) {
             return response.data;
         }
-        throw new Error(response.data.message);
+        throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
+        if (error.response?.status === 401) {
+            throw new Error('Senha incorreta');
+        }
         throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
 };

@@ -40,13 +40,14 @@ const HomeProfessor = () => {
       const decodedToken = useDecodedToken();
 
       console.log('decodedToken:', decodedToken);
-      console.log('localStorage token:', localStorage.getItem('token'));
+      // Corrija para conferir o nome correto da chave do token no localStorage
+      console.log('localStorage accessToken:', localStorage.getItem('accessToken'));
 
       console.log('Current auth state:', {
         isAuthenticated,
         loading,
         user,
-        token: localStorage.getItem('token')
+        token: localStorage.getItem('accessToken')
     });
       if (loading || authCheckLoading) {
          return <div>Loading...</div>;
