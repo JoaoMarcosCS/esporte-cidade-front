@@ -10,20 +10,28 @@ interface Student {
   semesterYear: string;
 }
 
-interface AttendanceProps {
-  userType: "professor" | "atleta";
+export interface AttendanceProps {
+  userType: string;
+  fetchAtletasDaModalidade: (modalityId: number) => Promise<any>;
+  registrarChamada: ({
+    modalityId,
+    teacherId,
+    attendances,
+  }: {
+    modalityId: number;
+    teacherId: number;
+    attendances: { athleteId: number; present: boolean }[];
+  }) => Promise<any>;
 }
 
 const initialStudents: Student[] = [
-
-  { id: 1, name: "Alessandra Cardoso dos Reis", status: "PRESENTE", absences: 3, modality: "Futebol", semesterYear: "2024/1" },
-  { id: 2, name: "Alessandro Cardoso dos Reis", status: "PRESENTE", absences: 4, modality: "Basquete", semesterYear: "2024/2" },
-  { id: 3, name: "Alessandre Cardoso dos Reis", status: "PRESENTE", absences: 4, modality: "Futebol", semesterYear: "2024/2" },
-  { id: 4, name: "Alessandri Cardoso dos Reis", status: "PRESENTE", absences: 4, modality: "Basquete", semesterYear: "2024/1" },
-
 ];
 
-const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
+const ChamadaComp: React.FC<AttendanceProps> = ({
+  userType,
+  fetchAtletasDaModalidade,
+  registrarChamada,
+}) => {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -53,9 +61,45 @@ const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const handleConfirm = () => {
-    console.log("Chamada gravada!");
-    setIsModalOpen(false);
+  const handleGerarLista = async () => {
+    if (!selectedModality) {
+      console.log("Selecione uma modalidade antes de buscar atletas.");
+      return;
+    }
+    try {
+      console.log("Consultando API: fetchAtletasDaModalidade", selectedModality);
+      const atletas = await fetchAtletasDaModalidade(Number(selectedModality));
+      console.log("Resposta da API (atletas):", atletas);
+      setStudents(
+        atletas.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          status: "PRESENTE",
+          absences: a.absences ?? 0,
+          modality: a.modality ?? selectedModality,
+          semesterYear: a.semesterYear ?? selectedSemesterYear,
+        }))
+      );
+    } catch (error) {
+      console.error("Erro ao buscar atletas:", error);
+    }
+  };
+
+  const handleConfirm = async () => {
+    try {
+      const modalityId = Number(selectedModality);
+      const teacherId = 1;
+      const attendances = students.map((s) => ({
+        athleteId: s.id,
+        present: s.status === "PRESENTE",
+      }));
+      console.log("Chamando registrarChamada", { modalityId, teacherId, attendances });
+      const res = await registrarChamada({ modalityId, teacherId, attendances });
+      console.log("Resposta da API (registrarChamada):", res);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao registrar chamada:", error);
+    }
   };
 
   const handleModalityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -74,8 +118,6 @@ const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
 
   return (
     <div className="p-6  min-h-screen">
-      
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label className="block text-gray-700 mb-1">Modalidade:</label>
@@ -85,8 +127,8 @@ const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
             className="w-full p-2 border border-black bg-[#d9d9d9]"
           >
             <option value="">Selecione a modalidade</option>
-            <option value="Futebol">Futebol</option>
-            <option value="Basquete">Basquete</option>
+            <option value="1">Futebol</option>
+            <option value="2">Basquete</option>
           </select>
         </div>
         <div>
@@ -123,6 +165,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({ userType }) => {
 
       <button
         className="bg-[#EB8317] mb-6 text-black py-2 px-4 mt-6 rounded border border-black"
+        onClick={handleGerarLista}
       >
         Gerar Lista de Chamada
       </button>
