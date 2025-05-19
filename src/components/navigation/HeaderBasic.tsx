@@ -16,7 +16,6 @@ interface HeaderBasicProps {
 }
 
 const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "show", user }) => {
-  console.log('Logo prop value:', logo);
   const [menuOpen, setMenuOpen] = useState(false);
   const GoTo = useNavigateTo();
   const { logout } = useAuth();

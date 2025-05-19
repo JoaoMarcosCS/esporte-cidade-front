@@ -21,6 +21,7 @@ import {
   GestaoDeProfessores,
   AtletaFaltas,
   RedirecionarHome,
+  CadastroModalidades,
 } from "../pages";
 
 const router = createBrowserRouter(
@@ -90,9 +91,9 @@ const router = createBrowserRouter(
         {
           path: "/home-professor",
           element: (
-            <ProtectedRoute requiredRole="2">
+           
               <HomeProfessor />
-            </ProtectedRoute>
+           
           ),
         },
         {
@@ -116,33 +117,33 @@ const router = createBrowserRouter(
         {
           path: "/home-Gestor",
           element: (
-            <ProtectedRoute requiredRole="3">
+            //<ProtectedRoute requiredRole="3">
               <HomeGestor />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-comunicado",
           element: (
-            <ProtectedRoute requiredRole="3">
+           // <ProtectedRoute requiredRole="3">
               <CadastroComunicados />
-            </ProtectedRoute>
+          //  </ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-Modalidade",
           element: (
-            <ProtectedRoute requiredRole="3">
-              <CadastroComunicados />
-            </ProtectedRoute>
+          //  <ProtectedRoute requiredRole="3">
+              <CadastroModalidades />
+           // </ProtectedRoute>
           ),
         },
         {
-          path: "/home-Gestor/professores",
+          path: "/home-Gestor/cadastrar-professor",
           element: (
-            <ProtectedRoute requiredRole="3">
+            //<ProtectedRoute requiredRole="3">
               <GestaoDeProfessores />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           ),
         },
       ],

@@ -30,36 +30,11 @@ export function useMediaQuerie() {
 }
 
 const HomeProfessor = () => {
-    const { user, loading, isAuthenticated } = useAuth();
-    const { isLoading: authCheckLoading } = useAuthStatus("2");
+    const { user } = useAuth();
     const isMobile = useMediaQuerie()
-    const GoTo = useNavigateTo();
     const userType = "professor"
     const userData = useUser();
-      //const { fetchUser } = useAuthStatus();
-      const decodedToken = useDecodedToken();
-
-      console.log('decodedToken:', decodedToken);
-      console.log('localStorage token:', localStorage.getItem('token'));
-
-      console.log('Current auth state:', {
-        isAuthenticated,
-        loading,
-        user,
-        token: localStorage.getItem('token')
-    });
-      if (loading || authCheckLoading) {
-         return <div>Loading...</div>;
-     }
    
-     if (!isAuthenticated) {
-         console.warn('Redirecting due to:', {
-             isAuthenticated,
-             userRole: user?.role,
-             expectedRole: "1"
-         });
-         return <Navigate to="/" replace />;
-     }
      return (
         <SidebarProvider>
             <AppSidebar type={userType} />

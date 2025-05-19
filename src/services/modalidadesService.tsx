@@ -1,3 +1,4 @@
+import api from "./api";
 import { Modality } from "@/types/Modality";
 import axios from "axios";
 
