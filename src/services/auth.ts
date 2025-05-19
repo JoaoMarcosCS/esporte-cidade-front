@@ -17,15 +17,18 @@ interface ManagerLoginCredentials {
 
 export const loginAthlete = async (credentials: LoginCredentials) => {
     try {
-        const response = await api.post('/auth/athlete', {
-            cpf: credentials.cpf,
-            password: credentials.password
+        const response = await api.post('/auth/login', {
+            type: "athlete",
+            credentials: {
+                cpf: credentials.cpf,
+                password: credentials.password
+            }
         });
 
-        if (response.data.success) {
+        if (response.data.accessToken && response.data.user) {
             return response.data;
         }
-        throw new Error(response.data.message);
+        throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
         throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
@@ -33,12 +36,18 @@ export const loginAthlete = async (credentials: LoginCredentials) => {
 
 export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
     try {
-        const response = await api.post('/auth/teacher/login', {
-            email: credentials.email,
-            password: credentials.password
+        const response = await api.post('/auth/login', {
+            type: "teacher",
+            credentials: {
+                email: credentials.email,
+                password: credentials.password
+            }
         });
 
-        return response.data;
+        if (response.data.accessToken && response.data.user) {
+            return response.data;
+        }
+        throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
         if (error.response?.status === 401) {
             throw new Error('Senha incorreta');
@@ -50,8 +59,10 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
 export const loginManager = async (credentials: ManagerLoginCredentials) => {
     try {
         const response = await api.post('/auth/manager/login', {
-            email: credentials.email,
-            password: credentials.password
+            credentials: {
+                email: credentials.email,
+                password: credentials.password
+            }
         });
 
         if (response.data.success) {

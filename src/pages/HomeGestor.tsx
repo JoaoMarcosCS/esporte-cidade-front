@@ -15,7 +15,6 @@ import {
 } from "../components/ui/sidebar"
 
 
-//depois da para trocar com o backend
 const nomeDoGestor = "maria"
 
 

@@ -18,7 +18,10 @@ import {
   HomeGestor,
   CadastroComunicados,
   GestaoDeProfessores,
-  AtletaFaltas
+  AtletaFaltas,
+  RedirecionarHome,
+  Modalidade,
+  AprovarInscricoesProfessor
 } from "../pages";
 
 const router = createBrowserRouter([
@@ -63,6 +66,10 @@ const router = createBrowserRouter([
         path: "/home-atleta/editar-perfil",
         element: <EditarPerfil />,
       },
+      {
+        path: "/home-atleta/modalidade",
+        element: <Modalidade />,
+      },
 
       // Rotas de professor
       {
@@ -77,6 +84,10 @@ const router = createBrowserRouter([
         path: "/home-professor/chamada",
         element: <Chamada />,
       },
+      {
+        path: "/home-professor/aprovar-inscricoes",
+        element: <AprovarInscricoesProfessor />,
+      },
 
       // Rotas Gestor
       {
@@ -90,6 +101,10 @@ const router = createBrowserRouter([
       {
         path: "/home-Gestor/professores",
         element: <GestaoDeProfessores/>,
+      },  
+      {
+        path: "/redirecting",
+        element: <RedirecionarHome/>,
       },      
     ],
   },

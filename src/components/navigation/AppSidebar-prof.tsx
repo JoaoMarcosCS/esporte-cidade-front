@@ -27,8 +27,7 @@ const navLinksProfessor = [
 const navLinksAtleta = [
   { href: "/home-atleta", text: "Home" },
   { href: "/home-atleta/faltas-atleta", text: "Faltas" },
-  { href: "/home-atleta/lista-atletas", text: "Modalidades" },
-  { href: "/home-atleta/calendario", text: "Calendário" },
+  { href: "/home-atleta/modalidade", text: "Modalidades" },
 ];
 
 

@@ -2,10 +2,11 @@ export interface Athlete {
     name: string;
     cpf: string;
     rg: string;
+    phone: string;
     address: string;
     fatherName: string;
     motherName: string;
-    birthDate: string;
+    birthday: string;
     phoneNumber: string;
     password: string;
     email: string;
@@ -14,8 +15,8 @@ export interface Athlete {
     motherPhoneNumber: string;
     fatherPhoneNumber: string;
     bloodType: string;
-    frontIdPhotoUrl: string;
-    backIdPhotoUrl: string;
-    athletePhotoUrl: string;
+    frontIdPhotoUrl:File | null;
+    backIdPhotoUrl: File | null;
+    athletePhotoUrl: File | null;
     foodAllergies: string;
 }

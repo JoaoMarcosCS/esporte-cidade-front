@@ -1,16 +1,25 @@
 import React, { useState } from "react";
 import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
+import axios from "axios";
+import { useFileUpload } from "../hooks/useFileConvert";
+import { Navigate } from "react-router-dom";
+import useNavigateTo from "../hooks/useNavigateTo";
+import { useNavigate } from 'react-router-dom';
+
 
 const CadastroAtleta: React.FC = () => {
+  const { convertFile } = useFileUpload();
+const GoTo = useNavigateTo();
   const [athlete, setAthlete] = useState<Athlete>({
     name: "",
     cpf: "",
     rg: "",
+    phone:"",
     address: "",
     fatherName: "",
     motherName: "",
-    birthDate: "",
+    birthday: "",
     phoneNumber: "",
     password: "",
     email: "",
@@ -19,9 +28,9 @@ const CadastroAtleta: React.FC = () => {
     motherPhoneNumber: "",
     fatherPhoneNumber: "",
     bloodType: "",
-    frontIdPhotoUrl: "",
-    backIdPhotoUrl: "",
-    athletePhotoUrl: "",
+    frontIdPhotoUrl: null ,
+    backIdPhotoUrl: null,
+    athletePhotoUrl: null,
     foodAllergies: "",
   });
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({
@@ -31,8 +40,13 @@ const CadastroAtleta: React.FC = () => {
   });
 
   const formatInputValue = (name: string, value: string): string => {
-    let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    let formattedValue = value;
   
+    if (["cpf", "rg", "phone", "motherPhoneNumber", "fatherPhoneNumber"].includes(name)) {
+      formattedValue = value.replace(/\D/g, ""); 
+      
+    }
+
     if (name === "cpf") {
       if (formattedValue.length <= 3) {
         return formattedValue;
@@ -53,7 +67,7 @@ const CadastroAtleta: React.FC = () => {
       } else {
         formattedValue = `${formattedValue.slice(0, 2)}.${formattedValue.slice(2, 5)}.${formattedValue.slice(5, 8)}-${formattedValue.slice(8, 9)}`;
       }
-    } else if (name === "phone") {
+    } else if (name === "phone" || name === "motherPhoneNumber" || name === "fatherPhoneNumber") {
       if (formattedValue.length <= 2) {
         formattedValue = `(${formattedValue}`;
       } else if (formattedValue.length <= 6) {
@@ -67,16 +81,60 @@ const CadastroAtleta: React.FC = () => {
   
     return formattedValue;
   };
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const formattedValue = formatInputValue(name, value);
-    setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
+
+  //para limpar a formatação para enviar para o banco
+  const cleanInput = (value: string) => {
+    return value.replace(/[^\w\s]/gi, "").replace(/\s/g, "");
   };
 
-  const handleSubmit = () => {
-    console.log("Athlete Data:", athlete);
-    // Enviar para a API
+
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files && files.length > 0) {
+      setAthlete((prevState) => ({
+        ...prevState,
+        [name]: files[0],
+      }));
+    } else {
+      const formattedValue = formatInputValue(name, value);
+      setAthlete((prevState) => ({ ...prevState, [name]: formattedValue }));
+    }
+  };
+  const navigate = useNavigate();
+  const handleSubmit = async () => {
+    const frontBase64 = await convertFile(athlete.frontIdPhotoUrl);
+    const backBase64 = await convertFile(athlete.backIdPhotoUrl);
+    const photoBase64 = await convertFile(athlete.athletePhotoUrl);
+    
+    const cleanedAthlete = {
+      ...athlete,
+      cpf: athlete.cpf.replace(/\D/g, ""),
+      rg: athlete.rg.replace(/\D/g, ""),
+      phone: athlete.phone.replace(/\D/g, ""),
+      fatherPhoneNumber: athlete.fatherPhoneNumber?.replace(/\D/g, ""),
+      motherPhoneNumber: athlete.motherPhoneNumber?.replace(/\D/g, ""),
+      phoneNumber: athlete.phoneNumber?.replace(/\D/g, ""),
+
+      athletePhotoUrl: photoBase64 || undefined,
+      frontIdPhotoUrl: frontBase64 || undefined,
+      backIdPhotoUrl: backBase64 || undefined,
+
+
+    };
+  
+    console.log("Athlete Data (clean):", cleanedAthlete);
+  
+    try {
+      const response = await axios.post("http://localhost:3002/api/register", cleanedAthlete, {
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      console.log("Cadastro realizado:", response.data);
+      navigate("/redirecting", { replace: true }); 
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+    }
   };
 
   const steps = [
@@ -124,8 +182,8 @@ const CadastroAtleta: React.FC = () => {
             <label className="block text-sm font-semibold">Telefone</label>
             <input
               type="text"
-              name="phoneNumber"
-              value={athlete.phoneNumber}
+              name="phone"
+              value={athlete.phone}
               onChange={handleChange}
               className="px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="(XX) XXXXX-XXXX"
@@ -188,8 +246,8 @@ const CadastroAtleta: React.FC = () => {
             <label className="block text-sm font-medium">Data de Nascimento</label>
             <input
               type="date"
-              name="birthDate"
-              value={athlete.birthDate}
+              name="birthday"
+              value={athlete.birthday}
               onChange={handleChange}
               className="px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="Insira sua data de nascimento"

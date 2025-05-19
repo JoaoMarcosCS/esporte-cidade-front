@@ -11,6 +11,7 @@ import {
 } from "../components/ui/sidebar"
 import { useAuth } from '../contexts/AuthContext';
 import { useDecodedToken } from '../hooks/useDecodedToken';
+import { Navigate } from "react-router-dom";
 
 export function useMediaQuerie() {
     const customBreakpoint = 854
@@ -29,19 +30,37 @@ export function useMediaQuerie() {
 }
 
 const HomeProfessor = () => {
+    const { user, loading, isAuthenticated } = useAuth();
+    const { isLoading: authCheckLoading } = useAuthStatus("2");
     const isMobile = useMediaQuerie()
     const GoTo = useNavigateTo();
-    const { user } = useAuth();
     const userType = "professor"
     const userData = useUser();
-      const { fetchUser } = useAuthStatus();
+      //const { fetchUser } = useAuthStatus();
       const decodedToken = useDecodedToken();
-    
-      // Adicionando logs para debug
+
       console.log('decodedToken:', decodedToken);
       console.log('localStorage token:', localStorage.getItem('token'));
 
-    return (
+      console.log('Current auth state:', {
+        isAuthenticated,
+        loading,
+        user,
+        token: localStorage.getItem('token')
+    });
+      if (loading || authCheckLoading) {
+         return <div>Loading...</div>;
+     }
+   
+     if (!isAuthenticated) {
+         console.warn('Redirecting due to:', {
+             isAuthenticated,
+             userRole: user?.role,
+             expectedRole: "1"
+         });
+         return <Navigate to="/" replace />;
+     }
+     return (
         <SidebarProvider>
             <AppSidebar type={userType} />
             <SidebarInset>
@@ -52,13 +71,14 @@ const HomeProfessor = () => {
                             { label: "Home", path: "/home-professor" },
                             { label: "Chamada", path: "/home-professor/chamada" },
                             { label: "Atletas", path: "/home-professor/lista-atletas" },
+                            { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" }
                         ]}
                     />
 
                     <div className="max-w-7xl pb-24 ml-24 mr-10 mt-14 ">
 
                         <h1 className="text-2xl font-bold">
-                            Olá, Professor(a) <span className="text-[#EB8317]">{decodedToken?.name || 'Usuário'}</span>!
+                            Olá, Professor(a) <span className="text-[#EB8317]">{userData?.name}</span>!
                         </h1>
 
                         {isMobile ? (

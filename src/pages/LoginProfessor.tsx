@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -9,11 +9,12 @@ import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom';
-import { loginTeacher } from "../services/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 export const LoginProfessor: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const GoTo = useNavigateTo();
+    const { login } = useAuth();
 
     const {
         register,
@@ -23,21 +24,19 @@ export const LoginProfessor: React.FC = () => {
         resolver: zodResolver(userSchema),
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            GoTo('/home-professor');
+        }
+    }, [GoTo]);
+
     async function onSubmit(data: FieldValues) {
         try {
             const { email, password } = data;
-            const response = await loginTeacher({ email, password });
-
-            // Só prossegue se tiver sucesso e dados
-            if (!response.success || !response.data) {
-                throw new Error(response.message || 'Credenciais inválidas');
-            }
-
-            // Login bem sucedido
-            localStorage.setItem('token', response.data.accessToken);
-            localStorage.setItem('teacher', JSON.stringify(response.data.teacher));
+            // Cast para evitar erro de tipagem
+            await login({ email, password } as any);
             GoTo("/home-professor");
-
         } catch (error: any) {
             console.error("Erro no login:", error);
             toast.error(error.message || 'Erro ao fazer login', {
@@ -50,10 +49,12 @@ export const LoginProfessor: React.FC = () => {
     return (
         <>
             <Toaster />
-            <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-                <HeaderBasic />
+            <div className="min-h-screen bg-[#F4F6FF] flex flex-col pb-16">
+                <h1 className="absolute top-7 left-1/2 -translate-x-1/2 md:left-10 md:translate-x-0 text-2xl mb-10 font-jockey text-black">
+                    ESPORTE NA CIDADE
+                </h1>
                 <main className="flex flex-col items-center flex-1">
-                    <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
+                    <div className="flex flex-col py-32 m-4 md:mx-20 p-4 md:px-24 w-full max-w-5xl">
                         <div className="text-start px-8 mb-8">
                             <h2 className="text-4xl font-bold pb-2">
                                 Olá, <span className="text-orange-600">Professor!</span>
@@ -147,12 +148,7 @@ export const LoginProfessor: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                        <div className="flex flex-col text-center">
-                            <p className="font-inter">Ainda não tem uma conta?</p>
-                            <Link to="/cadastro-professor" className="font-inter text-blue-600">
-                                Criar conta
-                            </Link>
-                        </div>
+                       
                     </div>
                 </main>
 
