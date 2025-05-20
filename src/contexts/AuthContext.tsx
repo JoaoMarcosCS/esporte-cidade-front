@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 import { LoginCredentials, User, AuthContextType } from '../types/auth';
-import { loginAthlete, loginTeacher } from '../services/auth';
+import { loginAthlete, loginManager, loginTeacher } from '../services/auth';
 import { AxiosResponse } from 'axios';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else if (role === "2" || role === 2) {
                 response = await api.get(`/teacher/${userId}`);
             } else if (role === "3") {
-                response = await api.get(`/managers/${userId}`);
+                response = await api.get(`/manager/${userId}`);
             } else {
                 throw new Error('Tipo de usuário inválido');
             }
@@ -93,37 +93,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         initializeAuth();
     }, []);
 
-    const login = async (credentials: LoginCredentials | { email: string; password: string }) => {
+    const login = async (credentials: LoginCredentials) => {
         try {
             setLoading(true);
             setError(null);
 
             let response;
-            if ('cpf' in credentials) {
-                response = await loginAthlete(credentials as LoginCredentials);
-            } else {
-                response = await loginTeacher(credentials as { email: string; password: string });
+            switch (credentials.type) {
+                case 'athlete':
+                    response = await loginAthlete(credentials);
+                    break;
+                case 'teacher':
+                    response = await loginTeacher(credentials);
+                    break;
+                case 'manager':
+                    response = await loginManager(credentials); // Make sure this uses loginManager
+                    break;
+                default:
+                    throw new Error('Tipo de login inválido');
             }
-            console.log('[login] Resposta do login:', response);
+
             if (response.accessToken && response.user) {
-                const accessToken = response.accessToken;
-                const user = response.user;
-                console.log('[login] accessToken:', accessToken);
-                console.log('[login] user:', user);
-
-                if (!user) throw new Error('Usuário não encontrado na resposta');
-
-                localStorage.setItem('token', accessToken);
-                // Store initial user data with role as string
+                localStorage.setItem('token', response.accessToken);
                 const userData = {
-                    ...user,
-                    role: user.role?.toString()
+                    ...response.user,
+                    role: response.user.role?.toString()
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 setUser(userData);
-
                 await fetchUser();
-                return;
             } else {
                 throw new Error(response.message || 'Erro ao fazer login');
             }

@@ -66,12 +66,12 @@ export const Escala = () => {
   const itemsPerPage = 10;
 
   const totalActivities = Math.max(
-    programacao.segunda.length,
-    programacao.terca.length,
-    programacao.quarta.length,
-    programacao.quinta.length,
-    programacao.sexta.length,
-    programacao.sabado.length
+    // programacao.segunda.length,
+    // programacao.terca.length,
+    // programacao.quarta.length,
+    // programacao.quinta.length,
+    // programacao.sexta.length,
+    // programacao.sabado.length
   );
 
   const Ativo = useMemo(() => {

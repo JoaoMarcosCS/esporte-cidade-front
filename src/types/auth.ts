@@ -2,7 +2,7 @@ export interface User {
     id: number;
     name?: string; // Agora opcional
     cpf: string;
-    role: number; // Mudando para number para corresponder ao backend
+    role: string; 
     email?: string;
     phone?: string;
     birthday?: string;
@@ -16,10 +16,10 @@ export interface User {
     [key: string]: any; // Permite propriedades adicionais
 }
 
-export interface LoginCredentials {
-    cpf: string;
-    password: string;
-}
+export type LoginCredentials = 
+  | { type: 'athlete'; cpf: string; password: string }
+  | { type: 'teacher'; email: string; password: string }
+  | { type: 'manager'; email: string; password: string };
 
 export interface AuthContextType {
     user: User | null;

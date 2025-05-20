@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { Professor } from "@/types/Professor";
 import { Modality } from "@/types/Modality";
-import { getModalities } from "../services/modalityService";
+import { getModalities } from "../services/modalidadesService";
 import Textbox from "./Textbox";
 import Datepicker from "./Datepicker";
 import Dropdown from "./Dropdown";

@@ -12,6 +12,7 @@ interface TextboxProps {
     multiline?: boolean; // Define se o componente será uma textarea
     rows?: number; // Número de linhas para a textarea
     required?: boolean; // Define se o campo é obrigatório
+    disabled?: boolean;
 }
 
 const Textbox: React.FC<TextboxProps> = ({
@@ -26,6 +27,7 @@ const Textbox: React.FC<TextboxProps> = ({
     multiline = false,
     rows = 4, // Número padrão de linhas para a textarea
     required = false, // Valor padrão é falso
+    disabled = false,
 }) => {
     return (
         <div className="relative my-5">

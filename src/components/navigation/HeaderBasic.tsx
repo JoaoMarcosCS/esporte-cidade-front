@@ -16,7 +16,6 @@ interface HeaderBasicProps {
 }
 
 const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "show", user }) => {
-  console.log('Logo prop value:', logo);
   const [menuOpen, setMenuOpen] = useState(false);
   const GoTo = useNavigateTo();
   const { logout } = useAuth();
@@ -38,13 +37,12 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
       <div className="flex items-center md:gap-0 gap-2">
         {type === "usuario" && <CustomSidebarTrigger />}
         
-        {logo === "show" && (
+       
           <img
             src="https://lh3.googleusercontent.com/proxy/X-B99B9HsP3Lo4ae0nDQMozyMHTcxxdcPINH959IZlOUhqK7j0tdAK-sz09ISiS2c0ew2N4wyhXsHyR5EZ1vqwJKbh0VhZBj7gEfvT4DeFZkKw"
             alt="Logo"
             className="h-10 mr-4 hidden md:block"
           />
-        )}
         
         <h1
           className="text-xl font-jockey cursor-pointer"
@@ -69,12 +67,14 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
 
         {/* Foto de perfil do usuário */}
         <div className="relative">
+           {logo === "show" && (
           <img
             src={userData?.profilePicture || user?.profilePicture || "https://via.placeholder.com/40"}
             alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
             className="h-10 w-10 border border-black cursor-pointer rounded-full"
             onClick={handleMenuToggle}
           />
+           )}
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
               <div className="px-4 py-3 border-b border-gray-200">
