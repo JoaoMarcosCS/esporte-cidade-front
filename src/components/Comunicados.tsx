@@ -26,22 +26,8 @@ interface EditProps {
 }
 
 const comunicados = [
-  { titulo: "primeiro", horario: "12:50", conteudo: "varias coisas" },
-  { horario: "12:50", conteudo: "varias coisas" },
-  { horario: "12:50", conteudo: "varias coisas" },
-  { horario: "12:50", conteudo: "varias coisas" },
-  { horario: "12:50", conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "varias coisas" },
-  { conteudo: "outas coisas" }
+  { titulo: "", horario: "", conteudo: "Sem compromissos" },
+
 ]
 
 //paginação
