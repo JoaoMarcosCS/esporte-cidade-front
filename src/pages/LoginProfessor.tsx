@@ -35,7 +35,7 @@ export const LoginProfessor: React.FC = () => {
         try {
             const { email, password } = data;
             // Cast para evitar erro de tipagem
-            await login({ email, password } as any);
+            await login({ type:'teacher', email, password } as any);
             GoTo("/home-professor");
         } catch (error: any) {
             console.error("Erro no login:", error);

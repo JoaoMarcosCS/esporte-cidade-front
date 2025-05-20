@@ -1,54 +1,56 @@
-import { useContext, useEffect } from 'react';
-import AuthContext from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from "react";
+import AuthContext from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export const useUser = () => {
-    const { user } = useAuth();
-    return user;
+  const { user } = useAuth();
+  return user;
 };
 
 export const useAuthStatus = (requiredRole?: string) => {
-    const { isAuthenticated, loading, user, fetchUser } = useAuth();
-    const navigate = useNavigate();
+  const { isAuthenticated, loading, user, fetchUser } = useAuth();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            if (loading) return;
-            
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) throw new Error("No token found");
-                
-                // Convert both to string for comparison
-                const userRole = user?.role?.toString();
-                
-                if (requiredRole && userRole !== requiredRole) {
-                    throw new Error(`Role mismatch. User: ${userRole}, Required: ${requiredRole}`);
-                }
-                
-                if (!user && token) {
-                    await fetchUser();
-                }
-            } catch (err) {
-                console.warn("Auth check failed:", err);
-                navigate("/");
-            }
-        };
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (loading) return;
 
-        checkAuth();
-    }, [loading, user, requiredRole]);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
 
-    return {
-        isAuthenticated,
-        isLoading: loading,
-        user
+        // If we have a token but no user, fetch user data
+        if (!user) {
+          await fetchUser();
+          return;
+        }
+
+        // Check role if required
+        if (requiredRole && user.role !== requiredRole) {
+          throw new Error(`Acesso não autorizado para role ${user.role}`);
+        }
+      } catch (err) {
+        console.warn("Auth check failed:", err);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/");
+      }
     };
+
+    checkAuth();
+  }, [loading, user, requiredRole, navigate]);
+
+  return {
+    isAuthenticated,
+    isLoading: loading,
+    user,
+  };
 };

@@ -8,8 +8,10 @@ import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import { loginManager } from "../services/auth";
 import { userSchema } from "../lib/schemaLoginUser";
+import { useAuth } from "../contexts/AuthContext";
 
 export const LoginGestor: React.FC = () => {
+    const { login } = useAuth();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const GoTo = useNavigateTo();
 
@@ -24,36 +26,26 @@ export const LoginGestor: React.FC = () => {
     async function onSubmit(data: FieldValues) {
         try {
             const { email, password } = data;
-            
-            const response = await loginManager({
+            await login({
+                type: 'manager',
                 email,
                 password
             });
-
-            if (response.success) {
-                // Armazenar token no localStorage
-                if (!response.data) {
-                    throw new Error('Resposta inválida do servidor');
-                }
-
-                localStorage.setItem('accessToken', response.data.accessToken);
-                localStorage.setItem('manager', JSON.stringify(response.data.manager));
-                
-                GoTo("/home-gestor");
-            } else {
-                toast.error(response.message || "Erro ao fazer login");
-            }
+            GoTo("/home-gestor");
         } catch (error: any) {
             console.error("Erro no login:", error);
-            toast.error(error.response?.data?.message || "Erro ao fazer login");
+            toast.error(error.message || 'Erro ao fazer login', {
+                duration: 3000,
+                position: 'top-center'
+            });
         }
     }
 
     return (
         <>
-        <Toaster/>
+            <Toaster />
             <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-                <HeaderBasic logo="hide"/>
+                <HeaderBasic logo="hide" />
 
                 <main className="flex flex-col items-center flex-1">
                     <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
@@ -135,7 +127,7 @@ export const LoginGestor: React.FC = () => {
                             <div className="py-10 flex justify-end gap-7">
                                 <button
                                     type="button"
-                                    onClick={() => GoTo("/")} 
+                                    onClick={() => GoTo("/")}
                                     className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
                                 >
                                     Voltar

@@ -35,16 +35,20 @@ export const LoginAtleta: React.FC = () => {
     }, []);
 
     async function onSubmit(data: FieldValues) {
-        try {
-            const { cpf, password } = data;
-            const cleanCpf = cpf.replace(/[.\-]/g, '');
-            await login({ cpf: cleanCpf, password });
-            GoTo("/home-atleta");
-        } catch (error: any) {
-            console.error("Erro no login:", error);
-            toast.error(error.message || "Erro ao fazer login.");
-        }
+    try {
+        const { cpf, password } = data;
+        const cleanCpf = cpf.replace(/[.\-]/g, '');
+        await login({ 
+            type: 'athlete', // Add the required type property
+            cpf: cleanCpf, 
+            password 
+        });
+        GoTo("/home-atleta");
+    } catch (error: any) {
+        console.error("Erro no login:", error);
+        toast.error(error.message || "Erro ao fazer login.");
     }
+}
     return (
         <>
             <Toaster />
