@@ -43,7 +43,7 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
                             <tr>
                                 <th className="px-4 py-3 text-lg font-bold">Nome</th>
                                 <th className="px-4 py-3 text-lg font-bold">Descrição</th>
-                                {/* <th className="px-4 py-3 text-lg font-bold">Local</th> */}
+                                <th className="px-4 py-3 text-lg font-bold">Local</th>
                                 <th className="px-4 py-3 text-lg font-bold">Ações</th>
                             </tr>
                         </thead>
@@ -52,7 +52,7 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
                                 <tr key={modalidade.id} className="border-t border-gray-300">
                                     <td className="px-4 py-3">{modalidade.name}</td>
                                     <td className="px-4 py-3">{modalidade.description || "-"}</td>
-                                    {/* <td className="px-4 py-3">{modalidade.class_locations || "-"}</td> */}
+                                    <td className="px-4 py-3">{modalidade.class_locations || "-"}</td>
                                     
                                     <td className="px-4 py-3 space-x-2 flex">
 
