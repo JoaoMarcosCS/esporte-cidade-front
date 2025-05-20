@@ -275,8 +275,6 @@ const CadastroAtleta: React.FC = () => {
       const response = await axios.post("http://localhost:3002/api/register", cleanedAthlete, {
         headers: { "Content-Type": "application/json" },
       });
-
-      console.log("Cadastro realizado:", response.data);
       navigate("/redirecting", { replace: true });
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
