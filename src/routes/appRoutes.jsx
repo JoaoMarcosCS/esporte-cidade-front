@@ -135,41 +135,41 @@ const router = createBrowserRouter(
         {
           path: "/home-Gestor",
           element: (
-            <ProtectedRoute requiredRole="3">
+            //<ProtectedRoute requiredRole="3">
               <HomeGestor />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-comunicado",
           element: (
-            <ProtectedRoute requiredRole="3">
+            //<ProtectedRoute requiredRole="3">
               <CadastroComunicados />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-Modalidade",
           element: (
-            <ProtectedRoute requiredRole="3">
+           // <ProtectedRoute requiredRole="3">
               <CadastroModalidades />
-            </ProtectedRoute>
+           // </ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-professor",
           element: (
-            <ProtectedRoute requiredRole="3">
+           // <ProtectedRoute requiredRole="3">
               <GestaoDeProfessores />
-            </ProtectedRoute>
+           // </ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/professores",
           element: (
-            <ProtectedRoute requiredRole="3">
+            //<ProtectedRoute requiredRole="3">
               <GestaoDeProfessores />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           ),
         },
       ],

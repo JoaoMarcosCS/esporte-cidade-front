@@ -6,7 +6,7 @@ import {
     getAllModalities,
     createModality,
     deleteModality
-} from "../services/modality";
+} from "../services/modalityService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 
