@@ -9,14 +9,24 @@ import {
 } from "../services/modalityService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
-
+import { ConfirmModal } from "../components/ComfirmModal";
 
 
 export const CadastroModalidades: React.FC = () => {
     const [modalidades, setModalidades] = useState<Modality[]>([]);
     const [modalidadeSelecionada, setModalidadeSelecionada] = useState<Modality | null>(null);
     const formularioRef = useRef<HTMLFormElement>(null);
+
+    //modal form
     const [showModal, setShowModal] = useState(false);
+
+    //modal confirmar delete
+    const [modalAberto, setModalAberto] = useState(false);
+    const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+    const handleDeleteClick = (id: number) => {
+        setIdParaExcluir(id);
+        setModalAberto(true);
+    };
 
     useEffect(() => {
         fetchModalidades();
@@ -34,10 +44,10 @@ export const CadastroModalidades: React.FC = () => {
     const handleCreate = async (data: Omit<Modality, "id" | "teachers" | "registred_athletes">) => {
         try {
             await createModality(data);
-            await fetchModalidades() // Return the new modality
+            await fetchModalidades()
         } catch (error) {
             console.error("Erro ao salvar modalidade:", error);
-            throw error; // Re-throw to handle in the onSubmit
+            throw error;
         }
     };
 
@@ -58,6 +68,24 @@ export const CadastroModalidades: React.FC = () => {
             throw error
         }
     };
+    const confirmarExclusao = async () => {
+        if (idParaExcluir === null) return;
+
+        try {
+            await deleteModality(idParaExcluir);
+            setModalidades((prev) => prev.filter((mod) => mod.id !== idParaExcluir));
+            if (modalidadeSelecionada?.id === idParaExcluir) {
+                setModalidadeSelecionada(null);
+            }
+        } catch (error) {
+            console.error("Erro ao deletar modalidade:", error);
+        } finally {
+            setModalAberto(false);
+            setIdParaExcluir(null);
+        }
+    };
+
+
 
     return (
         <section className="bg-[#F4F6FF] pb-20">
@@ -80,7 +108,7 @@ export const CadastroModalidades: React.FC = () => {
                             <button
                                 className="h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
                                 onClick={() => {
-                                    setModalidadeSelecionada(null); // limpa o formulário se for novo
+                                    setModalidadeSelecionada(null);
                                     setShowModal(true);
                                 }}
                             >
@@ -93,14 +121,21 @@ export const CadastroModalidades: React.FC = () => {
                         <ModalidadesCadastradas
                             modalidades={modalidades}
                             onEdit={handleEditClick}
-                            onDelete={handleDelete}
+                            onDelete={handleDeleteClick}
                             modalidadeEdicao={modalidadeSelecionada}
                             setModalidades={setModalidades}
                         />
-                        
+
 
 
                     </section>
+
+
+                    <ConfirmModal
+                        isOpen={modalAberto}
+                        onClose={() => setModalAberto(false)}
+                        onConfirm={confirmarExclusao}
+                    />
 
                     <section className="flex justify-end">
 

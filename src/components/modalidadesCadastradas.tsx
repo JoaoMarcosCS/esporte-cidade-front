@@ -20,17 +20,6 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
     setModalidades
 }) => {
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm("Tem certeza que deseja excluir esta modalidade?")) {
-            try {
-                await deleteModality(id);
-                setModalidades(prev => prev.filter(m => m.id !== id));
-
-            } catch (error) {
-                console.error("Erro ao deletar modalidade:", error);
-            }
-        }
-    };
     console.log('Modalidade data:', JSON.stringify(modalidades, null, 2));
 
     return (
@@ -60,7 +49,7 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
                                         <button className="w-7">
                                             <img src="/icon/pencil.svg" alt="Editar" className="w-full" />
                                         </button>
-                                        <button onClick={() => handleDelete(modalidade.id)} className="w-7">
+                                        <button onClick={() => onDelete(modalidade.id)} className="w-7">
                                             <img src="/icon/trash.svg" alt="Deletar" className="w-full" />
                                         </button>
                                     </td>
