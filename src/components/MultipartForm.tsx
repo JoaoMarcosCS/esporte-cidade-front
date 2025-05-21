@@ -9,32 +9,18 @@ interface FormStepProps {
 interface MultipartFormProps {
   steps: FormStepProps[];
   onSubmit: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
+  currentStep: number;
 }
 
-const MultipartForm: React.FC<MultipartFormProps> = ({ steps, onSubmit }) => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
-
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep((prevStep) => prevStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep((prevStep) => prevStep - 1);
-    }
-  };
-
+const MultipartForm: React.FC<MultipartFormProps> = ({ steps, onSubmit, onNext, onPrevious, currentStep }) => {
   return (
     <div className="max-w-2xl mx-auto bg-[#F4F6FF] p-10 border border-black">
-      {/* w-full p-2 border border-black  */}
       <h1 className="text-2xl font-bold text-left mb-4">Cadastre-se</h1>
-      <p className="text-gray-500 mb-6">
-        Crie sua conta para começar
-      </p>
+      <p className="text-gray-500 mb-6">Crie sua conta para começar</p>
 
-      {/* Steps Indicator */}
+      {/* Indicator */}
       <div className="flex justify-start space-x-4 mb-8">
         {steps.map((step) => (
           <div
@@ -46,14 +32,14 @@ const MultipartForm: React.FC<MultipartFormProps> = ({ steps, onSubmit }) => {
         ))}
       </div>
 
-      {/* Form Content */}
+      {/* Content */}
       <div className="mb-6">{steps[currentStep - 1].content}</div>
 
-      {/* Navigation Buttons */}
+      {/* Buttons */}
       <div className="flex justify-end gap-2">
         <button
           type="button"
-          onClick={handlePrevious}
+          onClick={onPrevious}
           className="px-7 py-2 border-2 border-black text-white rounded-sm bg-[#10375c]"
           disabled={currentStep === 1}
         >
@@ -70,7 +56,7 @@ const MultipartForm: React.FC<MultipartFormProps> = ({ steps, onSubmit }) => {
         ) : (
           <button
             type="button"
-            onClick={handleNext}
+            onClick={onNext}
             className="px-7 py-2 border-2 border-black font-bold rounded-sm bg-[#f48716]"
           >
             Próximo

@@ -7,6 +7,7 @@ import { userSchema } from "../lib/schemaLoginUser";
 import { Loader } from "lucide-react";
 import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
+
 import { useHookFormMask } from "use-mask-input";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -32,12 +33,14 @@ export const LoginGestor: React.FC = () => {
       GoTo("/home-gestor");
       localStorage.setItem("token", token);
       localStorage.setItem("manager", "true");
+
     }
   }, [GoTo]);
 
   async function onSubmit(data: FieldValues) {
     try {
       const { email, password } = data;
+
 
       // Verificação: log para garantir que o campo type está correto
       console.log("Tentando login gestor:", {
@@ -48,6 +51,7 @@ export const LoginGestor: React.FC = () => {
 
       // Certifique-se de que está chamando login({ email, password, type: "manager" })
       await login({ email, password, type: "manager" } as any);
+
 
       GoTo("/home-gestor");
     } catch (error: any) {
@@ -65,6 +69,7 @@ export const LoginGestor: React.FC = () => {
     }
   }
 
+
   return (
     <>
       <Toaster />
@@ -80,7 +85,6 @@ export const LoginGestor: React.FC = () => {
               </h2>
               <p className="font-inter">Entre em sua conta para começar.</p>
             </div>
-
             <form
               className="bg- p-8 rounded-lg w-full"
               onSubmit={handleSubmit(onSubmit)}
@@ -180,3 +184,4 @@ export const LoginGestor: React.FC = () => {
     </>
   );
 };
+

@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../services/api";
-import { LoginCredentials, User, AuthContextType } from "../types/auth";
-import { loginAthlete, loginTeacher } from "../services/auth";
-import { AxiosResponse } from "axios";
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api';
+import { LoginCredentials, User, AuthContextType } from '../types/auth';
+import { loginAthlete, loginManager, loginTeacher } from '../services/auth';
+import { AxiosResponse } from 'axios';
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -31,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   const fetchUser = async () => {
     try {
@@ -67,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const userData = {
           ...userFromApi,
           role: role,
+
         };
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
@@ -79,6 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem("token");
@@ -88,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (err) {
           console.error("Failed to fetch user:", err);
           logout();
+
         }
       }
       setLoading(false);

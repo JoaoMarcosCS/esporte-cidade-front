@@ -11,6 +11,7 @@ import { useUser, useAuthStatus } from "../hooks/useAuth";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { Navigate } from "react-router-dom";
 
+
 const HomeGestor = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const { isLoading: authCheckLoading } = useAuthStatus("3");
@@ -18,6 +19,7 @@ const HomeGestor = () => {
   const userType = "gestor";
   const userData = useUser();
   const decodedToken = useDecodedToken();
+
 
   // Logs para depuração (igual HomeProfessor)
   console.log(localStorage.getItem("token"));
@@ -105,6 +107,7 @@ const HomeGestor = () => {
       </SidebarInset>
     </SidebarProvider>
   );
+
 };
 
 export default HomeGestor;

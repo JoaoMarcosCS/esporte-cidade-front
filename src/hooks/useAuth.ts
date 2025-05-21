@@ -1,18 +1,18 @@
-import { useContext, useEffect } from 'react';
-import AuthContext from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from "react";
+import AuthContext from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export const useUser = () => {
-    const { user } = useAuth();
-    return user;
+  const { user } = useAuth();
+  return user;
 };
 
 function getToken() {
@@ -20,6 +20,7 @@ function getToken() {
 }
 
 export const useAuthStatus = (requiredRole?: string) => {
+
     const { isAuthenticated, loading, user, fetchUser } = useAuth();
     const navigate = useNavigate();
 
@@ -54,5 +55,15 @@ export const useAuthStatus = (requiredRole?: string) => {
         isAuthenticated,
         isLoading: loading,
         user
+
     };
+
+    checkAuth();
+  }, [loading, user, requiredRole, navigate]);
+
+  return {
+    isAuthenticated,
+    isLoading: loading,
+    user,
+  };
 };
