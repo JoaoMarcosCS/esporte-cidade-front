@@ -43,15 +43,44 @@ const HomeProfessor = () => {
   //const { fetchUser } = useAuthStatus();
   const decodedToken = useDecodedToken();
 
-  console.log("decodedToken:", decodedToken);
-  console.log("localStorage token:", localStorage.getItem("token"));
 
-  console.log("Current auth state:", {
-    isAuthenticated,
-    loading,
-    user,
-    token: localStorage.getItem("token"),
-  });
+      console.log('decodedToken:', decodedToken);
+      // Corrija para conferir o nome correto da chave do token no localStorage
+      console.log('localStorage accessToken:', localStorage.getItem('accessToken'));
+
+      console.log('Current auth state:', {
+        isAuthenticated,
+        loading,
+        user,
+        token: localStorage.getItem('accessToken')
+    });
+      if (loading || authCheckLoading) {
+         return <div>Loading...</div>;
+     }
+   
+     if (!isAuthenticated) {
+         console.warn('Redirecting due to:', {
+             isAuthenticated,
+             userRole: user?.role,
+             expectedRole: "1"
+         });
+         return <Navigate to="/" replace />;
+     }
+     return (
+        <SidebarProvider>
+            <AppSidebar type={userType} />
+            <SidebarInset>
+                <div className="min-h-screen bg-gray-100">
+                    <HeaderBasic
+                        type="usuario"
+                        links={[
+                            { label: "Home", path: "/home-professor" },
+                            { label: "Chamada", path: "/home-professor/chamada" },
+                            { label: "Atletas", path: "/home-professor/lista-atletas" },
+                            { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" }
+                        ]}
+                    />
+
 
   const userStorage = localStorage.getItem("user");
 

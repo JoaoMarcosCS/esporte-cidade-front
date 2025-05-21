@@ -1,11 +1,12 @@
 import { Professor } from "@/types/Professor";
 import axios from "axios";
+import api from "./api";
 
 const API_URL = "http://localhost:3002/api/teacher/";
 
 export const getProfessores = async (): Promise<Professor[]> => {
     try {
-        const response = await axios.get(API_URL);
+        const response = await api.get("/teacher");
         return response.data;
     } catch (error) {
         console.error("Erro ao buscar professores:", error);

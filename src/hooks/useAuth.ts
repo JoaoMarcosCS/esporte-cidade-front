@@ -15,34 +15,47 @@ export const useUser = () => {
   return user;
 };
 
+function getToken() {
+    return localStorage.getItem('token');
+}
+
 export const useAuthStatus = (requiredRole?: string) => {
-  const { isAuthenticated, loading, user, fetchUser } = useAuth();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (loading) return;
+    const { isAuthenticated, loading, user, fetchUser } = useAuth();
+    const navigate = useNavigate();
 
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
+    useEffect(() => {
+        const checkAuth = async () => {
+            if (loading) return;
+            
+            try {
+                const token = getToken();
+                if (!token) throw new Error("No token found");
+                
+                // Convert both to string for comparison
+                const userRole = user?.role?.toString();
+                
+                if (requiredRole && userRole !== requiredRole) {
+                    throw new Error(`Role mismatch. User: ${userRole}, Required: ${requiredRole}`);
+                }
+                
+                if (!user && token) {
+                    await fetchUser();
+                }
+            } catch (err) {
+                console.warn("Auth check failed:", err);
+                navigate("/");
+            }
+        };
 
-        // If we have a token but no user, fetch user data
-        if (!user) {
-          await fetchUser();
-          return;
-        }
+        checkAuth();
+    }, [loading, user, requiredRole]);
 
-        // Check role if required
-        if (requiredRole && user.role !== requiredRole) {
-          throw new Error(`Acesso não autorizado para role ${user.role}`);
-        }
-      } catch (err) {
-        console.warn("Auth check failed:", err);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/");
-      }
+    return {
+        isAuthenticated,
+        isLoading: loading,
+        user
+
     };
 
     checkAuth();
