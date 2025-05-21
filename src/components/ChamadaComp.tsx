@@ -1,43 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModuloConfirmacao from "./ModuloConfirmacao";
+import { AtletaAtivos } from "../pages/Chamada";
+import api from "../services/api";
+import useNavigateTo from "../hooks/useNavigateTo";
 
-interface Student {
-  id: number;
-  name: string;
-  status: "PRESENTE" | "AUSENTE";
-  absences: number;
-  modality: string;
-  semesterYear: string;
+interface AttendanceProps {
+  userType: "professor" | "atleta";
+  initialStudents: AtletaAtivos[];
 }
-
-export interface AttendanceProps {
-  userType: string;
-  fetchAtletasDaModalidade: (modalityId: number) => Promise<any>;
-  registrarChamada: ({
-    modalityId,
-    teacherId,
-    attendances,
-  }: {
-    modalityId: number;
-    teacherId: number;
-    attendances: { athleteId: number; present: boolean }[];
-  }) => Promise<any>;
-}
-
-const initialStudents: Student[] = [
-];
 
 const ChamadaComp: React.FC<AttendanceProps> = ({
   userType,
-  fetchAtletasDaModalidade,
-  registrarChamada,
+  initialStudents,
 }) => {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [students, setStudents] = useState<AtletaAtivos[]>(initialStudents);
+  const [dateTime, setDateTime] = useState<{ date: string; time: string }>({
+    date: "",
+    time: "",
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedModality, setSelectedModality] = useState<string>("");
-  const [selectedSemesterYear, setSelectedSemesterYear] = useState<string>("");
+  const GoTo = useNavigateTo();
+
+  useEffect(() => {
+    const now = new Date();
+    const currentDate = now.toISOString().split("T")[0];
+    const currentTime = now.toTimeString().substring(0, 5);
+    setDateTime({ date: currentDate, time: currentTime });
+  }, []);
 
   const toggleStatus = (studentId: number) => {
     if (userType === "professor") {
@@ -49,8 +38,8 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
                 status: student.status === "PRESENTE" ? "AUSENTE" : "PRESENTE",
                 absences:
                   student.status === "PRESENTE"
-                    ? student.absences + 1
-                    : student.absences - 1,
+                    ? student.faltas + 1
+                    : student.faltas - 1,
               }
             : student
         )
@@ -61,94 +50,61 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const handleGerarLista = async () => {
-    if (!selectedModality) {
-      console.log("Selecione uma modalidade antes de buscar atletas.");
-      return;
-    }
-    try {
-      console.log("Consultando API: fetchAtletasDaModalidade", selectedModality);
-      const atletas = await fetchAtletasDaModalidade(Number(selectedModality));
-      console.log("Resposta da API (atletas):", atletas);
-      setStudents(
-        atletas.map((a: any) => ({
-          id: a.id,
-          name: a.name,
-          status: "PRESENTE",
-          absences: a.absences ?? 0,
-          modality: a.modality ?? selectedModality,
-          semesterYear: a.semesterYear ?? selectedSemesterYear,
-        }))
-      );
-    } catch (error) {
-      console.error("Erro ao buscar atletas:", error);
-    }
-  };
-
   const handleConfirm = async () => {
     try {
-      const modalityId = Number(selectedModality);
-      const teacherId = 1;
-      const attendances = students.map((s) => ({
-        athleteId: s.id,
-        present: s.status === "PRESENTE",
+      const formatDateTime = (dateStr: string, timeStr: string) => {
+        const [hours, minutes] = timeStr.split(":");
+        return `${dateStr} ${hours}:${minutes}:00.000`;
+      };
+
+      const formattedDateTime = formatDateTime(dateTime.date, dateTime.time);
+
+      const atendiments = students.map((student) => ({
+        modalityId: student.modalityId, // Certifique-se que modalityId existe no student
+        athleteId: student.id,
+        present: student.status === "PRESENTE",
+        created_at: formattedDateTime, // Mantém como Date object
       }));
-      console.log("Chamando registrarChamada", { modalityId, teacherId, attendances });
-      const res = await registrarChamada({ modalityId, teacherId, attendances });
-      console.log("Resposta da API (registrarChamada):", res);
+
+      const response = await api.post(
+        `modality/${students[0].modalityId}/receive-atendiments`,
+        atendiments // Envia o array diretamente
+      );
+
+      console.log("Chamada gravada com sucesso:", response.data);
       setIsModalOpen(false);
+      GoTo("/home-professor");
     } catch (error) {
-      console.error("Erro ao registrar chamada:", error);
+      console.error("Erro ao gravar chamada:", error);
+      // Aqui você pode adicionar tratamento de erro para o usuário
     }
   };
-
-  const handleModalityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedModality(e.target.value);
+  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDateTime((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleSemesterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSemesterYear(e.target.value);
-  };
-
-  const filteredStudents = students.filter(
-    (student) =>
-      (!selectedModality || student.modality === selectedModality) &&
-      (!selectedSemesterYear || student.semesterYear === selectedSemesterYear)
-  );
 
   return (
-    <div className="p-6  min-h-screen">
+    <div className="p-6 min-h-screen">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label className="block text-gray-700 mb-1">Modalidade:</label>
-          <select
-            value={selectedModality}
-            onChange={handleModalityChange}
+          <input
+            type="text"
+            value="Futebol"
+            readOnly
             className="w-full p-2 border border-black bg-[#d9d9d9]"
-          >
-            <option value="">Selecione a modalidade</option>
-            <option value="1">Futebol</option>
-            <option value="2">Basquete</option>
-          </select>
+          />
         </div>
         <div>
-          <label className="block text-gray-700 mb-1">Ano/Semestre:</label>
-          <select
-            value={selectedSemesterYear}
-            onChange={handleSemesterChange}
-            className="w-full p-2 border border-black bg-[#d9d9d9]"
-          >
-            <option value="">Selecione o ano/semestre</option>
-            <option value="2024/1">2024/1</option>
-            <option value="2024/2">2024/2</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-gray-700 mb-1">Informe a data da chamada:</label>
+          <label className="block text-gray-700 mb-1">
+            Informe a data da chamada:
+          </label>
           <input
             type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            name="date"
+            value={dateTime.date}
+            onChange={handleDateTimeChange}
             className="w-full p-2 border border-black bg-[#d9d9d9]"
           />
         </div>
@@ -156,35 +112,49 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
           <label className="block text-gray-700 mb-1">Informe o horário:</label>
           <input
             type="time"
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
+            name="time"
+            value={dateTime.time}
+            onChange={handleDateTimeChange}
             className="w-full p-2 border border-black bg-[#d9d9d9]"
           />
         </div>
       </div>
 
-      <button
-        className="bg-[#EB8317] mb-6 text-black py-2 px-4 mt-6 rounded border border-black"
-        onClick={handleGerarLista}
-      >
+      {/* <button className="bg-[#EB8317] mb-6 text-black py-2 px-4 mt-6 rounded border border-black">
         Gerar Lista de Chamada
-      </button>
+      </button> */}
 
-      <div className="space-y-4">
-        {filteredStudents.map((student) => (
+      <div className="space-y-4 mt-6">
+        <p className="text-2xl font-semibold">Alunos da modalidade</p>
+
+        {students.map((student) => (
           <div
             key={student.id}
             className="p-4 bg-[#d9d9d9] border border-black flex flex-col cursor-pointer"
             onClick={() => toggleStatus(student.id)}
           >
             <div className="flex items-center">
-              <img src="https://via.placeholder.com/50" alt={student.name} className="rounded-full mr-4" />
+              <img
+                src={student.photo_url || "https://via.placeholder.com/50"}
+                alt={student.name}
+                className="rounded-full mr-4 w-12 h-12 sm:w-14 sm:h-14 object-cover"
+                style={{
+                  maxWidth: "56px", // Define um tamanho máximo
+                  minWidth: "48px", // Define um tamanho mínimo
+                }}
+              />
               <div className="flex-1">
                 <h3 className="font-semibold">{student.name}</h3>
-                <p className={`font-bold ${student.status === "PRESENTE" ? "text-green-500" : "text-red-500"}`}>
+                <p
+                  className={`font-bold ${
+                    student.status === "PRESENTE"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
                   {student.status}
                 </p>
-                <p>{student.absences} Faltas</p>
+                <p>{student.faltas} Faltas</p>
               </div>
             </div>
           </div>
