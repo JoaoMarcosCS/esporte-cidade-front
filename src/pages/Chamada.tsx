@@ -1,16 +1,21 @@
-// src/App.tsx ou src/components/ui/Home.tsx
-import React from 'react';
-import ChamadaComp from '../components/ChamadaComp';
-import HeaderBasic from "../components/navigation/HeaderBasic"
+import React, { useEffect, useState } from "react";
+import ChamadaComp from "../components/ChamadaComp";
+import HeaderBasic from "../components/navigation/HeaderBasic";
 import useNavigateTo from "../hooks/useNavigateTo";
-import { AppSidebar } from '../components/navigation/AppSidebar-prof';
+import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import FooterMobile from "../components/navigation/FooterMobile";
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import api from "../services/api";
 
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "../components/ui/sidebar"
+export interface AtletaAtivos {
+  id: number;
+  name: string;
+  faltas: number;
+  presente: boolean;
+  photo_url: string;
+  status: string;
+  modalityId: number;
+}
 
 const Chamada: React.FC = () => {
   const userType = "professor";
@@ -19,32 +24,50 @@ const Chamada: React.FC = () => {
     profilePicture: "",
   };
 
-  // Função para buscar atletas de uma modalidade
-  const fetchAtletasDaModalidade = async (modalityId: number) => {
-    const res = await api.get(`/modality/${modalityId}/athletes-availible`);
-    // Ajuste conforme o retorno da API
-    return res.data.athletes_availible || [];
-  };
+  const [atletasAtivos, setAtletasAtivos] = useState<AtletaAtivos[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Função para registrar chamada
-  const registrarChamada = async ({
-    modalityId,
-    teacherId,
-    attendances,
-  }: {
-    modalityId: number;
-    teacherId: number;
-    attendances: { athleteId: number; present: boolean }[];
-  }) => {
-    // Envie apenas o array de presenças, mas inclua modalityId em cada objeto
-    const atendimentos = attendances.map((a) => ({
-      modalityId,
-      athleteId: a.athleteId,
-      present: a.present,
-    }));
-    return api.post(`/modality/${modalityId}/receive-atendiments`, atendimentos);
-  };
+  const userStorage = localStorage.getItem("user");
 
+  console.log(userStorage);
+
+  const userData = userStorage ? JSON.parse(userStorage) : null;
+
+  // Acessa a propriedade '0' do objeto e depois a modalidade
+  const userModalityId = userData?.["0"]?.modality?.id || null;
+
+  useEffect(() => {
+    const fetchAtletasAtivos = async () => {
+      try {
+        setLoading(true);
+
+        const response = await api.get(
+          `modality/${userModalityId}/athletes-availible`
+        );
+
+        const atletasFormatados = response.data.map((atleta: AtletaAtivos) => ({
+          id: atleta.id,
+          name: atleta.name,
+          photo_url: atleta.photo_url,
+          faltas: atleta.faltas || 0,
+          status: "PRESENTE",
+          modalityId: userModalityId,
+        }));
+
+        console.log(atletasFormatados);
+
+        setAtletasAtivos(atletasFormatados);
+      } catch (err) {
+        console.error("Erro ao buscar atletas ativos:", err);
+        setError("Falha ao carregar atletas. Tente novamente mais tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAtletasAtivos();
+  }, [userModalityId]);
   return (
     <SidebarProvider>
       <AppSidebar type="professor" />
@@ -57,14 +80,27 @@ const Chamada: React.FC = () => {
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
-              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" },
+              {
+                label: "Aprovar Inscrições",
+                path: "/home-professor/aprovar-inscricoes",
+              },
             ]}
           />
-          <ChamadaComp
-            userType={userType}
-            fetchAtletasDaModalidade={fetchAtletasDaModalidade}
-            registrarChamada={registrarChamada}
-          />
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <p>Carregando atletas...</p>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center h-64 text-red-500">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <ChamadaComp
+              userType={userType}
+              initialStudents={atletasAtivos} // Passando os atletas como prop
+            />
+          )}
+
           <FooterMobile />
         </div>
       </SidebarInset>
