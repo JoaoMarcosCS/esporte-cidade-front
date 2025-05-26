@@ -5,6 +5,8 @@ import FormularioProfessores from "../components/FormularioProfessores";
 import { getProfessores, saveProfessor, deleteProfessor } from "../services/professorService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
+import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 
 const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
@@ -51,40 +53,47 @@ const GestaoDeProfessor: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F4F6FF] pb-20">
-      <HeaderBasic
-        type="visitante"
-        links={[
-          { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-          { label: "Professores", path: "/home-gestor/cadastrar-professor" },
-        ]}
-      />
 
-      <FooterMobile />
+    <SidebarProvider>
+      <AppSidebar type="gestor" />
+      <SidebarInset>
+        <section className="bg-[#F4F6FF] pb-20">
+          <HeaderBasic
+            type="usuario"
+            links={[
+              { label: "Home", path: "/home-gestor" },
+              { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
+              { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+              { label: "modalidades", path: "/home-gestor/cadastrar-modalidade" },
+            ]}
+          />
 
-      <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
-        <main className="space-y-8 mt-6">
-          <section>
-            <ProfessoresCadastrados
-              professores={professores}
-              onEdit={handleEditClick}
-              onDelete={handleDelete}
-              professorEdicao={selectedProfessor}
-            />
-          </section>
+          <FooterMobile />
 
-          <section>
-            <FormularioProfessores
-              ref={formularioRef}
-              professorEdicao={selectedProfessor}
-              onSubmit={handleAddOrEdit}
-              onCancelEdit={() => setSelectedProfessor(null)}
-            />
-          </section>
-        </main>
-      </div>
-    </section>
+          <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
+            <main className="space-y-8 mt-6">
+              <section>
+                <ProfessoresCadastrados
+                  professores={professores}
+                  onEdit={handleEditClick}
+                  onDelete={handleDelete}
+                  professorEdicao={selectedProfessor}
+                />
+              </section>
+
+              <section>
+                <FormularioProfessores
+                  ref={formularioRef}
+                  professorEdicao={selectedProfessor}
+                  onSubmit={handleAddOrEdit}
+                  onCancelEdit={() => setSelectedProfessor(null)}
+                />
+              </section>
+            </main>
+          </div>
+        </section>
+      </SidebarInset>
+    </SidebarProvider >
   );
 };
 

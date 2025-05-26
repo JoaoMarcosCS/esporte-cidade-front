@@ -44,3 +44,12 @@ export const deleteModality = async (id: number) => {
     throw new Error(error.response?.data?.message || "Erro ao excluir modalidade");
   }
 };
+
+export const  assignTeacherToModality = async (id:number, data:any) =>{
+   try {
+    const response = await api.put(`/use/modality/assign-teacher/${id}`, data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Erro ao atualizar modalidade");
+  }
+}

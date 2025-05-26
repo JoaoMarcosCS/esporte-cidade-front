@@ -5,17 +5,21 @@ import FormularioModalidades from "../components/FormularioModalidades";
 import {
     getAllModalities,
     createModality,
-    deleteModality
+    deleteModality,
+    updateModality,
+    getModalityById
 } from "../services/modalityService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { ConfirmModal } from "../components/ComfirmModal";
-
+import AssignTeacherForm from "../components/AssignTeacherModal";
 
 export const CadastroModalidades: React.FC = () => {
     const [modalidades, setModalidades] = useState<Modality[]>([]);
     const [modalidadeSelecionada, setModalidadeSelecionada] = useState<Modality | null>(null);
     const formularioRef = useRef<HTMLFormElement>(null);
+    const [modalAssignTeacherOpen, setModalAssignTeacherOpen] = useState(false);
+    const [modalidadeParaAssign, setModalidadeParaAssign] = useState<Modality | null>(null);
 
     //modal form
     const [showModal, setShowModal] = useState(false);
@@ -50,24 +54,30 @@ export const CadastroModalidades: React.FC = () => {
             throw error;
         }
     };
+    const handleAssignTeacherClick = (modality: Modality) => {
+        setModalidadeParaAssign(modality);
+        setModalAssignTeacherOpen(true);
+    };
+
+    const handleUpdate = async (
+        id: number,
+        data: Omit<Modality, "id" | "teachers" | "registred_athletes">
+    ) => {
+        try {
+            await updateModality(id, data);
+            await fetchModalidades();
+        } catch (error) {
+            console.error("Erro ao atualizar modalidade:", error);
+            throw error;
+        }
+    };
 
     const handleEditClick = (modality: Modality) => {
         setModalidadeSelecionada(modality);
-        formularioRef.current?.scrollIntoView({ behavior: "smooth" });
+        setShowModal(true);
+        console.log("clicou")
     };
 
-    const handleDelete = async (id: number) => {
-        try {
-            await deleteModality(id);
-            setModalidades(prev => prev.filter(mod => mod.id !== id));
-            if (modalidadeSelecionada?.id === id) {
-                setModalidadeSelecionada(null);
-            }
-        } catch (error) {
-            console.error("Erro ao deletar modalidade:", error);
-            throw error
-        }
-    };
     const confirmarExclusao = async () => {
         if (idParaExcluir === null) return;
 
@@ -94,6 +104,7 @@ export const CadastroModalidades: React.FC = () => {
                 links={[
                     { label: "Home", path: "/home-gestor" },
                     { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
+                    { label: "Professores", path: "/home-gestor/professores" },
                     { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
                 ]}
             />
@@ -124,6 +135,7 @@ export const CadastroModalidades: React.FC = () => {
                             onDelete={handleDeleteClick}
                             modalidadeEdicao={modalidadeSelecionada}
                             setModalidades={setModalidades}
+                            onAssignTeacher={handleAssignTeacherClick}
                         />
 
 
@@ -139,6 +151,7 @@ export const CadastroModalidades: React.FC = () => {
 
                     <section className="flex justify-end">
 
+                        {/* modal cadastro */}
 
                         {showModal && (
                             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
@@ -148,8 +161,13 @@ export const CadastroModalidades: React.FC = () => {
                                         ref={formularioRef}
                                         modalityEdicao={modalidadeSelecionada}
                                         onSubmit={async (data) => {
-                                            await handleCreate(data);
+                                            if (modalidadeSelecionada) {
+                                                await handleUpdate(modalidadeSelecionada.id, data);
+                                            } else {
+                                                await handleCreate(data);
+                                            }
                                             setShowModal(false);
+                                            setModalidadeSelecionada(null);
                                             await fetchModalidades();
                                         }}
                                         onCancelEdit={() => {
@@ -159,6 +177,29 @@ export const CadastroModalidades: React.FC = () => {
                                         }}
                                     />
 
+                                </div>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="flex justify-end">
+
+                        {/* modal atribuição */}
+                        {modalAssignTeacherOpen && modalidadeParaAssign && (
+                            <div className="fixed top-0 left-0 right-0 bottom-0 min-h-screen z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl relative">
+                                    <AssignTeacherForm
+                                        modality={modalidadeParaAssign}
+                                        onCancel={() => {
+                                            setModalidadeParaAssign(null);
+                                            setModalAssignTeacherOpen(false);
+                                        }}
+                                        onSubmitSuccess={() => {
+                                            setModalidadeParaAssign(null);
+                                            setModalAssignTeacherOpen(false);
+                                            fetchModalidades();
+                                        }}
+                                    />
                                 </div>
                             </div>
                         )}

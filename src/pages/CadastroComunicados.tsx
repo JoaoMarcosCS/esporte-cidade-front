@@ -41,6 +41,7 @@ const CadastroComunicados = () => {
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
                             { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+                             { label: "modalidades", path: "/home-gestor/cadastrar-modalidade" },
                         ]}
                     />
 

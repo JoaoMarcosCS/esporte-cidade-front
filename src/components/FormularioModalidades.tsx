@@ -10,9 +10,19 @@ interface Props {
   onSuccess?: () => void;
   // Callback opcional após sucesso
 }
+
+type ModalityFormData = {
+  name: string;
+  description: string;
+  days_of_week: string[]; // Array in form state
+  start_time: string;
+  end_time: string;
+  class_locations: string;
+};
+
 interface FormularioModalidadesProps {
   modalityEdicao: Modality | null;
-  onSubmit: (data: Omit<Modality, "id" | "teachers" | "registred_athletes">) => Promise<void>;
+  onSubmit: (data: { name: string; description: string; days_of_week: string; start_time: string; end_time: string; class_locations: string; }) => Promise<void>;
   onCancelEdit: () => void;
   onSucess?: () => void;
 }
@@ -21,13 +31,14 @@ const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado",
 
 const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesProps>(
   ({ modalityEdicao, onSubmit, onCancelEdit, onSucess }, ref) => {
-    const [formData, setFormData] = useState<Omit<Modality, "id" | "teachers" | "registred_athletes">>({
+    const [formData, setFormData] = useState<Omit<ModalityFormData, "id" | "teachers" | "registred_athletes">>({
       name: "",
       description: "",
-      days_of_week: [],
       start_time: "",
       end_time: "",
-      class_locations: [],
+      days_of_week: [],
+      class_locations: "",
+
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -37,7 +48,9 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
         setFormData({
           name: modalityEdicao.name,
           description: modalityEdicao.description,
-          days_of_week: modalityEdicao.days_of_week,
+          days_of_week: modalityEdicao.days_of_week
+            ? modalityEdicao.days_of_week.split(",").map((d:any) => d.trim())
+            : [],
           start_time: modalityEdicao.start_time,
           end_time: modalityEdicao.end_time,
           class_locations: modalityEdicao.class_locations,
@@ -54,22 +67,18 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
     };
 
     const handleCheckboxChange = (day: string) => {
-      setFormData(prev => ({
-        ...prev,
-        days_of_week: prev.days_of_week.includes(day)
+      setFormData(prev => {
+        const updatedDays = prev.days_of_week.includes(day)
           ? prev.days_of_week.filter(d => d !== day)
-          : [...prev.days_of_week, day],
-      }));
+          : [...prev.days_of_week, day];
+
+        return {
+          ...prev,
+          days_of_week: updatedDays,
+        };
+      });
     };
 
-    const handleLocationsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = e.target.value;
-      const locations = value.split(",").map(loc => loc.trim());
-      setFormData(prev => ({
-        ...prev,
-        class_locations: locations,
-      }));
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -77,9 +86,12 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
       setError(null);
 
       try {
-        await onSubmit(formData);
+        await onSubmit({
+          ...formData,
+          days_of_week: formData.days_of_week.join(",")
+        })
         console.log(formData);
-        
+
         if (onSucess) onSucess();
       } catch (err: any) {
         setError(err.message || "Erro ao criar modalidade");
@@ -164,8 +176,8 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
             </div>
 
             <Textbox
-              value={formData.class_locations.join(", ")}
-              onChange={handleLocationsChange}
+              value={formData.class_locations}
+              onChange={handleChange}
               name="class_locations"
               label="Locais de Aula separe por vírgula)"
               placeholder="Piscina, Quadra, Campo"
@@ -176,15 +188,15 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
         </div>
 
         <div className="mt-6 flex gap-4">
-         <button
+          <button
             className="h-13 md:w-fit font-bold font-inter bg-orange-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
             type="submit"
           >
-            Cadastrar Modalidade
+            {modalityEdicao ? "Salvar Alterações" : "Cadastrar Modalidade"}
           </button>
 
           <button
-            className="h-13 md:w-fit font-bold font-inter bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition duration-300"
+            className="h-13 md:w-fit font-bold font-inter bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition duration-300"
             type="button"
             onClick={onCancelEdit}
             disabled={loading}
