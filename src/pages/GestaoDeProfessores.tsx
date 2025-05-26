@@ -41,7 +41,7 @@ const GestaoDeProfessor: React.FC = () => {
     formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | null) => {
     try {
       await deleteProfessor(Number(id));
       setProfessores(prev => prev.filter(prof => prof.id === id));

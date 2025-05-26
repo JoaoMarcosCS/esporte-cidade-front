@@ -16,10 +16,15 @@ const athleteSchema = z
     name: z.string().min(1, "Nome é obrigatório"),
     email: z.string().email("Email inválido"),
     phone: z.string().optional(),
-    address: z.string().optional(),
+    photo: z.string().optional(),
+    cep: z.string().optional(),
+    street: z.string().optional(),
+    neighborhood: z.string().optional(),
     city: z.string().optional(),
     password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-    confirmPassword: z.string().min(6, "Confirmação de senha deve ter pelo menos 6 caracteres"),
+    confirmPassword: z
+      .string()
+      .min(6, "Confirmação de senha deve ter pelo menos 6 caracteres"),
   })
   .superRefine((data, ctx) => {
     if (data.confirmPassword !== data.password) {
@@ -55,11 +60,30 @@ const EditarPerfil: React.FC = () => {
         const response = await api.get(`/athletes/${user?.id}`);
         const athleteData = response.data;
 
-        
-        const { password, ...otherData } = athleteData;
+        console.log("Dados recebidos do servidor:", athleteData); // Debug log
 
-        Object.keys(otherData).forEach((key) => {
-          setValue(key as keyof FieldValues, otherData[key]);
+        const { password, confirmPassword, ...otherData } = athleteData;
+
+        // Mapear os campos retornados pela API para os campos do formulário
+        const fieldMapping = {
+          name: otherData.name,
+          email: otherData.email,
+          phone: otherData.phone,
+          photo: otherData.photo_url || "", // Mapeando photo_url para o campo photo
+          cep: otherData.cep || "", // Adicione um valor padrão se o campo não existir
+          street: otherData.street || "",
+          neighborhood: otherData.neighborhood || "",
+          city: otherData.city || "",
+          cpf: otherData.cpf || "",
+          rg: otherData.rg || "",
+        };
+
+        Object.entries(fieldMapping).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            setValue(key as keyof FieldValues, value);
+          } else {
+            console.warn(`Campo ausente ou nulo: ${key}`); // Warn about missing fields
+          }
         });
       } catch (error) {
         console.error("Erro ao buscar dados do atleta:", error);
@@ -79,7 +103,7 @@ const EditarPerfil: React.FC = () => {
   const handleConfirm = async () => {
     try {
       setLoading(true);
-      const formData = getValues(); 
+      const formData = getValues();
 
       const payload = {
         ...formData,
@@ -121,9 +145,47 @@ const EditarPerfil: React.FC = () => {
       <div className="p-6 bg-[#F4F6FF] min-h-screen">
         <h1 className="text-xl text-center font-bold mb-6">Editar Perfil</h1>
         <div className="space-y-4 max-w-lg mx-auto">
-          <form onSubmit={handleSubmit(handleConfirm)}>
+          <form onSubmit={handleSubmit(handleConfirm)} >
             <div>
-              <label className="block text-gray-700 mb-1">Nome</label>
+              <label className="block text-gray-700 mt-1">Foto</label>
+              {getValues("photo") && (
+                <img src={getValues("photo")}
+                     alt="Pré-visualização"
+                     className="mt-2 rounded w-32 h-32 object-cover border"
+                />
+              )}
+              <input
+                type="file"
+                id="photo"
+                disabled={!isEditing}
+                className={`w-full mt-1 p-2 border border-gray-300 rounded ${!isEditing ? "bg-gray-100 text-gray-500" : ""}`}
+                onChange={async (e) => {
+                  if (!isEditing) return;
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const formData = new FormData();
+                  formData.append("profile", file);
+                  try {
+                    const response = await fetch("http://localhost:3002/uploads/upload", {
+                      method: "POST",
+                      body: formData,
+                    });
+                    const data = await response.json();
+                    if (data.profile) {
+                      setValue("photo", data.profile);
+                      toast.success("Imagem de perfil atualizada!");
+                    } else {
+                      toast.error("Falha ao processar imagem.");
+                    }
+                  } catch (err) {
+                    toast.error("Erro ao fazer upload da imagem.");
+                  }
+                }}
+              />
+              
+            </div>
+            <div>
+              <label className="block text-gray-700 mt-1">Nome</label>
               <input
                 type="text"
                 id="name"
@@ -140,7 +202,7 @@ const EditarPerfil: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">E-mail</label>
+              <label className="block text-gray-700 mt-1">E-mail</label>
               <input
                 type="email"
                 id="email"
@@ -157,7 +219,7 @@ const EditarPerfil: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Telefone</label>
+              <label className="block text-gray-700 mt-1">Telefone</label>
               <input
                 type="tel"
                 id="phone"
@@ -173,25 +235,60 @@ const EditarPerfil: React.FC = () => {
                 </p>
               )}
             </div>
+            
             <div>
-              <label className="block text-gray-700 mb-1">Endereço</label>
+              <label className="block text-gray-700 mt-1">CEP</label>
               <input
                 type="text"
-                id="address"
-                {...register("address")}
+                id="cep"
+                {...register("cep")}
                 disabled={!isEditing}
                 className={`w-full mt-1 p-2 border border-gray-300 rounded ${
                   !isEditing ? "bg-gray-100 text-gray-500" : ""
                 }`}
               />
-              {errors.address && (
+              {errors.cep && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.address.message as string}
+                  {errors.cep.message as string}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Cidade</label>
+              <label className="block text-gray-700 mt-1">Rua</label>
+              <input
+                type="text"
+                id="street"
+                {...register("street")}
+                disabled={!isEditing}
+                className={`w-full mt-1 p-2 border border-gray-300 rounded ${
+                  !isEditing ? "bg-gray-100 text-gray-500" : ""
+                }`}
+              />
+              {errors.street && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.street.message as string}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mt-1">Bairro</label>
+              <input
+                type="text"
+                id="neighborhood"
+                {...register("neighborhood")}
+                disabled={!isEditing}
+                className={`w-full mt-1 p-2 border border-gray-300 rounded ${
+                  !isEditing ? "bg-gray-100 text-gray-500" : ""
+                }`}
+              />
+              {errors.neighborhood && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.neighborhood.message as string}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mt-1">Cidade</label>
               <input
                 type="text"
                 id="city"
@@ -208,11 +305,11 @@ const EditarPerfil: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Nova Senha</label>
+              <label className="block text-gray-700 mt-1">Nova Senha</label>
               <input
                 type="password"
                 id="password"
-                {...register("password")} // Register the password field
+                {...register("password")}
                 disabled={!isEditing}
                 className={`w-full mt-1 p-2 border border-gray-300 rounded ${
                   !isEditing ? "bg-gray-100 text-gray-500" : ""
@@ -225,11 +322,13 @@ const EditarPerfil: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 mb-1">Confirmar Senha</label>
+              <label className="block text-gray-700 mt-1">
+                Confirmar Senha
+              </label>
               <input
                 type="password"
                 id="confirmPassword"
-                {...register("confirmPassword")} // Register the confirmPassword field
+                {...register("confirmPassword")}
                 disabled={!isEditing}
                 className={`w-full mt-1 p-2 border border-gray-300 rounded ${
                   !isEditing ? "bg-gray-100 text-gray-500" : ""

@@ -130,13 +130,7 @@ const AprovarInscricoesProfessor: React.FC = () => {
                     >
                       {actionLoading === enrollment.id ? 'Aguarde...' : 'Aprovar'}
                     </button>
-                    <button
-                      className={`w-full py-2 rounded-lg font-bold text-white transition duration-200 ${actionLoading === enrollment.id ? 'bg-red-300' : 'bg-red-600 hover:bg-red-700'}`}
-                      disabled={actionLoading === enrollment.id}
-                      onClick={() => handleApprove(enrollment.id, false)}
-                    >
-                      {actionLoading === enrollment.id ? 'Aguarde...' : 'Reprovar'}
-                    </button>
+    
                   </div>
                 </div>
               ))}
