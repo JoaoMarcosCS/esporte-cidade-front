@@ -27,6 +27,12 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+
+    // Função para atualizar o usuário globalmente (ex: após editar perfil)
+    const updateUser = (updatedFields: Partial<User>) => {
+        setUser((prev) => prev ? { ...prev, ...updatedFields } : prev);
+    };
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -149,7 +155,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 login,
                 logout,
                 isAuthenticated: !!user,
-                fetchUser
+                fetchUser,
+                updateUser, // NOVO: permite atualização global do usuário
             }}
         >
             {children}

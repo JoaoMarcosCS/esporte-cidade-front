@@ -52,6 +52,7 @@ const EditarPerfil: React.FC = () => {
   } = useForm({
     resolver: zodResolver(athleteSchema),
   });
+  const { updateUser } = useAuth();
 
   useEffect(() => {
     const fetchAthleteData = async () => {
@@ -111,11 +112,29 @@ const EditarPerfil: React.FC = () => {
         confirmPassword: formData.confirmPassword?.trim() || undefined,
       };
 
-      await api.put(`/athletes/${user?.id}`, payload);
+      const response = await api.put(`/athletes/${user?.id}`, payload);
       toast.success("Perfil atualizado com sucesso!");
       setIsModalOpen(false);
       setIsEditing(false);
-      GoTo("/home-atleta");
+
+      // Atualizar os campos do formulário localmente com os dados retornados
+      const updatedData = response.data;
+      const { address: updatedAddress, ...updatedOther } = updatedData;
+      setValue("name", updatedOther.name);
+      setValue("email", updatedOther.email);
+      setValue("phone", updatedOther.phone);
+      setValue("photo", updatedOther.photo_url || "");
+      setValue("cep", updatedAddress?.cep || "");
+      setValue("street", updatedAddress?.street || "");
+      setValue("neighborhood", updatedAddress?.neighborhood || "");
+      setValue("city", updatedAddress?.city || "");
+      // Atualiza o usuário globalmente para refletir em todas as páginas/HeaderBasic
+      updateUser({
+        name: updatedOther.name,
+        email: updatedOther.email,
+        phone: updatedOther.phone,
+        photo_url: updatedOther.photo_url,
+      });
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
       toast.error("Erro ao atualizar perfil.");
