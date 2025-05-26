@@ -11,7 +11,8 @@ interface HeaderBasicProps {
   logo?: "show" | "hide";
   user?: {
     name: string;
-    profilePicture: string;
+    profilePicture?: string;
+    photo_url?: string;
   };
 }
 
@@ -69,7 +70,13 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
         <div className="relative">
            {logo === "show" && (
           <img
-            src={userData?.profilePicture || user?.profilePicture || "https://via.placeholder.com/40"}
+            src={
+              user?.photo_url ||
+              user?.profilePicture ||
+              userData?.photo_url ||
+              userData?.profilePicture ||
+              "https://via.placeholder.com/40"
+            }
             alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
             className="h-10 w-10 border border-black cursor-pointer rounded-full"
             onClick={handleMenuToggle}

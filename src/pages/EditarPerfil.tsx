@@ -62,18 +62,18 @@ const EditarPerfil: React.FC = () => {
 
         console.log("Dados recebidos do servidor:", athleteData); // Debug log
 
-        const { password, confirmPassword, ...otherData } = athleteData;
+        const { password, confirmPassword, address, ...otherData } = athleteData;
 
-        // Mapear os campos retornados pela API para os campos do formulário
+        // Mapear os campos retornados pela API para os campos do formulário, incluindo endereço
         const fieldMapping = {
           name: otherData.name,
           email: otherData.email,
           phone: otherData.phone,
           photo: otherData.photo_url || "", // Mapeando photo_url para o campo photo
-          cep: otherData.cep || "", // Adicione um valor padrão se o campo não existir
-          street: otherData.street || "",
-          neighborhood: otherData.neighborhood || "",
-          city: otherData.city || "",
+          cep: address?.cep || "",
+          street: address?.street || "",
+          neighborhood: address?.neighborhood || "",
+          city: address?.city || "",
           cpf: otherData.cpf || "",
           rg: otherData.rg || "",
         };
@@ -166,7 +166,7 @@ const EditarPerfil: React.FC = () => {
                   const formData = new FormData();
                   formData.append("profile", file);
                   try {
-                    const response = await fetch("http://localhost:3002/uploads/upload", {
+                    const response = await fetch("http://localhost:3002/api/uploads/upload", {
                       method: "POST",
                       body: formData,
                     });
