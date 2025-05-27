@@ -90,13 +90,13 @@ export const CadastroModalidades: React.FC = () => {
     return (
         <section className="bg-[#F4F6FF] pb-20">
             <HeaderBasic
-                type="visitante"
-                links={[
-                    { label: "Home", path: "/home-gestor" },
-                    { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                    { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
-                ]}
-            />
+                        type="visitante"
+                        links={[
+                            { label: "Home", path: "/home-gestor" },
+                            { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
+                            { label: "Professores", path: "/home-gestor/professores" },
+                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
+            ]} />
             <FooterMobile />
 
             <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">

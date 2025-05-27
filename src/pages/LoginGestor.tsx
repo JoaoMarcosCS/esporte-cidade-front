@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -9,11 +9,20 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { loginManager } from "../services/auth";
 import { userSchema } from "../lib/schemaLoginUser";
 import { useAuth } from "../contexts/AuthContext";
+import { useAuthStatus } from "../hooks/useAuth";
 
 export const LoginGestor: React.FC = () => {
     const { login } = useAuth();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const GoTo = useNavigateTo();
+
+    // Redireciona automaticamente se já estiver autenticado
+    const { isAuthenticated, isLoading } = useAuthStatus("3");
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            GoTo("/home-gestor");
+        }
+    }, [isAuthenticated, isLoading, GoTo]);
 
     const {
         register,

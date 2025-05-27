@@ -59,6 +59,16 @@ const AgendaSemanal: React.FC = () => {
           // Log para debug
           console.log('Resposta da API:', response.data);
           
+          const dayMap: Record<string, string> = {
+            'seg': 'Segunda',
+            'ter': 'Terça',
+            'qua': 'Quarta',
+            'qui': 'Quinta',
+            'sex': 'Sexta',
+            'sab': 'Sábado',
+            'dom': 'Domingo'
+          };
+
           const formattedNotes = response.data.map((enrollment: Enrollment) => {
             // Convert days_of_week string to array if it's not already
             const days = typeof enrollment.modality.days_of_week === 'string'
@@ -67,10 +77,16 @@ const AgendaSemanal: React.FC = () => {
             
             // Create notes for each day
             return days.map((day: string) => ({
-              day,
+              day: dayMap[day.toLowerCase()] || day,
               modality: enrollment.modality.name,
               schedule: enrollment.modality.start_time,
-              address: enrollment.modality.class_locations || 'Local não especificado'
+              address: enrollment.modality.class_locations
+                ? (Array.isArray(enrollment.modality.class_locations)
+                    ? enrollment.modality.class_locations[0]
+                    : typeof enrollment.modality.class_locations === "string"
+                      ? enrollment.modality.class_locations.split(",")[0].trim()
+                      : 'Local não especificado')
+                : 'Local não especificado'
             }));
           }).flat();
 

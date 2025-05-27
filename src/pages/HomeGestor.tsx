@@ -37,7 +37,7 @@ const HomeGestor = () => {
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
                             { label: "Professores", path: "/home-gestor/professores" },
-                            { label: "modalidades", path: "/home-gestor/cadastrar-modalidade" },
+                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
                         ]} />
 
                     <div className="  ml-20 mt-32 pb-6">
