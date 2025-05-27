@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modality } from "@/types/Modality";
-import {getProfessores } from "../services/professorService"; // você precisa ter isso
+import {getProfessores } from "../services/professorService"; 
 import { assignTeacherToModality} from "../services/modalityService"
 interface AssignTeacherFormProps {
   modality: Modality;

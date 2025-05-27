@@ -22,15 +22,13 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
     setModalidades
 }) => {
 
-    console.log('Modalidade data:', JSON.stringify(modalidades, null, 2));
-    console.log("aqui: " + modalidades)
 
     return (
 
         <div>
 
 
-            <div className="border border-black md:pb-36 bg-[#D9D9D9]">
+            <div className=" md:pb-10 bg-[#D9D9D9]">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-left min-w-[600px]">
                         <thead>
@@ -45,8 +43,6 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
                         </thead>
                         <tbody>
                             {modalidades.map((modalidade) => {
-                                console.log("socorro")
-                                console.log("Teachers da modalidade", modalidade.name, modalidade.teachers);
                                 return (
                                     <tr key={modalidade.id} className="border-t border-gray-300">
                                         <td className="px-4 py-3">{modalidade.name}</td>

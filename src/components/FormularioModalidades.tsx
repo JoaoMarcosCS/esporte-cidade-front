@@ -1,28 +1,28 @@
 import React, { useEffect, useState, forwardRef } from "react";
-import { Modality } from "@/types/Modality";
+import { Modality } from "../types/Modality";
 import Textbox from "./Textbox";
 import { Button } from "./ui/button";
-import { createModality } from "../services/modalityService"; // ajuste o caminho se necessário
-
+import { createModality } from "../services/modalityService";
+import { getProfessores } from "../services/professorService";
 interface Props {
-  modalityEdicao?: Modality | null; // Para edição
+  modalityEdicao?: Modality | null;
   onCancelEdit: () => void;
   onSuccess?: () => void;
-  // Callback opcional após sucesso
 }
 
 type ModalityFormData = {
   name: string;
   description: string;
-  days_of_week: string[]; // Array in form state
+  days_of_week: string[];
   start_time: string;
   end_time: string;
   class_locations: string;
+  teacherId: number | undefined;
 };
 
 interface FormularioModalidadesProps {
   modalityEdicao: Modality | null;
-  onSubmit: (data: { name: string; description: string; days_of_week: string; start_time: string; end_time: string; class_locations: string; }) => Promise<void>;
+  onSubmit: (data: { name: string; description: string; days_of_week: string; start_time: string; end_time: string; class_locations: string; teacherId?: Number | undefined; }) => Promise<void>;
   onCancelEdit: () => void;
   onSucess?: () => void;
 }
@@ -38,10 +38,27 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
       end_time: "",
       days_of_week: [],
       class_locations: "",
+      teacherId: undefined,
 
     });
+
+    const [teachers, setTeachers] = useState<any[]>([]);
+    const [selectedTeacher, setSelectedTeacher] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+      const fetchTeachers = async () => {
+        try {
+          const data = await getProfessores();
+          setTeachers(data);
+        } catch (err) {
+          setError("Erro ao carregar professores");
+        }
+      };
+
+      fetchTeachers();
+    }, []);
 
     useEffect(() => {
       if (modalityEdicao) {
@@ -49,11 +66,12 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
           name: modalityEdicao.name,
           description: modalityEdicao.description,
           days_of_week: modalityEdicao.days_of_week
-            ? modalityEdicao.days_of_week.split(",").map((d:any) => d.trim())
+            ? modalityEdicao.days_of_week.split(",").map((d: any) => d.trim())
             : [],
           start_time: modalityEdicao.start_time,
           end_time: modalityEdicao.end_time,
           class_locations: modalityEdicao.class_locations,
+          teacherId: selectedTeacher || undefined
         });
       }
     }, [modalityEdicao]);
@@ -65,6 +83,8 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
         [name]: value,
       }));
     };
+
+
 
     const handleCheckboxChange = (day: string) => {
       setFormData(prev => {
@@ -88,6 +108,7 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
       try {
         await onSubmit({
           ...formData,
+          teacherId: selectedTeacher || undefined,
           days_of_week: formData.days_of_week.join(",")
         })
         console.log(formData);
@@ -184,7 +205,28 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
               required
               disabled={loading}
             />
+
+            {!modalityEdicao && (
+              <div>
+                <label className="block mb-2 font-medium">inscrever professor (opcional)</label>
+                <select
+                  className="bg-[#d9d9d9]  block w-full p-3 rounded-sm border border-black"
+                  value={selectedTeacher ?? ""}
+                  onChange={(e) => setSelectedTeacher(Number(e.target.value))}
+                >
+                  <option value="" disabled>Selecione</option>
+                  {teachers.map((teacher) => (
+                    <option key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
           </div>
+
+
         </div>
 
         <div className="mt-6 flex gap-4">
@@ -204,6 +246,8 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
             Cancelar
           </button>
         </div>
+
+
       </form>
     );
   }

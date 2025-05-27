@@ -114,10 +114,22 @@ export const CadastroModalidades: React.FC = () => {
                 <main className="space-y-8 mt-6">
                     <section>
                         <div className="flex justify-evenly">
-
                             <h2 className="font-bold text-3xl mb-10">Modalidades Cadastradas</h2>
+                        </div>
+
+                        <div className="flex flex-col  border border-black md:pb-20 bg-[#D9D9D9]">
+                            <ModalidadesCadastradas
+                                modalidades={modalidades}
+                                onEdit={handleEditClick}
+                                onDelete={handleDeleteClick}
+                                modalidadeEdicao={modalidadeSelecionada}
+                                setModalidades={setModalidades}
+                                onAssignTeacher={handleAssignTeacherClick}
+                            />
+
+
                             <button
-                                className="h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
+                                className="self-end mr-12 h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
                                 onClick={() => {
                                     setModalidadeSelecionada(null);
                                     setShowModal(true);
@@ -125,29 +137,16 @@ export const CadastroModalidades: React.FC = () => {
                             >
                                 Cadastrar Nova Modalidade
                             </button>
-
-
                         </div>
-
-                        <ModalidadesCadastradas
-                            modalidades={modalidades}
-                            onEdit={handleEditClick}
-                            onDelete={handleDeleteClick}
-                            modalidadeEdicao={modalidadeSelecionada}
-                            setModalidades={setModalidades}
-                            onAssignTeacher={handleAssignTeacherClick}
-                        />
-
-
-
                     </section>
 
-
-                    <ConfirmModal
-                        isOpen={modalAberto}
-                        onClose={() => setModalAberto(false)}
-                        onConfirm={confirmarExclusao}
-                    />
+                    <div className="flex justify-end">
+                        <ConfirmModal
+                            isOpen={modalAberto}
+                            onClose={() => setModalAberto(false)}
+                            onConfirm={confirmarExclusao}
+                        />
+                    </div>
 
                     <section className="flex justify-end">
 

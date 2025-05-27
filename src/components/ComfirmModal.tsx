@@ -14,7 +14,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-     <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex items-center justify-center overflow-hidden">
+     <div className="fixed z-50 top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex items-center justify-center overflow-hidden">
       <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
         <h2 className="text-lg font-bold mb-4">Deseja excluir esta modalidade?</h2>
         <div className="flex justify-end gap-4">
