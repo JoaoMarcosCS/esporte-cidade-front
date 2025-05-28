@@ -145,6 +145,7 @@ export const CadastroModalidades: React.FC = () => {
                             isOpen={modalAberto}
                             onClose={() => setModalAberto(false)}
                             onConfirm={confirmarExclusao}
+                             message="Tem certeza que deseja excluir esta modalidade?"
                         />
                     </div>
 
