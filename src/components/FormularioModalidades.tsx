@@ -20,6 +20,8 @@ type ModalityFormData = {
   teacherId: number | undefined;
 };
 
+
+
 interface FormularioModalidadesProps {
   modalityEdicao: Modality | null;
   onSubmit: (data: { name: string; description: string; days_of_week: string; start_time: string; end_time: string; class_locations: string; teacherId?: Number | undefined; }) => Promise<void>;
@@ -27,7 +29,16 @@ interface FormularioModalidadesProps {
   onSucess?: () => void;
 }
 
-const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+const diasSemana = [
+  { nome: "Segunda", abreviado: "seg" },
+  { nome: "Terça", abreviado: "ter" },
+  { nome: "Quarta", abreviado: "qua" },
+  { nome: "Quinta", abreviado: "qui" },
+  { nome: "Sexta", abreviado: "sex" },
+  { nome: "Sábado", abreviado: "sab" },
+  { nome: "Domingo", abreviado: "dom" },
+];
+
 
 const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesProps>(
   ({ modalityEdicao, onSubmit, onCancelEdit, onSucess }, ref) => {
@@ -86,11 +97,11 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
 
 
 
-    const handleCheckboxChange = (day: string) => {
+    const handleCheckboxChange = (abreviado: string) => {
       setFormData(prev => {
-        const updatedDays = prev.days_of_week.includes(day)
-          ? prev.days_of_week.filter(d => d !== day)
-          : [...prev.days_of_week, day];
+        const updatedDays = prev.days_of_week.includes(abreviado)
+          ? prev.days_of_week.filter(d => d !== abreviado)
+          : [...prev.days_of_week, abreviado];
 
         return {
           ...prev,
@@ -98,7 +109,6 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
         };
       });
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -180,16 +190,16 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
               <label className="block text-sm font-semibold">Dias da Semana</label>
               <div className="bg-[#d9d9d9]  block w-full p-3 rounded-sm border border-black">
                 <div className="grid grid-cols-1 gap-2 pb-[2px]">
-                  {diasSemana.map(day => (
-                    <label key={day} className="flex items-center gap-2 text-sm">
+                  {diasSemana.map(({ nome, abreviado }) => (
+                    <label key={abreviado} className="flex items-center gap-2 text-sm">
                       <input
                         type="checkbox"
-                        checked={formData.days_of_week.includes(day)}
-                        onChange={() => handleCheckboxChange(day)}
+                        checked={formData.days_of_week.includes(abreviado)}
+                        onChange={() => handleCheckboxChange(abreviado)}
                         disabled={loading}
                         className="accent-blue-600"
                       />
-                      {day}
+                      {nome}
                     </label>
                   ))}
                 </div>
@@ -208,13 +218,13 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
 
             {!modalityEdicao && (
               <div>
-                <label className="block mb-2 font-medium">inscrever professor (opcional)</label>
+                <label className="block mb-2 font-medium">vincular professor (opcional)</label>
                 <select
                   className="bg-[#d9d9d9]  block w-full p-3 rounded-sm border border-black"
                   value={selectedTeacher ?? ""}
                   onChange={(e) => setSelectedTeacher(Number(e.target.value))}
                 >
-                  <option value="" disabled>Selecione</option>
+                  <option value="">Não vincular</option>
                   {teachers.map((teacher) => (
                     <option key={teacher.id} value={teacher.id}>
                       {teacher.name}

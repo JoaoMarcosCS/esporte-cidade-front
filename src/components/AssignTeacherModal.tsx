@@ -33,7 +33,7 @@ const AssignTeacherForm: React.FC<AssignTeacherFormProps> = ({ modality, onCance
 
     setLoading(true);
     try {
-      await assignTeacherToModality(modality.id, selectedTeacher);
+      await assignTeacherToModality(modality.id, { teacherId: selectedTeacher });
       onSubmitSuccess();
     } catch (err) {
       setError("Erro ao atribuir professor.");
@@ -50,7 +50,7 @@ const AssignTeacherForm: React.FC<AssignTeacherFormProps> = ({ modality, onCance
 
       <label className="block mb-2 font-medium">Selecione o professor:</label>
       <select
-        className="w-full border rounded px-3 py-2 mb-4"
+        className="bg-[#d9d9d9] block w-full p-3 rounded-sm border border-black px-3 py-2 mb-4"
         value={selectedTeacher ?? ""}
         onChange={(e) => setSelectedTeacher(Number(e.target.value))}
       >

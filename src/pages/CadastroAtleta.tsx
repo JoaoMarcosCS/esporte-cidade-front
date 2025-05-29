@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import MultipartForm from "../components/MultipartForm";
-import { Athlete } from "@/types/Athlete";
+import { Athlete } from "../types/Athlete";
 import axios from "axios";
 import { useFileUpload } from "../hooks/useFileConvert";
 import { Navigate } from "react-router-dom";
 import useNavigateTo from "../hooks/useNavigateTo";
 import { useNavigate } from 'react-router-dom';
+import api from "../services/api";
 
 
 const CadastroAtleta: React.FC = () => {
@@ -52,23 +53,31 @@ const CadastroAtleta: React.FC = () => {
 
   const [isValidating, setIsValidating] = useState(false);
   const [cpfValidationError, setCpfValidationError] = useState("");
-
+  const [emailValidationError, setEmailValidationError] = useState("");
   //controlador do formulario
   const [currentStep, setCurrentStep] = useState(1);
 
-  const handleNext = async () => {
-    setIsValidating(true);
-    try {
+const handleNext = async () => {
+  setIsValidating(true);
+
+  try {
+    // Valida apenas os campos do step atual
+    if (currentStep === 1) {
       const isCpfValid = await validateCpf(athlete.cpf);
-      if (!isCpfValid) {
-        setIsValidating(false);
-        return;
-      }
-      setCurrentStep((prev) => prev + 1);
-    } finally {
-      setIsValidating(false);
+      if (!isCpfValid) return;
     }
-  };
+
+    if (currentStep === 3) {
+      const isEmailValid = await validateEmail(athlete.email);
+      if (!isEmailValid) return;
+    }
+
+    // Avança para o próximo step
+    setCurrentStep((prev) => prev + 1);
+  } finally {
+    setIsValidating(false);
+  }
+};
 
   const handlePrevious = () => {
     if (currentStep > 1) {
@@ -218,7 +227,7 @@ const CadastroAtleta: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3002/api/validate-cpf", {
+      const response = await api.post("/validation/cpf", {
         cpf: cleanedCpf
       });
 
@@ -242,6 +251,44 @@ const CadastroAtleta: React.FC = () => {
         }
       } else {
         setCpfValidationError("Erro desconhecido ao validar CPF");
+      }
+      return false;
+    }
+  };
+
+  //validação de email
+  const validateEmail = async (email: string): Promise<boolean> => {
+    if (!email) {
+      setEmailValidationError("Email é obrigatório");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailValidationError("Formato de email inválido");
+      return false;
+    }
+
+    try {
+      const response = await api.post("/validation/email", { email });
+
+      if (response.data.valid) {
+        setEmailValidationError("");
+        return true;
+      } else {
+        setEmailValidationError(response.data.message || "Email inválido");
+        return false;
+      }
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          setEmailValidationError(error.response.data.message || "Erro na validação do email");
+        } else {
+          setEmailValidationError("Erro de conexão. Verifique sua internet.");
+        }
+      } else {
+        setEmailValidationError("Erro desconhecido ao validar email");
       }
       return false;
     }
@@ -478,10 +525,14 @@ const CadastroAtleta: React.FC = () => {
               name="email"
               value={athlete.email}
               onChange={handleChange}
-              className="px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+              onBlur={() => validateEmail(athlete.email)}
+              className={`px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border rounded-sm ${emailValidationError ? "border-red-500" : "border-black"}`}
               placeholder="Insira seu e-mail"
+              disabled={isValidating}
             />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            {emailValidationError && (
+              <p className="text-red-600 text-sm mt-1">{emailValidationError}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="font-semibold block text-sm">Senha</label>

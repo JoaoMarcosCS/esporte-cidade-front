@@ -11,41 +11,62 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar"
+import { text } from 'stream/consumers';
+import { useState } from 'react';
+import useNavigateTo from '../../hooks/useNavigateTo';
+import { useAuth } from '../../contexts/AuthContext';
+import { useUser } from '../../hooks/useAuth';
+import { useDecodedToken } from '../../hooks/useDecodedToken';
 
-const iconItems = [
-  { title: "Sair", url: "/", icon: LogOut },
-  { title: "Calendario", url: "#", icon: Calendar },
-];
-
-const navLinksProfessor = [
-  { href: "/home-professor", text: "Home" },
-  { href: "/home-professor/chamada", text: "Chamada" },
-  { href: "/home-professor/lista-atletas", text: "Atletas" },
-];
-
-
-const navLinksAtleta = [
-  { href: "/home-atleta", text: "Home" },
-  { href: "/home-atleta/faltas-atleta", text: "Faltas" },
-  { href: "/home-atleta/modalidade", text: "Modalidades" },
-];
-
-
-const navLinksGestor = [
-  { href: "/home-gestor", text: "Home" },
-  { href: "/home-gestor/cadastrar-professor", text: "professores" },
-  { href: "/home-gestor/cadastrar-comunicado", text: "comunicados" },
-];
 
 interface SidebarProps {
   type: "professor" | "atleta" | "gestor";
 }
 
-export const AppSidebar: React.FC<SidebarProps> = ({type}) => {
-  
+export const AppSidebar: React.FC<SidebarProps> = ({ type }) => {
+  const GoTo = useNavigateTo();
+  const { logout } = useAuth();
+  const userData = useUser();
+  const decodedToken = useDecodedToken();
 
-  const navLinks = type === "professor" ?  navLinksProfessor : type === "atleta" ? navLinksAtleta : navLinksGestor;
-  
+  const handleLogout = () => {
+    logout();
+    GoTo("/")
+  };
+
+
+  //links
+  const iconItems = [
+    { title: "Sair", icon: LogOut, action: handleLogout },
+    { title: "Calendario", url: "#", icon: Calendar },
+  ];
+  const navLinksProfessor = [
+    { href: "/home-professor", text: "Home" },
+    { href: "/home-professor/chamada", text: "Chamada" },
+    { href: "/home-professor/lista-atletas", text: "Atletas" },
+    { href: "/home-professor/aprovar-inscricoes", text: "Aprovar inscrições" },
+  ];
+
+
+  const navLinksAtleta = [
+    { href: "/home-atleta", text: "Home" },
+    { href: "/home-atleta/faltas-atleta", text: "Faltas" },
+    { href: "/home-atleta/modalidade", text: "Modalidades" },
+  ];
+
+
+  const navLinksGestor = [
+    { href: "/home-gestor", text: "Home" },
+    { href: "/home-gestor/cadastrar-professor", text: "professores" },
+    { href: "/home-gestor/cadastrar-comunicado", text: "comunicados" },
+    { href: "/home-gestor/cadastrar-modalidade", text: "modalidades" }
+  ];
+
+
+
+
+  const navLinks = type === "professor" ? navLinksProfessor : type === "atleta" ? navLinksAtleta : navLinksGestor;
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -68,10 +89,23 @@ export const AppSidebar: React.FC<SidebarProps> = ({type}) => {
               {iconItems.map((item, index) => (
                 <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center space-x-2 text-gray-700 hover:text-orange-500">
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.title}</span>
-                    </a>
+                    {item.action ? (
+                      <button
+                        onClick={item.action}
+                        className="flex items-center space-x-2 text-gray-700 hover:text-orange-500 w-full text-left"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </button>
+                    ) : (
+                      <a
+                        href={item.url}
+                        className="flex items-center space-x-2 text-gray-700 hover:text-orange-500"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </a>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -81,8 +115,8 @@ export const AppSidebar: React.FC<SidebarProps> = ({type}) => {
         <SidebarGroup>
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
-           
-           
+
+
             <SidebarMenu>
               {navLinks.map((link, index) => (
                 <SidebarMenuItem key={index}>
