@@ -77,7 +77,7 @@ export const CalendarioCompromissos: React.FC<EditProps> = ({ type }) => {
         <div className="mr-6">
           <div className="flex flex-col h-[600px] mx-auto">
             <h2 className="text-lg font-semibold mb-1">Calendário de compromissos</h2>
-            <div className="border rounded-md border-black sm:w-[400px] md:w-[600px] h-full bg-[#d9d9d9] p-4 shadow">
+            <div className="border rounded-md border-black sm:w-[400px] md:w-[400px] h-full bg-[#d9d9d9] p-4 shadow">
               <div>
                 {PagedComunicados.map((comunicado, index) => (
                   <p key={index} className="flex flex-row space-x-1 mb-2 text-gray-700">

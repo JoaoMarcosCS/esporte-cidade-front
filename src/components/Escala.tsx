@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { getModalidades } from '../services/modality';
 import {
@@ -9,10 +8,19 @@ import {
   SelectValue
 } from "./ui/select";
 import { Button } from "./ui/button";
+import { EscalaMobile } from './EscalaMobile';
 
 const diasSemana = [
   'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
 ];
+
+interface Aula {
+  day: string;
+  modality: string;
+  schedule: string;
+  location: string;
+  teacher: string;
+}
 interface Aula {
   day: string;
   modality: string;
@@ -23,6 +31,7 @@ interface Aula {
 
 export const Escala = () => {
   const [aulas, setAulas] = useState<Aula[]>([]);
+  const [activeDay, setActiveDay] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedModality, setSelectedModality] = useState<string>('');
   const [selectedTeacher, setSelectedTeacher] = useState<string>('');
@@ -99,75 +108,88 @@ export const Escala = () => {
   const maxAulasPorDia = Math.max(...diasSemana.map(dia => aulasPorDia[dia].length));
 
   return (
-    <div className="mr-16 lg:mr-6">
-      <div className="flex gap-4 mb-4">
-        <div className="flex-1">
-          <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filtrar por modalidade" />
-            </SelectTrigger>
-            <SelectContent>
-              {selectModalities.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex-1">
-          <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filtrar por professor" />
-            </SelectTrigger>
-            <SelectContent>
-              {selectTeachers.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setSelectedModality('');
-            setSelectedTeacher('');
-          }}
-        >
-          Limpar filtros
-        </Button>
-      </div>
-      <div className="w-full max-w-6xl mx-auto">
+    <>
+      {/* Versão desktop */}
+      <div className="hidden md:block">
         <h2 className="text-lg font-semibold mb-1">Escala Semanal</h2>
-        <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
-          <div className="grid grid-cols-6 gap-2 lg:gap-6 font-semibold mb-2">
-            {diasSemana.map(dia => (
-              <p key={dia} className="border-b-2 border-black pb-2">{dia}</p>
-            ))}
-          </div>
-          {/* Renderiza as linhas da grade */}
-          {Array.from({ length: maxAulasPorDia }).map((_, idx) => (
-            <div key={idx} className="grid grid-cols-6 gap-2 lg:gap-10 py-2 border-t border-gray-200">
-              {diasSemana.map(dia => {
-                const aula = aulasPorDia[dia][idx];
-                return (
-                  <div key={dia} className="space-y-1">
-                    {aula ? (
-                      <>
-                        <div><strong>{aula.modality}</strong> - {aula.schedule}</div>
-                        <div className="text-xs text-gray-600">Local: {aula.location}</div>
-                        <div className="text-xs text-gray-600">Professor: {aula.teacher}</div>
-                      </>
-                    ) : ""}
-                  </div>
-                );
-              })}
+        <div className="mr-16 lg:mr-6">
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1">
+              <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filtrar por modalidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectModalities.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ))}
+            <div className="flex-1">
+              <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filtrar por professor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectTeachers.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <button
+              className="bg-[#EB8317] p-2 border border-black rounded-sm hover:bg-[#EB8317]/75"
+              onClick={() => {
+                setSelectedModality('');
+                setSelectedTeacher('');
+              }}
+            >
+              Limpar filtros
+            </button>
+          </div>
+          <div className="w-full max-w-6xl mx-auto">
+            
+            <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
+              <div className="grid grid-cols-6 gap-2 lg:gap-6 font-semibold mb-2">
+                {diasSemana.map(dia => (
+                  <p key={dia} className="border-b-2 border-black pb-2">{dia}</p>
+                ))}
+              </div>
+              {/* Renderiza as linhas da grade */}
+              {Array.from({ length: maxAulasPorDia }).map((_, idx) => (
+                <div key={idx} className="grid grid-cols-6 gap-2 lg:gap-10 py-2 border-t border-gray-200">
+                  {diasSemana.map(dia => {
+                    const aula = aulasPorDia[dia][idx];
+                    return (
+                      <div key={dia} className="space-y-1">
+                        {aula ? (
+                          <div className="flex flex-col gap-1">
+                            <div className="font-medium"><strong>{aula.modality}</strong></div>
+                            <div className="text-sm text-gray-600">{aula.schedule}</div>
+                            <div className="text-xs text-gray-600">Local: {aula.location}</div>
+                            <div className="text-xs text-gray-600">Professor: {aula.teacher}</div>
+                          </div>
+                        ) : ""}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+      {/* Versão mobile */}
+      <div className="block md:hidden">
+        <EscalaMobile />
+      </div>
+      
+    </>
   );
 };
+

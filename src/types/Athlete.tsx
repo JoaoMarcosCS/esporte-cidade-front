@@ -1,4 +1,5 @@
 export interface Athlete {
+    id?: string;
     name: string;
     cpf: string;
     rg: string;
@@ -15,9 +16,9 @@ export interface Athlete {
     motherPhoneNumber: string;
     fatherPhoneNumber: string;
     bloodType: string;
-    frontIdPhotoUrl:File | null;
-    backIdPhotoUrl: File | null;
-    athletePhotoUrl: File | null;
+    frontIdPhotoUrl: string | null;
+    backIdPhotoUrl: string | null;
+    athletePhotoUrl: string | null;
     foodAllergies: string;
     estado: string,
     cidade: string,

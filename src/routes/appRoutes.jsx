@@ -24,6 +24,8 @@ import {
   Modalidade,
   AprovarInscricoesProfessor,
   CadastroModalidades,
+  GestaoDeAtletas,
+  CadastrarAtletasGestor
 } from "../pages";
 
 const router = createBrowserRouter(
@@ -172,6 +174,15 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           ),
         },
+        {
+          path: "/home-Gestor/atletas",
+          element: (
+            <ProtectedRoute requiredRole="3">
+              <GestaoDeAtletas />
+            </ProtectedRoute>
+          ),
+        },
+        
       ],
     },
   ],

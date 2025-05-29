@@ -9,7 +9,26 @@ import { useNavigate } from 'react-router-dom';
 
 
 const CadastroAtleta: React.FC = () => {
-  const { convertFile } = useFileUpload();
+  // Função para upload de imagem
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('profile', file);
+    try {
+      const response = await fetch('http://localhost:3002/api/uploads/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.profile) {
+        setAthlete(prev => ({ ...prev, [field]: data.profile }));
+      }
+    } catch (err) {
+      console.error('Erro ao fazer upload da imagem:', err);
+    }
+  };
+
   const GoTo = useNavigateTo();
   const [athlete, setAthlete] = useState<Athlete>({
     name: "",
@@ -152,12 +171,26 @@ const CadastroAtleta: React.FC = () => {
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, files } = e.target as HTMLInputElement;
-    //formatação de valores
-    if (files && files.length > 0) {
-      setAthlete((prevState) => ({
-        ...prevState,
-        [name]: files[0],
-      }));
+    // Upload images immediately and store URL
+    if (files && files.length > 0 && (name === "athletePhotoUrl" || name === "frontIdPhotoUrl" || name === "backIdPhotoUrl")) {
+      const file = files[0];
+      const formData = new FormData();
+      formData.append("profile", file);
+      try {
+        const response = await fetch("http://localhost:3002/api/uploads/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        if (data.profile) {
+          setAthlete((prevState) => ({
+            ...prevState,
+            [name]: data.profile,
+          }));
+        }
+      } catch (err) {
+        console.error("Erro ao fazer upload da imagem.", err);
+      }
     } else {
       const rawValue = value.replace(/\D/g, ""); // só números
       const formattedValue = formatInputValue(name, value);
@@ -249,9 +282,9 @@ const CadastroAtleta: React.FC = () => {
 
   const navigate = useNavigate();
   const handleSubmit = async () => {
-    const frontBase64 = await convertFile(athlete.frontIdPhotoUrl);
-    const backBase64 = await convertFile(athlete.backIdPhotoUrl);
-    const photoBase64 = await convertFile(athlete.athletePhotoUrl);
+    //const frontBase64 = await convertFile(athlete.frontIdPhotoUrl);
+    //const backBase64 = await convertFile(athlete.backIdPhotoUrl);
+    //const photoBase64 = await convertFile(athlete.athletePhotoUrl);
 
     const cleanedAthlete = {
       ...athlete,
@@ -261,13 +294,12 @@ const CadastroAtleta: React.FC = () => {
       fatherPhoneNumber: athlete.fatherPhoneNumber?.replace(/\D/g, ""),
       motherPhoneNumber: athlete.motherPhoneNumber?.replace(/\D/g, ""),
       phoneNumber: athlete.phoneNumber?.replace(/\D/g, ""),
-
-      athletePhotoUrl: photoBase64 || undefined,
-      frontIdPhotoUrl: frontBase64 || undefined,
-      backIdPhotoUrl: backBase64 || undefined,
-
-
+      // Guarantee only URLs are sent
+      athletePhotoUrl: typeof athlete.athletePhotoUrl === 'string' ? athlete.athletePhotoUrl : null,
+      frontIdPhotoUrl: typeof athlete.frontIdPhotoUrl === 'string' ? athlete.frontIdPhotoUrl : null,
+      backIdPhotoUrl: typeof athlete.backIdPhotoUrl === 'string' ? athlete.backIdPhotoUrl : null,
     };
+
 
     console.log("Athlete Data (clean):", cleanedAthlete);
 
@@ -615,7 +647,7 @@ const CadastroAtleta: React.FC = () => {
             <input
               type="file"
               name="frontIdPhotoUrl"
-              onChange={handleChange}
+              onChange={e => handleImageUpload(e, 'frontIdPhotoUrl')}
               className="mt-1 block w-full"
             />
           </div>
@@ -624,7 +656,7 @@ const CadastroAtleta: React.FC = () => {
             <input
               type="file"
               name="backIdPhotoUrl"
-              onChange={handleChange}
+              onChange={e => handleImageUpload(e, 'backIdPhotoUrl')}
               className="mt-1 block w-full"
             />
           </div>
@@ -633,7 +665,7 @@ const CadastroAtleta: React.FC = () => {
             <input
               type="file"
               name="athletePhotoUrl"
-              onChange={handleChange}
+              onChange={e => handleImageUpload(e, 'athletePhotoUrl')}
               className="mt-1 block w-full"
             />
           </div>

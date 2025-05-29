@@ -1,0 +1,184 @@
+import React, { useState, useEffect } from "react";
+import { getModalidades } from '../services/modality';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "./ui/select";
+import { Button } from "./ui/button";
+
+const diasSemana = [
+  'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
+];
+
+interface Aula {
+  day: string;
+  modality: string;
+  schedule: string;
+  location: string;
+  teacher: string;
+}
+
+export const EscalaMobile = () => {
+  const [aulas, setAulas] = useState<Aula[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedModality, setSelectedModality] = useState<string>('');
+  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
+  const [activeDay, setActiveDay] = useState<string | null>(null);
+
+  // Extrair listas únicas de modalidades e professores para os selects
+  const uniqueModalities = Array.from(new Set(aulas.map(a => a.modality))).filter(Boolean);
+  const uniqueTeachers = Array.from(new Set(aulas.map(a => a.teacher))).filter(t => t && t !== 'Professor não especificado');
+
+  // Adicionar opção padrão para cada select
+  const selectModalities = [{ value: 'all', label: 'Todas as modalidades' }, ...uniqueModalities.map(mod => ({ value: mod, label: mod }))];
+  const selectTeachers = [{ value: 'all', label: 'Todos os professores' }, ...uniqueTeachers.map(teacher => ({ value: teacher, label: teacher }))];
+
+  // Filtrar aulas baseado nos seletores
+  const filteredAulas = aulas.filter(aula => {
+    const modalityMatch = !selectedModality || aula.modality === selectedModality;
+    const teacherMatch = !selectedTeacher || aula.teacher === selectedTeacher;
+    return modalityMatch && teacherMatch;
+  });
+
+  // Agrupar aulas filtradas por dia
+  const aulasPorDia: { [key: string]: Aula[] } = {};
+  diasSemana.forEach(dia => {
+    aulasPorDia[dia] = filteredAulas.filter(aula => aula.day === dia);
+  });
+
+  useEffect(() => {
+    const fetchModalidades = async () => {
+      try {
+        const dayMap: Record<string, string> = {
+          'seg': 'Segunda',
+          'ter': 'Terça',
+          'qua': 'Quarta',
+          'qui': 'Quinta',
+          'sex': 'Sexta',
+          'sab': 'Sábado',
+          'dom': 'Domingo'
+        };
+        const modalidades = await getModalidades();
+        const formattedAulas: Aula[] = [];
+        modalidades.forEach((mod: any) => {
+          let days = mod.days_of_week;
+          if (typeof days === 'string') {
+            days = days.split(',').map((d: string) => d.trim());
+          }
+          (days || []).forEach((day: string) => {
+            const mappedDay = dayMap[day.toLowerCase()] || day;
+            if (diasSemana.includes(mappedDay)) {
+              formattedAulas.push({
+                day: mappedDay,
+                modality: mod.name,
+                schedule: mod.start_time,
+                location: mod.class_locations?.[0] || '',
+                teacher: mod.teachers?.[0]?.name || 'Professor não especificado'
+              });
+            }
+          });
+        });
+        setAulas(formattedAulas);
+      } catch (error) {
+        setAulas([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchModalidades();
+  }, []);
+
+  if (loading) {
+    return <div className="p-4 text-center">Carregando escala...</div>;
+  }
+
+  return (
+    <div className="sm:w-[400px] mr-10">
+      <div className="flex gap-4 mb-4">
+        <div className="flex-1">
+          <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filtrar por modalidade" />
+            </SelectTrigger>
+            <SelectContent>
+              {selectModalities.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex-1">
+          <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filtrar por professor" />
+            </SelectTrigger>
+            <SelectContent>
+              {selectTeachers.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSelectedModality('');
+            setSelectedTeacher('');
+          }}
+        >
+          Limpar filtros
+        </Button>
+      </div>
+      <div className="w-full max-w-6xl mx-auto">
+        <h2 className="text-lg font-semibold mb-2">Escala Semanal</h2>
+        <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
+          <div className="grid grid-cols-1 gap-2 mb-2">
+            {diasSemana.map(dia => (
+              <div key={dia} className="border-b-2 border-black pb-2">
+                <button
+                  onClick={() => setActiveDay(activeDay === dia ? null : dia)}
+                  className={`w-full text-left p-2 font-semibold transition-colors duration-200 ${
+                    activeDay === dia ? 'bg-[#D9D9D9]' : 'hover:bg-gray-100'
+                  }`}
+                >
+                  {dia}
+                </button>
+                {/* Conteúdo da gaveta */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  activeDay === dia ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="pl-4">
+                    {aulasPorDia[dia].map((aula, idx) => (
+                      <div key={idx} className="border-b border-gray-300 last:border-0">
+                        <div className="p-2 bg-[#D9D9D9] rounded">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-sm font-medium">{aula.schedule}</p>
+                            <p className="text-sm text-gray-600">{aula.modality}</p>
+                            <p className="text-sm text-gray-600">{aula.teacher}</p>
+                            <p className="text-sm text-gray-600">{aula.location}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {aulasPorDia[dia].length === 0 && (
+                      <div className="p-4 bg-[#D9D9D9] rounded">
+                        <p className="text-sm text-gray-600">Sem aulas</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

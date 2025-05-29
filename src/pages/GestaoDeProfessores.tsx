@@ -58,6 +58,7 @@ const GestaoDeProfessor: React.FC = () => {
           { label: "Home", path: "/home-gestor" },
           { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+          { label: "Atletas", path: "/home-gestor/atletas" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
         ]}
       />
