@@ -2,7 +2,7 @@ import  api  from "./api"; // base axios configurado
 
 export const getAllModalities = async () => {
   try {
-    const response = await api.get('/use/modality/all');
+    const response = await api.get('/modality/all');
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao buscar modalidades");
@@ -11,7 +11,7 @@ export const getAllModalities = async () => {
 
 export const getModalityById = async (id: number) => {
   try {
-    const response = await api.get(`/use/modality/single/${id}`);
+    const response = await api.get(`/modality/single/${id}`);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao buscar modalidade");
@@ -20,7 +20,7 @@ export const getModalityById = async (id: number) => {
 
 export const createModality = async (data: any) => {
   try {
-    const response = await api.post('/use/modality/create', data);
+    const response = await api.post('/modality/create', data);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao criar modalidade");
@@ -29,7 +29,7 @@ export const createModality = async (data: any) => {
 
 export const updateModality = async (id: number, data: any) => {
   try {
-    const response = await api.put(`/use/modality/update/${id}`, data);
+    const response = await api.put(`/modality/update/${id}`, data);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao atualizar modalidade");
@@ -38,7 +38,7 @@ export const updateModality = async (id: number, data: any) => {
 
 export const deleteModality = async (id: number) => {
   try {
-    const response = await api.delete(`/use/modality/delete/${id}`);
+    const response = await api.delete(`/modality/delete/${id}`);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao excluir modalidade");
@@ -47,7 +47,7 @@ export const deleteModality = async (id: number) => {
 
 export const  assignTeacherToModality = async (id:number, data:any) =>{
    try {
-    const response = await api.put(`/use/modality/assign-teacher/${id}`, data);
+    const response = await api.put(`/modality/assign-teacher/${id}`, data);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Erro ao atualizar modalidade");
