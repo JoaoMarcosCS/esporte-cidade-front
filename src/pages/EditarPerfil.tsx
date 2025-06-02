@@ -71,10 +71,12 @@ const EditarPerfil: React.FC = () => {
           email: otherData.email,
           phone: otherData.phone,
           photo: otherData.photo_url || "", // Mapeando photo_url para o campo photo
-          cep: address?.cep || "",
           street: address?.street || "",
           neighborhood: address?.neighborhood || "",
           city: address?.city || "",
+          number: address?.number ? address.number.toString() : "",
+          complement: address?.complement || "",
+          references: address?.references || "",
           cpf: otherData.cpf || "",
           rg: otherData.rg || "",
         };
@@ -110,6 +112,13 @@ const EditarPerfil: React.FC = () => {
         ...formData,
         password: formData.password?.trim() || undefined,
         confirmPassword: formData.confirmPassword?.trim() || undefined,
+        estado: formData.estado || formData.state || '',
+        cidade: formData.cidade || formData.city || '',
+        bairro: formData.bairro || formData.neighborhood || '',
+        rua: formData.rua || formData.street || '',
+        numeroDaCasa: formData.numeroDaCasa || formData.number || '',
+        complemento: formData.complemento || formData.complement || '',
+        referencia: formData.referencia || formData.references || '',
       };
 
       const response = await api.put(`/athletes/${user?.id}`, payload);
@@ -286,6 +295,23 @@ const EditarPerfil: React.FC = () => {
               {errors.street && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.street.message as string}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mt-1">Número</label>
+              <input
+                type="text"
+                id="number"
+                {...register("number")}
+                disabled={!isEditing}
+                className={`w-full mt-1 p-2 border border-gray-300 rounded ${
+                  !isEditing ? "bg-gray-100 text-gray-500" : ""
+                }`}
+              />
+              {errors.number && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.number.message as string}
                 </p>
               )}
             </div>

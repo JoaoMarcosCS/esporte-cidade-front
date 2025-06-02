@@ -24,8 +24,44 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
   useEffect(() => {
     if (athlete) {
       console.log('[EDIT] Iniciando edição do atleta:', athlete);
-      setForm({ ...emptyForm, ...athlete, password: "" }); // Limpa o campo senha!
-      setEditMode(false); // Sempre inicia desabilitado ao selecionar atleta
+      // Cast temporário para acessar snake_case
+      const a: any = athlete;
+      const normalized = {
+        ...athlete,
+        fatherName: athlete.fatherName ?? a['father_name'] ?? '',
+        fatherPhoneNumber: formatPhone(athlete.fatherPhoneNumber ?? a['father_phone'] ?? ''),
+        motherName: athlete.motherName ?? a['mother_name'] ?? '',
+        motherPhoneNumber: formatPhone(athlete.motherPhoneNumber ?? a['mother_phone'] ?? ''),
+        bloodType: athlete.bloodType ?? a['blood_type'] ?? '',
+        foodAllergies: athlete.foodAllergies ?? a['allergy'] ?? '',
+        // Fotos: aceita tanto camelCase quanto snake_case
+        athletePhotoUrl: athlete.athletePhotoUrl ?? a['photo_url'] ?? '',
+        frontIdPhotoUrl: athlete.frontIdPhotoUrl ?? a['photo_url_cpf_front'] ?? '',
+        backIdPhotoUrl: athlete.backIdPhotoUrl ?? a['photo_url_cpf_back'] ?? '',
+        // Data: normaliza para yyyy-mm-dd se vier dd/mm/yyyy
+        birthday: (() => {
+          const val = athlete.birthday ?? a['birthday'] ?? '';
+          if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+          if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+            const [day, month, year] = val.split('/');
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          }
+          return val;
+        })(),
+        cpf: formatCPF(athlete.cpf ?? a['cpf'] ?? ''),
+        phone: formatPhone(athlete.phone ?? a['phone'] ?? ''),
+        rg: formatRG(athlete.rg ?? a['rg'] ?? ''),
+        // Endereço: espalha campos do objeto address, se existir
+        estado: a.address?.state ?? '',
+        cidade: a.address?.city ?? '',
+        bairro: a.address?.neighborhood ?? '',
+        rua: a.address?.street ?? '',
+        numeroDaCasa: a.address?.number ? a.address.number.toString() : '',
+        complemento: a.address?.complement ?? '',
+        referencia: a.address?.references ?? '',
+      };
+      setForm({ ...emptyForm, ...normalized, password: "" });
+      setEditMode(false);
     } else {
       setForm(emptyForm);
       setEditMode(false);
@@ -66,9 +102,9 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
     const { name, value } = e.target;
     let formattedValue = value;
     if (name === "cpf") formattedValue = formatCPF(value);
-    if (name === "rg") formattedValue = formatRG(value);
     if (name === "phone" || name === "fatherPhoneNumber" || name === "motherPhoneNumber") formattedValue = formatPhone(value);
-    if (name === "birthday") formattedValue = formatDate(value);
+    if (name === "rg") formattedValue = formatRG(value);
+    // Não formatar birthday, pois agora é type=date
     if (name === "cep") formattedValue = formatCEP(value);
     setForm({ ...form, [name]: formattedValue });
 
@@ -119,17 +155,43 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
     setEmailError("");
     setSuccessMessage("");
     setGenericError("");
-    const payload = {
+    // Converte a data de nascimento para yyyy-mm-dd (ISO)
+    const parseBirthday = (dateStr: string) => {
+      if (!dateStr) return '';
+      // Se já estiver no formato yyyy-mm-dd, retorna direto
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+      // Se estiver no formato dd/mm/yyyy
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      // Se estiver no formato mm/dd/yyyy
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+        const [month, day, year] = dateStr.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      return dateStr;
+    };
+
+    const payload: any = {
       ...form,
+      birthday: parseBirthday(form.birthday),
       cpf: (form.cpf || '').replace(/\D/g, ""),
       rg: (form.rg || '').replace(/\D/g, ""),
       phone: (form.phone || '').replace(/\D/g, ""),
-      fatherPhoneNumber: (form.fatherPhoneNumber || '').replace(/\D/g, ""),
-      motherPhoneNumber: (form.motherPhoneNumber || '').replace(/\D/g, ""),
+      father_name: (form.fatherName || '').trim(),
+      father_phone: (form.fatherPhoneNumber || '').replace(/\D/g, ""),
+      mother_name: (form.motherName || '').trim(),
+      mother_phone: (form.motherPhoneNumber || '').replace(/\D/g, ""),
       photo_url: form.athletePhotoUrl || '',
       photo_url_cpf_front: form.frontIdPhotoUrl || '',
       photo_url_cpf_back: form.backIdPhotoUrl || ''
     };
+    // Remove os campos camelCase do payload
+    delete payload.fatherName;
+    delete payload.fatherPhoneNumber;
+    delete payload.motherName;
+    delete payload.motherPhoneNumber;
     try {
       if (isEditing && athlete?.id) {
         // UPDATE direto igual EditarPerfil
@@ -156,7 +218,17 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         }
         // Atualiza o formulário/local state com os dados retornados
         if (responseData && typeof responseData === 'object') {
-          setForm((prev: typeof form) => ({ ...prev, ...responseData }));
+          setForm((prev: typeof form) => ({
+            ...prev,
+            ...responseData,
+            estado: responseData.estado || '',
+            cidade: responseData.cidade || '',
+            bairro: responseData.bairro || '',
+            rua: responseData.rua || '',
+            numeroDaCasa: responseData.numeroDaCasa ? responseData.numeroDaCasa.toString() : '',
+            complemento: responseData.complemento || '',
+            referencia: responseData.referencia || '',
+          }));
         }
         setSuccessMessage("Edição realizada com sucesso!");
         setEditMode(false);
@@ -193,7 +265,18 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-4 bg-[#D9D9D9] border border-black rounded-lg p-4">
-      <h2 className="text-xl font-bold mb-4">Edição de Atleta</h2>
+      <div className="flex justify-between">
+      <h2 className="text-xl font-bold mb-4">Edição de Atleta</h2> 
+      <button
+        type="button"
+        onClick={handleCancel}
+        className="w-8 h-8 flex items-center justify-center rounded-md border border-black bg-[#D9D9D9] hover:bg-[#EB8317] transition-colors text-lg font-bold"
+        style={{ lineHeight: 1 }}
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+      </div>
 
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-2">
@@ -206,112 +289,191 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         </div>
       )}
 
-      {(() => {
-        // Lista dos campos em ordem
-        const fields = [
-          { label: "Nome completo", name: "name" },
-          { label: "CPF", name: "cpf" },
-          { label: "RG", name: "rg" },
-          { label: "Data de nascimento", name: "birthday", type: "text" },
-          { label: "Telefone", name: "phone" },
-          { label: "Email", name: "email", type: "email" },
-          { label: "Senha", name: "password", type: "password" },
-          { label: "Alergias Alimentares", name: "foodAllergies" },
-          { label: "Nome do Pai", name: "fatherName" },
-          { label: "Telefone do Pai", name: "fatherPhoneNumber" },
-          { label: "Nome da Mãe", name: "motherName" },
-          { label: "Telefone da Mãe", name: "motherPhoneNumber" },
-          { label: "CEP", name: "cep" },
-          { label: "Estado", name: "estado" },
-          { label: "Cidade", name: "cidade" },
-          { label: "Bairro", name: "bairro" },
-          { label: "Rua", name: "rua" },
-          { label: "Número", name: "numeroDaCasa" },
-          { label: "Complemento", name: "complemento" },
-          { label: "Referência", name: "referencia" },
-        ];
-        // Cria refs para cada campo
-        const inputRefs = Array(fields.length).fill(null).map(() => React.createRef<HTMLInputElement>());
-        // Renderização dos campos
-        return fields.map(({ label, name, type = "text" }, idx) => (
-          <div key={name}>
-            <label className="block font text-sm mb-1">{label}</label>
-            <input
-              ref={inputRefs[idx]}
-              name={name}
-              type={type}
-              value={(form as any)[name]}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm"
-              maxLength={
-                name === "cpf" ? 14 :
-                name === "rg" ? 12 :
-                name === "cep" ? 9 :
-                undefined
-              }
-              disabled={isEditing && !editMode}
-              onKeyDown={e => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  // Vai para o próximo input se não for o último campo
-                  if (idx < inputRefs.length - 1) {
-                    inputRefs[idx + 1].current?.focus();
-                  } else {
-                    // Se for o último campo, submete
-                    (e.target as HTMLInputElement).form?.requestSubmit();
-                  }
-                }
-              }}
-            />
-            {name === "email" && emailError && (
-              <span className="text-red-500 text-sm">{emailError}</span>
-            )}
-          </div>
-        ));
-      })()}
-
-
-      <div>
-        <label className="block font-semibold text-sm mb-1">Tipo Sanguíneo</label>
-        <select
-          name="bloodType"
-          value={form.bloodType}
-          onChange={handleChange}
-          className="text-sm w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100"
-          disabled={isEditing && !editMode}
-        >
-          <option value="">Selecione...</option>
-          {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map((tipo) => (
-            <option key={tipo} value={tipo}>{tipo}</option>
-          ))}
-        </select>
+      {/* Dados Pessoais */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm mb-1">Nome completo</label>
+          <input name="name" type="text" value={form.name} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Data de nascimento</label>
+          <input
+            name="birthday"
+            type="date"
+            value={form.birthday}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm"
+            disabled={isEditing && !editMode}
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">CPF</label>
+          <input name="cpf" type="text" maxLength={14} value={form.cpf} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">RG</label>
+          <input name="rg" type="text" maxLength={12} value={form.rg} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Telefone</label>
+          <input name="phone" type="text" value={form.phone} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Telefone Secundário</label>
+          <input name="phoneNumber" type="text" value={form.phoneNumber} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Email</label>
+          <input name="email" type="email" value={form.email} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+          {emailError && <span className="text-red-500 text-sm">{emailError}</span>}
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Senha</label>
+          <input name="password" type="password" value={form.password} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Alergias Alimentares</label>
+          <input name="foodAllergies" type="text" value={form.foodAllergies} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Tipo Sanguíneo</label>
+          <select
+            name="bloodType"
+            value={form.blood_type}
+            onChange={handleChange}
+            className="text-sm w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100"
+            disabled={isEditing && !editMode}
+          >
+            <option value="">Selecione...</option>
+            {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map((tipo) => (
+              <option key={tipo} value={tipo}>{tipo}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm">Foto Frente do RG</label>
-        <input type="file" disabled={isEditing && !editMode} onChange={(e) => handleImageUpload(e, "frontIdPhotoUrl")} className="text-sm mt-1 p-2 border border-gray-300 rounded" />
+      {/* Endereço */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div>
+          <label className="block text-sm mb-1">CEP</label>
+          <input name="cep" type="text" maxLength={9} value={form.cep} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Estado</label>
+          <input name="estado" type="text" value={form.estado} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Cidade</label>
+          <input name="cidade" type="text" value={form.cidade} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Bairro</label>
+          <input name="bairro" type="text" value={form.bairro} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Rua</label>
+          <input name="rua" type="text" value={form.rua} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Número</label>
+          <input name="numeroDaCasa" type="text" value={form.numeroDaCasa} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Complemento</label>
+          <input name="complemento" type="text" value={form.complemento} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Referência</label>
+          <input name="referencia" type="text" value={form.referencia} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm">Foto Verso do RG</label>
-        <input type="file" disabled={isEditing && !editMode} onChange={(e) => handleImageUpload(e, "backIdPhotoUrl")} className="text-sm mt-1 p-2 border border-gray-300 rounded" />
+      {/* Informações Familiares */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label className="block text-sm mb-1">Nome do Pai</label>
+          <input name="fatherName" type="text" value={form.fatherName || ''} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Telefone do Pai</label>
+          <input name="fatherPhoneNumber" type="text" value={form.fatherPhoneNumber || ''} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Nome da Mãe</label>
+          <input name="motherName" type="text" value={form.motherName || ''} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Telefone da Mãe</label>
+          <input name="motherPhoneNumber" type="text" value={form.motherPhoneNumber || ''} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm">Foto do Atleta</label>
-        <input type="file" disabled={isEditing && !editMode} onChange={(e) => handleImageUpload(e, "athletePhotoUrl")} className="text-sm mt-1 p-2 border border-gray-300 rounded" />
-      </div>
+      {/*
+      //Responsáveis 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label className="block text-sm mb-1">Nome do Responsável</label>
+          <input name="responsibleName" type="text" value={form.responsibleName} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Email do Responsável</label>
+          <input name="responsibleEmail" type="email" value={form.responsibleEmail} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+        </div>
+      </div>*/}
 
-      {!isEditing && (
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded mr-2">Cadastrar</button>
+      {/* Fotos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+  {[
+    { name: "frontIdPhotoUrl", label: "Foto Frente do RG", value: form.frontIdPhotoUrl },
+    { name: "backIdPhotoUrl", label: "Foto Verso do RG", value: form.backIdPhotoUrl },
+    { name: "athletePhotoUrl", label: "Foto do Atleta", value: form.athletePhotoUrl },
+  ].map(({ name, label, value }) => (
+    <div key={name} className="relative">
+      <label className="block text-sm mb-1">{label}</label>
+
+      <input
+        type="file"
+        id={name}
+        name={name}
+        disabled={isEditing && !editMode}
+        onChange={e => handleImageUpload(e, name)}
+        className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
+      />
+
+      
+
+      {value && (
+        <img
+          src={value}
+          alt={label}
+          className="mt-2 rounded w-24 h-24 object-cover border mb-3"
+        />
       )}
+
+      <label
+        htmlFor={name}
+        className={`bg-[#EB8317] border border-black rounded-sm hover:bg-[#EB8317]/75 text-sm text-white px-4 py-2  ${
+          isEditing && !editMode ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
+        Escolha o arquivo
+      </label>
+    </div>
+  ))}
+</div>
+      <div>
       {isEditing && !editMode && (
-        <button type="button" className="bg-yellow-600 text-white px-4 py-2 rounded mr-2" onClick={() => setEditMode(true)}>Editar</button>
+        <button type="button" className="bg-[#EB8317] text-white py-2 px-4 rounded-md hover:scale-105 transition-transform border border-black" onClick={() => setEditMode(true)}>Editar</button>
       )}
       {isEditing && editMode && (
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded mr-2">Salvar</button>
+        <div className="flex gap-2">
+        <button type="submit" className="bg-[#10375C] text-white py-2 px-4 rounded-md shadow-sm hover:scale-105 transition-transform border border-black">Salvar</button>
+        <button type="button" onClick={handleCancel} className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-[#EB8317] transition-transform border border-black">Cancelar</button>
+        </div>
       )}
-      <button type="button" onClick={handleCancel} className="bg-red-600 text-white px-4 py-2 rounded">Cancelar</button>
+      
+      </div>
+      
     </form>
   );
 };

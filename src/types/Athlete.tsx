@@ -1,10 +1,22 @@
+export interface Address {
+    id?: number;
+    state?: string;
+    city?: string;
+    neighborhood?: string;
+    street?: string;
+    number?: number;
+    complement?: string;
+    references?: string;
+}
+
 export interface Athlete {
     id?: string;
     name: string;
     cpf: string;
     rg: string;
     phone: string;
-    address: string;
+    address?: Address;
+
     fatherName: string;
     motherName: string;
     birthday: string;

@@ -35,7 +35,7 @@ const CadastroAtleta: React.FC = () => {
     cpf: "",
     rg: "",
     phone: "",
-    address: "",
+    //address: "",
     fatherName: "",
     motherName: "",
     birthday: "",

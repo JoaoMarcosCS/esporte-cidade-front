@@ -83,10 +83,16 @@ const GestaoDeAtletas: React.FC = () => {
     }
   };
 
-  const handleEditClick = (athlete: Athlete) => {
-    setSelectedAthlete(athlete);
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const handleEditClick = async (athlete: Athlete) => {
+    try {
+      const response = await api.get(`/athletes/${athlete.id}`);
+      setSelectedAthlete(response.data); // agora terá address
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      console.error('Erro ao buscar atleta para edição:', error);
+      alert('Erro ao buscar dados completos do atleta.');
+    }
+  }
 
   const handleDelete = async (id: string) => {
     try {
@@ -140,12 +146,12 @@ const GestaoDeAtletas: React.FC = () => {
               <input
                 type="text"
                 placeholder="Buscar por nome, RG ou CPF"
-                className="border rounded px-3 py-2 w-full md:w-1/2"
+                className="border border-black rounded px-3 py-2 w-full md:w-1/2"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
               <select
-                className="border rounded px-3 py-2 w-full md:w-1/3"
+                className="border border-black rounded px-3 py-2 w-full md:w-1/3"
                 value={selectedModality}
                 onChange={e => setSelectedModality(e.target.value)}
               >
