@@ -19,3 +19,4 @@ export { Modalidade } from './Modalidade';
 export { default as AprovarInscricoesProfessor } from './AprovarInscricoesProfessor';
 export {CadastroModalidades} from "./cadastroModalidade"
 
+

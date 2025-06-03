@@ -14,6 +14,8 @@ export const getModalidadesInscritas = async (athleteId: number) => {
     headers: {
       Authorization: `Bearer ${token}`
     }
+    
   });
+  
   return response.data;
 };

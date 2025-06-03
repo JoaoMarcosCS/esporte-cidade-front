@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../hooks/useAuth';
 import { useDecodedToken } from '../hooks/useDecodedToken';
 import api from '../services/api';
+import { getScheduleAthlete } from '../services/schedule';
+import dayjs from 'dayjs';
 
 interface Modality {
   id: number;
@@ -27,13 +29,22 @@ interface DayNote {
   modality: string;
   schedule: string;
 }
+const dayMap: { [key: string]: string } = {
+  seg: 'Segunda',
+  ter: 'Terça',
+  qua: 'Quarta',
+  qui: 'Quinta',
+  sex: 'Sexta',
+  sab: 'Sábado',
+};
 
 const AgendaSemanal: React.FC = () => {
   const user = useUser();
+   console.log("\n\n\n\n\n\n\n\nusuario",user);
   const decodedToken = useDecodedToken();
   const [notes, setNotes] = useState<DayNote[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [horarios, setHorarios] = useState<any[]>([]);
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
@@ -47,30 +58,24 @@ const AgendaSemanal: React.FC = () => {
         }
 
         try {
-          const response = await api.get<Enrollment[]>('/enrollment', {
-            params: {
-              approved: true
-            },
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          
-          // Log para debug
-          console.log('Resposta da API:', response.data);
-          
-          const formattedNotes = response.data.map((enrollment: Enrollment) => {
+          const responseData = await getScheduleAthlete(token);
+          setHorarios(responseData);
+          console.log('Resposta da API:', responseData);
+
+          const formattedNotes = responseData.map((modality: any) => {
             // Convert days_of_week string to array if it's not already
-            const days = typeof enrollment.modality.days_of_week === 'string'
-              ? enrollment.modality.days_of_week.split(',').map(day => day.trim())
-              : enrollment.modality.days_of_week || [];
-            
+            const days = typeof modality.days_of_week === 'string'
+              ? modality.days_of_week.split(',').map((day: any) => day.trim())
+              : modality.days_of_week || [];
+
             // Create notes for each day
             return days.map((day: string) => ({
-              day,
-              modality: enrollment.modality.name,
-              schedule: enrollment.modality.start_time,
-              address: enrollment.modality.class_locations || 'Local não especificado'
+              day: dayMap[day] || day, // converte 'ter' para 'Terça'
+              modality: modality.name,
+              schedule: modality.start_time,
+              address: Array.isArray(modality.class_locations)
+                ? modality.class_locations.join(', ')
+                : modality.class_locations || 'Local não especificado'
             }));
           }).flat();
 
@@ -79,28 +84,18 @@ const AgendaSemanal: React.FC = () => {
           console.error('Erro ao buscar horário:', error.response?.data || error.message);
           // Se falhar, usa os dados padrão
           setNotes([
-            { day: 'Segunda', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-            { day: 'Terça', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-            { day: 'Quarta', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-            { day: 'Quinta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70' },
-            { day: 'Sexta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70,' },
-            { day: 'Sábado', modality: "Atletismo", schedule: "9h", address: 'Campo do Migule Vieira' },
+            { day: 'Segunda', modality: "-", schedule: "-", address: '-' },
+            { day: 'Terça', modality: "-", schedule: "-", address: '-' },
+            { day: 'Quarta', modality: "-", schedule: "-", address: '-' },
+            { day: 'Quinta', modality: "-", schedule: "-", address: '-' },
+            { day: 'Sexta', modality: "-", schedule: "-", address: '-' },
+            { day: 'Sábado', modality: "-", schedule: "-", address: '-' },
           ]);
         } finally {
           setLoading(false);
         }
       } catch (error) {
         console.error('Erro ao buscar horário:', error);
-        // Se falhar, usa os dados padrão
-        setNotes([
-          { day: 'Segunda', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-          { day: 'Terça', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-          { day: 'Quarta', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
-          { day: 'Quinta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70' },
-          { day: 'Sexta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70,' },
-          { day: 'Sábado', modality: "Atletismo", schedule: "9h", address: 'Campo do Migule Vieira' },
-        ]);
-      } finally {
         setLoading(false);
       }
     };

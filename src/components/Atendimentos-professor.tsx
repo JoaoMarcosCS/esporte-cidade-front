@@ -4,11 +4,13 @@ import { Button } from "../components/ui/button";
 import api from "../services/api";
 import { useAuth } from '../contexts/AuthContext';
 
-import { ChevronLeft, ChevronRight, ChevronDown,  } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { format } from "date-fns"
-
+import { getScheduleTeacher } from "../services/schedule";
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
 import {
     Select,
     SelectContent,
@@ -16,7 +18,6 @@ import {
     SelectTrigger,
     SelectValue
 } from "./ui/select"
-
 import {
     Carousel,
     CarouselContent,
@@ -24,6 +25,9 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "./ui/carousel"
+import { useUser } from "../hooks/useAuth";
+import { useDecodedToken } from "../hooks/useDecodedToken";
+
 
 interface ScheduleItem {
     name: string;
@@ -79,6 +83,7 @@ interface ContentItem {
     items: CardItem[]
 }
 
+dayjs.locale('pt-br');
 const attendances: Attendance[] = [
     { data: "10/12/2023", local: "Raspadão", atendimento: "Futebol" },
     { data: "11/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
@@ -94,216 +99,153 @@ const attendances: Attendance[] = [
     { data: "21/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
 ]
 
-const locations = Array.from(new Set(attendances.map(a => a.local)))
+const locations = Array.from(new Set(attendances.map(a => a.local)));
+const dayMap: Record<string, string> = {
+    dom: 'Domingo',
+    seg: 'Segunda',
+    ter: 'Terça',
+    qua: 'Quarta',
+    qui: 'Quinta',
+    sex: 'Sexta',
+    sab: 'Sábado',
+};
+const getDiasHojeEAmanha = () => {
+    const hoje = dayjs();
+    const amanha = hoje.add(1, 'day');
+
+    const hojeAbrev = hoje.format('ddd').toLowerCase(); // já com locale pt-br, 'ter'
+    const amanhaAbrev = amanha.format('ddd').toLowerCase(); // 'qua'
+
+    return {
+        hoje: hojeAbrev,
+        amanha: amanhaAbrev
+    };
+};
+const { hoje, amanha } = getDiasHojeEAmanha();
 
 export const VisualizarAtendimentos = () => {
-    const [schedule, setSchedule] = useState<ScheduleSection[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-    const [selectedLocation, setSelectedLocation] = useState<string>('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const { user, isAuthenticated, fetchUser } = useAuth();
+    const user = useAuth()
+    const rawUser = useUser();
+    const userData = rawUser?.[0];
+    console.log(userData);
 
-    // Log component state when it mounts
-    useEffect(() => {
-        console.log('VisualizarAtendimentos component mounted');
-        console.log('Current user:', user);
-        console.log('Is authenticated:', isAuthenticated);
 
-        // Try to fetch user data if not authenticated
-        if (!isAuthenticated && !user) {
-            console.log('Attempting to fetch user data');
-            fetchUser().catch(err => {
-                console.error('Error fetching user data:', err);
-            });
-        }
-    }, [isAuthenticated, user, fetchUser]);
 
-    const fetchSchedule = useCallback(async () => {
+
+    const decodedToken = useDecodedToken();
+    const [loading, setLoading] = useState(true);
+    const [formattedSchedule, setFormattedSchedule] = useState<any[]>([]);
+
+    const { hoje, amanha } = getDiasHojeEAmanha();
+
+    const fetchScheduleTeacher = async () => {
         try {
-            console.log('Attempting to fetch schedule');
-            console.log('Current auth state:', { isAuthenticated, user });
+            setLoading(true);
 
-            if (!isAuthenticated) {
-                console.log('User is not authenticated');
-                return;
-            }
+            console.log("asdasdsad\n\n\n\n\n", userData?.name);
 
-            if (!user?.id) {
-                console.log('User ID not found:', user);
-                return;
-            }
 
-            console.log('Fetching schedule for user:', user.id);
-            
-            // Log the API endpoint being called
-            const endpoint = `/schedule/teacher/${user.id}`;
-            console.log('Calling API endpoint:', endpoint);
+            if (!userData) return;
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-            try {
-                const response = await api.get(endpoint);
-                console.log('API Response:', response.data);
-                
-                // Check if response data exists
-                if (!response.data) {
-                    console.error('No data received from API');
-                    setSchedule([
-                        {
-                            title: "Aulas de Hoje",
-                            items: []
-                        },
-                        {
-                            title: "Aulas de Amanhã",
-                            items: []
-                        }
-                    ]);
-                    return;
-                }
+            const responseData = await getScheduleTeacher(token);
+            const scheduleArray = Array.isArray(responseData)
+                ? responseData
+                : responseData ? [responseData] : [];
 
-                // Transform the backend response to match our component's expected format
-                const todaySchedules = response.data.today ? response.data.today.map((schedule: any) => ({
-                    name: schedule.name,
-                    time: schedule.time,
-                    date: new Date(schedule.date).toISOString().split('T')[0]
-                })) : [];
+            const formatted = scheduleArray.map((classInfo: any) => {
+                const days = typeof classInfo.days === 'string'
+                    ? classInfo.days.split(',').map((d: string) => d.trim())
+                    : [];
 
-                const tomorrowSchedules = response.data.tomorrow ? response.data.tomorrow.map((schedule: any) => ({
-                    name: schedule.name,
-                    time: schedule.time,
-                    date: new Date(schedule.date).toISOString().split('T')[0]
-                })) : [];
+                return days.map((day: string) => ({
+                    dia: day, // manter a abreviação original para comparação direta
+                    modalidade: classInfo.name,
+                    horario: `${classInfo.start_time} - ${classInfo.end_time}`,
+                    local: Array.isArray(classInfo.class_locations)
+                        ? classInfo.class_locations.join(', ')
+                        : classInfo.class_locations || 'Local não especificado',
+                }));
+            }).flat();
 
-                console.log('Transformed schedules:', {
-                    today: todaySchedules,
-                    tomorrow: tomorrowSchedules
-                });
-
-                setSchedule([
-                    {
-                        title: "Aulas de Hoje",
-                        items: todaySchedules
-                    },
-                    {
-                        title: "Aulas de Amanhã",
-                        items: tomorrowSchedules
-                    }
-                ]);
-
-            } catch (error: unknown) {
-                console.error('Erro ao carregar o horário:', error);
-                console.error('Error details:', {
-                    message: error instanceof Error ? error.message : 'Unknown error',
-                    stack: error instanceof Error ? error.stack : undefined
-                });
-                
-                setSchedule([
-                    {
-                        title: "Aulas de Hoje",
-                        items: []
-                    },
-                    {
-                        title: "Aulas de Amanhã",
-                        items: []
-                    }
-                ]);
-            }
-        } catch (error: unknown) {
-            console.error('Erro ao carregar o horário:', error);
-            console.error('Error details:', {
-                message: error instanceof Error ? error.message : 'Unknown error',
-                stack: error instanceof Error ? error.stack : undefined
-            });
-            
-            setSchedule([
-                {
-                    title: "Aulas de Hoje",
-                    items: []
-                },
-                {
-                    title: "Aulas de Amanhã",
-                    items: []
-                }
-            ]);
+            setFormattedSchedule(formatted);
+            console.log("formatado: ", formatted)
+        } catch (error: any) {
+            console.error("Erro ao buscar horário do professor:", error.response?.data || error.message);
+        } finally {
+            setLoading(false);
         }
-    }, [isAuthenticated, user?.id]);
+    };
 
     useEffect(() => {
-        console.log('Auth state changed:', { isAuthenticated, user });
-        
-        if (isAuthenticated && user?.id) {
-            console.log('Starting schedule fetch with interval');
-            fetchSchedule();
-            const intervalId = setInterval(fetchSchedule, 60000);
-            return () => {
-                console.log('Clearing schedule fetch interval');
-                clearInterval(intervalId);
-            };
-        } else {
-            console.log('Not authenticated or no user ID, clearing schedule');
-            setSchedule([
-                {
-                    title: "Aulas de Hoje",
-                    items: []
-                },
-                {
-                    title: "Aulas de Amanhã",
-                    items: []
-                }
-            ]);
-        }
-    }, [isAuthenticated, user?.id, fetchSchedule]);
+        fetchScheduleTeacher();
+    }, []);
 
-    if (!isAuthenticated || !user) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <p className="text-gray-500">Carregando dados do usuário...</p>
-            </div>
-        );
-    }
+    console.log('Hoje (abrev):', hoje);     
+    console.log('Amanhã (abrev):', amanha);  
 
-    
+    console.log('Dias no formattedSchedule:');
+    formattedSchedule.forEach((aula, i) => {
+        console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
+    });
+
+    const filtrarAulasPorDia = (dia: string) => {
+        return formattedSchedule.filter(aula => aula.dia === dia);
+    };
+
+    const aulasHoje = filtrarAulasPorDia(hoje);
+    const aulasAmanha = filtrarAulasPorDia(amanha);
+
+    console.log('aulasHoje:', aulasHoje);
+    console.log('aulasAmanha:', aulasAmanha);
+
+    const renderCarousel = (aulas: any[], titulo: string) => (
+        <div className="mt-4">
+            <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
+            {aulas.length === 0 ? (
+                <p className="text-gray-500 text-center">Nenhuma aula agendada</p>
+            ) : (
+                <>
+                    <Carousel opts={{ align: "start" }} className="w-full max-w-3xl">
+                        <CarouselContent>
+                            {aulas.map((aula, index) => (
+                                <CarouselItem key={index} className="basis-1/2 min-w-36">
+                                    <div className="p-1">
+                                        <Card>
+                                            <CardContent className="p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
+                                                <p>{aula.modalidade}</p>
+                                                <p className="text-orange-500">{aula.horario}</p>
+                                                <p className="text-sm text-gray-600">{aula.local}</p>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                        <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" /> */}
+                    </Carousel>
+                </>
+            )}
+        </div>
+    );
 
     return (
         <div className="flex flex-col gap-8">
-            {schedule.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mt-4">
-                    <h2 className="text-lg font-semibold text-start mb-4">{section.title}</h2>
-                    {section.items.length === 0 ? (
-                        <p className="text-gray-500 text-center">Nenhuma aula agendada</p>
-                    ) : (
-                        <>
-                            <p className="text-gray-500 text-center mb-4">Total de aulas: {section.items.length}</p>
-                            <Carousel
-                                opts={{
-                                    align: "start",
-                                }}
-                                className="w-full max-w-3xl"
-                            >
-                                <CarouselContent>
-                                    {section.items.map((item, itemIndex) => (
-                                        <CarouselItem
-                                            key={itemIndex}
-                                            className="basis-1/2 min-w-36"
-                                        >
-                                            <div className="p-1">
-                                                <Card>
-                                                    <CardContent className="p-6 border rounded-md border-black bg-[#d9d9d9]">
-                                                        <p>{item.name}</p>
-                                                        <p className="text-orange-500">
-                                                            {item.time}
-                                                        </p>
-                                                    </CardContent>
-                                                </Card>
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
-                                </CarouselContent>
-                                <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
-                                <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
-                            </Carousel>
-                        </>
-                    )}
-                </div>
-            ))}
+            <div>
+                <h1>Aulas do professor</h1>
+                {loading ? (
+                    <p>Carregando...</p>
+                ) : formattedSchedule.length === 0 ? (
+                    <p>Nenhuma aula encontrada</p>
+                ) : (
+                    <>
+                        {renderCarousel(aulasHoje, `Aulas de hoje (${hoje.toUpperCase()})`)}
+                        {renderCarousel(aulasAmanha, `Aulas de amanhã (${amanha.toUpperCase()})`)}
+                    </>
+                )}
+            </div>
         </div>
     );
 };
@@ -398,7 +340,7 @@ export const AtendimentosAnteriores = () => {
     );
 
     return (
-        <div className="w-full mt-4 max-w-2xl mx-auto ">
+        <div className="w-full mt-4 max-w-2xl  ">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
             <div className="flex gap-4 mb-4">
                 <Popover>
@@ -419,9 +361,10 @@ export const AtendimentosAnteriores = () => {
                     </PopoverContent>
                 </Popover>
                 <Select onValueChange={(value) => setSelectedLocation(value)}>
-                    <SelectTrigger className="bg-[#d9d9d9] hover:shadow-md hover:shadow-slate-700  w-40  border rounded-md border-black">
+                    <SelectTrigger className="bg-[#d9d9d9] hover:bg-[#d9d9d9] hover:shadow-md hover:shadow-slate-700 flex w-40 justify-between items-center font-normal h-12 border rounded-md border-black">
                         <SelectValue placeholder="Local" />
                     </SelectTrigger>
+
                     <SelectContent>
                         <SelectItem value="all">Todos os locais</SelectItem>
                         {locations.map((location) => (
@@ -432,7 +375,7 @@ export const AtendimentosAnteriores = () => {
                     </SelectContent>
                 </Select>
             </div>
-    
+
             <div className=" border rounded-md border-black bg-[#d9d9d9] p-4 rounded-lg shadow">
                 <div className=" grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
                     <p className="border-b-2 border-black pb-2">Data</p>
@@ -447,7 +390,7 @@ export const AtendimentosAnteriores = () => {
                     </div>
                 ))}
             </div>
-    
+
             <div className="flex justify-between items-center mt-4">
                 <Button
                     variant="outline"

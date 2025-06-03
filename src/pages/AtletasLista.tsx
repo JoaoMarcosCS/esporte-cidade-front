@@ -10,6 +10,7 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "../components/ui/sidebar"
+import AgendaSemanal from "../components/AgendaSemanal";
 
 
 const AtletasLista: React.FC = () => {
@@ -34,6 +35,8 @@ const AtletasLista: React.FC = () => {
                         <h1 className="text-2xl font-bold">
                             Alunos Inscritos
                         </h1>
+
+                     
                     </div>
                     <Contador />
                     <div className='pt-8'>

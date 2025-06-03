@@ -13,49 +13,50 @@ import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import { useAuth } from "../contexts/AuthContext";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-export function useMediaQuerie() {
-  const customBreakpoint = 854;
-  const [isMobile, setIsmobile] = React.useState<boolean | undefined>(
-    undefined
-  );
-  React.useEffect(() => {
-    const media = window.matchMedia(`(max-width:${customBreakpoint - 1}px)`);
-    const onChange = () => {
-      setIsmobile(window.innerWidth < customBreakpoint);
-    };
-    media.addEventListener("change", onChange);
-    setIsmobile(window.innerWidth < customBreakpoint);
-    return () => {
-      media.removeEventListener("change", onChange);
-    };
-  });
-  return !!isMobile;
-}
+
 
 const HomeProfessor = () => {
   const { user, loading, isAuthenticated } = useAuth();
+
+
   const { isLoading: authCheckLoading } = useAuthStatus("2");
-  const isMobile = useMediaQuerie();
   const GoTo = useNavigateTo();
   const userType = "professor";
-  const userData = useUser();
+  const rawUser = useUser();
+  const userData = rawUser?.[0];
   //const { fetchUser } = useAuthStatus();
   const decodedToken = useDecodedToken();
 
-  console.log("decodedToken:", decodedToken);
-  console.log("localStorage token:", localStorage.getItem("token"));
+  const [isMobile, setIsMobile] = useState(false);
 
-  console.log("Current auth state:", {
-    isAuthenticated,
-    loading,
-    user,
-    token: localStorage.getItem("token"),
-  });
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1440);
+    };
+
+    // Chama inicialmente
+    handleResize();
+
+    // Escuta alterações de tamanho
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // console.log("decodedToken:", decodedToken);
+  // console.log("localStorage token:", localStorage.getItem("token"));
+
+  // console.log("Current auth state:", {
+  //   isAuthenticated,
+  //   loading,
+  //   user,
+  //   token: localStorage.getItem("token"),
+  // });
 
   const userStorage = localStorage.getItem("user");
 
-  console.log("payload: ", userStorage);
+  // console.log("payload: ", userStorage);
   if (loading || authCheckLoading) {
     return <div>Loading...</div>;
   }
@@ -93,13 +94,18 @@ const HomeProfessor = () => {
             </h1>
 
             {isMobile ? (
-              <div className="mt-4 flex flex-col mr-6 items-center gap-8">
-                <VisualizarAtendimentos />
-                <QuantidadeAtendimentos />
+              <div className="mt-4 grid grid-cols-1 gap-8 items-start">
+                <div className="flex gap-8">
+                  <VisualizarAtendimentos />
+                  <QuantidadeAtendimentos />
+                </div>
                 <AtendimentosAnteriores />
               </div>
+
+
+
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 space-x-10">
                 <VisualizarAtendimentos />
                 <QuantidadeAtendimentos />
                 <AtendimentosAnteriores />

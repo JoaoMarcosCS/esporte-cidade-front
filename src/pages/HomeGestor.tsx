@@ -16,9 +16,6 @@ import {
 import { useUser } from "../hooks/useAuth";
 
 
-const nomeDoGestor = "maria"
-
-
 const HomeGestor = () => {
 
     const GoTo = useNavigateTo();
@@ -44,6 +41,7 @@ const HomeGestor = () => {
                         <h2 className="text-4xl font-bold pb-2">
                             Olá, Gestor(a) <span className="text-[#EB8317]">{userData?.name}</span>
                         </h2>
+                         <AgendaSemanal/>
                         <div className="xl:items-start items-center flex flex-col xl:flex-row">
                             <div className="mt-12">
                                 <Escala />

@@ -7,6 +7,7 @@ import {
     SidebarInset,
     SidebarProvider,
 } from '../components/ui/sidebar';
+import AgendaSemanal from '../components/AgendaSemanal';
 
 interface Enrollment {
   id: number;
@@ -105,6 +106,7 @@ const AprovarInscricoesProfessor: React.FC = () => {
                 Nenhuma inscrição pendente.
               </div>
             )}
+
             <div className="grid gap-6 md:grid-cols-2">
               {enrollments.map((enrollment) => (
                 <div
