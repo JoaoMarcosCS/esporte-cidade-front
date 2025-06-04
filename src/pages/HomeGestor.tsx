@@ -32,15 +32,14 @@ const HomeGestor = () => {
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
 
                     <HeaderBasic
-                        type="usuario"
+                        type="visitante"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/professores" },
-                            { label: "modalidades", path: "/home-gestor/cadastrar-modalidade" },
+                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
                         ]} />
 
-                    <div className="  ml-20 mt-32 pb-6">
+                    <div className="ml-10 mt-10 pb-6">
                         <h2 className="text-4xl font-bold pb-2">
                             Olá, Gestor(a) <span className="text-[#EB8317]">{userData?.name}</span>
                         </h2>

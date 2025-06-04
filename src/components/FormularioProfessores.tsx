@@ -142,7 +142,37 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
 
               <Textbox value={formData.phone} onChange={handleChange} name="phone" label="Telefone" iconPath="/icon/phone.svg" placeholder="(__)_____-____" type="text" required={true} />
 
-              <Textbox value={formData.photo_url} onChange={handleChange} name="photo_url" label="URL da foto" iconPath="/icon/mailbox.svg" placeholder="Insira o link da foto" type="url" required={true} />
+              <label className="block text-sm font-semibold">Foto</label>
+              {formData.photo_url && (
+                <img
+                  src={formData.photo_url}
+                  alt="Pré-visualização"
+                  className="mb-2 mt-2 rounded w-32 h-32 object-cover border"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="mb-2 mt-1"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const formDataFile = new FormData();
+                  formDataFile.append("profile", file);
+                  try {
+                    const response = await fetch("http://localhost:3002/api/uploads/upload", {
+                      method: "POST",
+                      body: formDataFile,
+                    });
+                    const data = await response.json();
+                    if (data.profile) {
+                      setFormData((prev) => ({ ...prev, photo_url: data.profile }));
+                    }
+                  } catch (err) {
+                    alert("Erro ao fazer upload da imagem.");
+                  }
+                }}
+              />
 
               <Dropdown label="Modalidade" name="modality" onChange={handleChange} value={formData.modality != null ? formData.modality.id : 0} iconPath="/icon/soccer.svg">
                 <option value="">Selecione a modalidade</option>

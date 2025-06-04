@@ -25,15 +25,17 @@ export const useAuthStatus = (requiredRole?: string) => {
 
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found");
 
-        // If we have a token but no user, fetch user data
+        // Se não há token, não faz nada (permite acessar tela de login)
+        if (!token) return;
+
+        // Se temos token mas não temos user, busca o user
         if (!user) {
           await fetchUser();
           return;
         }
 
-        // Check role if required
+        // Se exigir role específica e não corresponder, redireciona
         if (requiredRole && user.role !== requiredRole) {
           throw new Error(`Acesso não autorizado para role ${user.role}`);
         }

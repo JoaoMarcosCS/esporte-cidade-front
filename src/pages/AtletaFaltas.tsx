@@ -92,6 +92,12 @@ const AtletaFaltas = () => {
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
+  function formatDate(dateStr: string) {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar type="atleta" />
@@ -173,7 +179,7 @@ const AtletaFaltas = () => {
                     <tbody>
                       {currentFaltas.map((falta, index) => (
                         <tr key={index}>
-                          <td className="px-4 py-2 border-b">{falta.data}</td>
+                          <td className="px-4 py-2 border-b">{formatDate(falta.data)}</td>
                           <td className="px-4 py-2 border-b">
                             {falta.modalidade}
                           </td>

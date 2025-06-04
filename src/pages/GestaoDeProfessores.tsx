@@ -41,10 +41,10 @@ const GestaoDeProfessor: React.FC = () => {
     formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | null) => {
     try {
       await deleteProfessor(Number(id));
-      setProfessores(prev => prev.filter(prof => prof.id === id));
+      setProfessores(prev => prev.filter(prof => Number(prof.id) !== Number(id)));
     } catch (error) {
       console.error('Erro ao deletar professor:', error);
     }
@@ -56,8 +56,8 @@ const GestaoDeProfessor: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-          { label: "Professores", path: "/home-gestor/cadastrar-professor" },
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
+          { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
         ]}
       />
 
