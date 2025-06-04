@@ -129,9 +129,7 @@ const GestaoDeAtletas: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-          { label: "Professores", path: "/home-gestor/cadastrar-professor" },
-          { label: "Atletas", path: "/home-gestor/atletas" },
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
         ]}
       />

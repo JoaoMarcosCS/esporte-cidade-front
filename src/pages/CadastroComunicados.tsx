@@ -36,12 +36,10 @@ const CadastroComunicados = () => {
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
 
                 <HeaderBasic
-                        type="usuario"
+                        type="visitante"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/professores" },
-                            { label: "Atletas", path: "/home-gestor/atletas" },
                             { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
                         ]} />
 

@@ -19,6 +19,7 @@ export { Modalidade } from './Modalidade';
 export { default as AprovarInscricoesProfessor } from './AprovarInscricoesProfessor';
 export {CadastroModalidades} from "./cadastroModalidade"
 export {default as GestaoDeAtletas} from "./GestaoDeAtletas"
+export {default as GestaoDeManagers} from "./GestaoDeManagers"
 
 
 

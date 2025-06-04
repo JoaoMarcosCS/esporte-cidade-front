@@ -94,8 +94,6 @@ export const CadastroModalidades: React.FC = () => {
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/professores" },
-                            { label: "Atletas", path: "/home-gestor/atletas" },
                             { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
             ]} />
             <FooterMobile />
