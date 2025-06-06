@@ -145,17 +145,17 @@ const AgendaSemanal: React.FC = () => {
   const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
   return (
-    <div className="bg-[#F4F6FF] p-3 pt-0 rounded border border-black">
+    <div className="bg-white pt-0 border-blacbg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 p-6  border border-black  flex flex-col justify-between mb-4">
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6  sm:gap-4">
         {daysOfWeek.map((day, index) => {
           const dayNotes = notes.filter(note => note.day === day);
           return (
-            <div key={index} className="bg-[#F4F6FF] p-2 rounded text-center">
+            <div key={index} className="bg-white p-2 rounded text-center">
               <h3 className="font-semibold mb-2">{day}</h3>
               {dayNotes.length > 0 ? (
                 <div className="space-y-2">
                   {dayNotes.map((note, noteIndex) => (
-                    <div key={noteIndex} className="bg-[#F4F6FF] p-1">
+                    <div key={noteIndex} className="bg-white p-1">
                       <p className='text-gray-700 font-medium'>{note.modality}</p>
                       <p className='text-gray-600 text-sm'>{note.schedule}</p>
                       <p className='text-gray-500 text-sm'>{note.address}</p>

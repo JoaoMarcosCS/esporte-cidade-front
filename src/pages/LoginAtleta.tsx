@@ -10,6 +10,7 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom';
 import { useAuth } from "../contexts/AuthContext";
+import CustomButton from "../components/customButtom";
 
 export const LoginAtleta: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -35,25 +36,25 @@ export const LoginAtleta: React.FC = () => {
     }, []);
 
     async function onSubmit(data: FieldValues) {
-    try {
-        const { cpf, password } = data;
-        const cleanCpf = cpf.replace(/[.\-]/g, '');
-        await login({ 
-            type: 'athlete', // Add the required type property
-            cpf: cleanCpf, 
-            password 
-        });
-        GoTo("/home-atleta");
-    } catch (error: any) {
-        console.error("Erro no login:", error);
-        toast.error(error.message || "Erro ao fazer login.");
+        try {
+            const { cpf, password } = data;
+            const cleanCpf = cpf.replace(/[.\-]/g, '');
+            await login({
+                type: 'athlete', // Add the required type property
+                cpf: cleanCpf,
+                password
+            });
+            GoTo("/home-atleta");
+        } catch (error: any) {
+            console.error("Erro no login:", error);
+            toast.error(error.message || "Erro ao fazer login.");
+        }
     }
-}
     return (
         <>
             <Toaster />
             <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-                <HeaderBasic logo="hide"/>
+                <HeaderBasic logo="hide" />
                 <main className="flex flex-col items-center flex-1">
                     <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
                         <div className="text-start px-8 mb-8">
@@ -126,24 +127,16 @@ export const LoginAtleta: React.FC = () => {
                             </section>
 
                             <div className="py-10 flex justify-end gap-7">
-                                <button
-                                    type="button"
-                                    onClick={() => GoTo("/")}
-                                    className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
-                                >
+                                <CustomButton width="w-52" height="h-13" variant="gray" onClick={() => GoTo("/")}>
                                     Voltar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="h-13 md:w-52 font-bold font-inter bg-orange-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                                >
+                                </CustomButton>
+                                <CustomButton  type="submit" variant="orange" width="w-52" height="h-13" disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         <Loader className="animate-spin" />
                                     ) : (
                                         "Confirmar"
                                     )}
-                                </button>
+                                </CustomButton>
                             </div>
                         </form>
                         <div className="flex flex-col text-center">

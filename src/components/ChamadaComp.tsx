@@ -19,6 +19,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
     time: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalityName, setModalityName] = useState("");
   const GoTo = useNavigateTo();
 
   useEffect(() => {
@@ -26,7 +27,26 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
     const currentDate = now.toISOString().split("T")[0];
     const currentTime = now.toTimeString().substring(0, 5);
     setDateTime({ date: currentDate, time: currentTime });
-  }, []);
+
+
+    const fetchModalityName = async () => {
+      try {
+        const response = await api.get("/modality");
+        const modality = response.data.find(
+          (mod: any) => mod.id === initialStudents[0]?.modalityId
+        );
+        if (modality) {
+          setModalityName(modality.name);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar modalidade:", error);
+      }
+    };
+
+
+    fetchModalityName();
+
+  }, [initialStudents]);
 
   const toggleStatus = (studentId: number) => {
     if (userType === "professor") {
@@ -34,13 +54,13 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         prevStudents.map((student) =>
           student.id === studentId
             ? {
-                ...student,
-                status: student.status === "PRESENTE" ? "AUSENTE" : "PRESENTE",
-                absences:
-                  student.status === "PRESENTE"
-                    ? student.faltas + 1
-                    : student.faltas - 1,
-              }
+              ...student,
+              status: student.status === "PRESENTE" ? "AUSENTE" : "PRESENTE",
+              absences:
+                student.status === "PRESENTE"
+                  ? student.faltas + 1
+                  : student.faltas - 1,
+            }
             : student
         )
       );
@@ -89,12 +109,9 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label className="block text-gray-700 mb-1">Modalidade:</label>
-          <input
-            type="text"
-            value="Futebol"
-            readOnly
-            className="w-full p-2 border border-black bg-[#d9d9d9]"
-          />
+          <div className="w-full p-2 border border-black bg-[#d9d9d9]">
+            {modalityName || "Carregando..."}
+          </div>
         </div>
         <div>
           <label className="block text-gray-700 mb-1">
@@ -144,13 +161,13 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
                 }}
               />
               <div className="flex-1">
+
                 <h3 className="font-semibold">{student.name}</h3>
                 <p
-                  className={`font-bold ${
-                    student.status === "PRESENTE"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+                  className={`font-bold ${student.status === "PRESENTE"
+                    ? "text-green-500"
+                    : "text-red-500"
+                    }`}
                 >
                   {student.status}
                 </p>
