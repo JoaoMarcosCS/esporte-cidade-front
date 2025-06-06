@@ -4,7 +4,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 import {
   CadastroAtleta,
-  Home,
+  // Home, // Removed unused import
   Chamada,
   ErrorPage,
   HomeAtleta,
@@ -14,7 +14,7 @@ import {
   LoginGestor,
   ProfileSelect,
   AtletasLista,
-  FaltasAtleta,
+  // FaltasAtleta, // Removed unused import
   EditarPerfil,
   HomeGestor,
   CadastroComunicados,
@@ -25,7 +25,9 @@ import {
   AprovarInscricoesProfessor,
   CadastroModalidades,
   GestaoDeAtletas,
-  GestaoDeManagers
+  GestaoDeManagers,
+  TeacherRequestPasswordReset, // Added for password recovery
+  TeacherResetPassword      // Added for password recovery
 } from "../pages";
 
 const router = createBrowserRouter(
@@ -61,6 +63,15 @@ const router = createBrowserRouter(
         {
           path: "/home-atleta/cadastro",
           element: <CadastroAtleta />,
+        },
+        // Rotas de recuperação de senha do Professor (PUBLICAS)
+        {
+          path: "/recuperar-senha/professor",
+          element: <TeacherRequestPasswordReset />,
+        },
+        {
+          path: "/password-reset/:teacherId/:token",
+          element: <TeacherResetPassword />,
         },
 
         // ROTAS PRIVADAS

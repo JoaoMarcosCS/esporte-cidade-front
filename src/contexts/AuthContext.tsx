@@ -67,13 +67,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.log('[fetchUser] Resposta da API do usuário:', userFromApi);
 
             if (userFromApi) {
-                // Ensure role is preserved as string
-                const userData = {
-                    ...userFromApi,
-                    role: role
-                };
-                setUser(userData);
-                localStorage.setItem('user', JSON.stringify(userData));
+                // Check if userFromApi is an array and take the first element if so
+                const userObject = Array.isArray(userFromApi) ? userFromApi[0] : userFromApi;
+
+                // Ensure userObject is not null or undefined before proceeding
+                if (userObject) {
+                    const fetchedUserData = {
+                        ...userObject,
+                        role: role // role is already a string from decodedToken.role
+                    };
+                    localStorage.setItem('user', JSON.stringify(fetchedUserData));
+                    setUser(fetchedUserData);
+                } else {
+                    console.error("[fetchUser] User data from API is null or undefined after potential array unwrapping.", userFromApi);
+                    // Optionally clear user state or handle error appropriately
+                }
             } else {
                 throw new Error('Usuário não encontrado');
             }
@@ -111,6 +119,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     break;
                 case 'teacher':
                     response = await loginTeacher(credentials);
+                    // ADD CONSOLE LOGS HERE
+                    console.log("[AuthContext] Response from loginTeacher service:", JSON.stringify(response));
+                    if (response && response.user) {
+                        console.log("[AuthContext] response.user from loginTeacher:", JSON.stringify(response.user));
+                    }
+                    // END CONSOLE LOGS
                     break;
                 case 'manager':
                     response = await loginManager(credentials); // Make sure this uses loginManager

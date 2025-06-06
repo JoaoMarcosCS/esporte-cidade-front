@@ -118,9 +118,9 @@ export const LoginProfessor: React.FC = () => {
                                                 {errors.password?.message as string}
                                             </p>
                                         )}
-                                        <a href="#" className="text-blue-600 mt-2 block">
+                                        <Link to="/recuperar-senha/professor" className="text-blue-600 mt-2 block">
                                             Esqueci minha senha
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </section>

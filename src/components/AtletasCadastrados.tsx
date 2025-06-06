@@ -61,19 +61,18 @@ export default function AtletasCadastrados({
       setAthletes(mappedAthletes);
       setLoading(false);
     }
-    setCurrentPage(1); // Sempre volta para página 1 ao atualizar lista
+    setCurrentPage(1); 
   }, [athletesProp, perPage]);
 
-  // Filtro de ordenação
   const [orderBy, setOrderBy] = useState<'matricula' | 'alfabetica'>('matricula');
 
-  // Função de ordenação
+ 
   const getSortedAthletes = () => {
     if (orderBy === 'alfabetica') {
       // Ordena por nome
       return [...athletes].sort((a, b) => a.name.localeCompare(b.name));
     }
-    // Ordem de matrícula (id)
+   
     return [...athletes].sort((a, b) => {
       if (!a.id || !b.id) return 0;
       // Se id for string, converte para número se possível
@@ -86,7 +85,7 @@ export default function AtletasCadastrados({
   };
   const sortedAthletes = getSortedAthletes();
 
-  // Paginação
+ 
   const totalPages = Math.ceil(sortedAthletes.length / perPage) || 1;
   const paginatedAthletes = sortedAthletes.slice((currentPage - 1) * perPage, currentPage * perPage);
 
@@ -99,7 +98,6 @@ export default function AtletasCadastrados({
     if (!athletesProp) {
       fetchAthletes();
     } else {
-      // Map fields from prop to ensure compatibility
       const mappedAthletes = athletesProp.map((athlete: any) => ({
         ...athlete,
         athletePhotoUrl: athlete.photo_url,
