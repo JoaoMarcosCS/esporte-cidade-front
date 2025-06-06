@@ -6,57 +6,61 @@ import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { Escala } from "../components/Escala";
-import { AppSidebar } from '../components/navigation/AppSidebar-prof';
-import { CalendarioCompromissos } from '../components/Comunicados';
+import { AppSidebar } from "../components/navigation/AppSidebar-prof";
+import { CalendarioCompromissos } from "../components/Comunicados";
 
-import {
-    SidebarInset,
-    SidebarProvider,
-} from "../components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import { useUser } from "../hooks/useAuth";
 
-
-const nomeDoGestor = "maria"
-
+const nomeDoGestor = "maria";
 
 const HomeGestor = () => {
+  const GoTo = useNavigateTo();
+  const userType = "gestor";
+  const userData = useUser();
+  return (
+    <SidebarProvider>
+      <AppSidebar type="gestor" />
+      <SidebarInset>
+        <div className="min-h-screen flex flex-col  bg-white pb-16">
+          <HeaderBasic
+            type="visitante"
+            links={[
+              { label: "Home", path: "/home-gestor" },
+              {
+                label: "Comunicados",
+                path: "/home-gestor/cadastrar-comunicado",
+              },
+              {
+                label: "Modalidades",
+                path: "/home-gestor/cadastrar-modalidade",
+              },
+              {
+                label: "Relatório Geral",
+                path: "/home-gestor/relatorio-geral",
+              },
+            ]}
+          />
 
-    const GoTo = useNavigateTo();
-    const userType = "gestor"
-    const userData = useUser();
-    return (
-
-        <SidebarProvider>
-            <AppSidebar type="gestor" />
-            <SidebarInset>
-                <div className="min-h-screen flex flex-col  bg-white pb-16">
-
-                    <HeaderBasic
-                        type="visitante"
-                        links={[
-                            { label: "Home", path: "/home-gestor" },
-                            { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
-                        ]} />
-
-                    <div className="ml-10 mt-10 pb-6">
-                        <h2 className="text-4xl font-bold pb-2">
-                            Olá, Gestor(a) <span className="text-[#EB8317]">{userData?.name}</span>
-                        </h2>
-                        <div className="xl:items-start items-center flex flex-col xl:flex-row">
-                            <div className="mt-12">
-                                <Escala />
-                            </div>
-                            <div className="mt-12">
-                                <CalendarioCompromissos type="DisableEdit" />
-                            </div>
-                        </div>
-                    </div>
-                    <FooterMobile />
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
-    );
+          <div className="ml-10 mt-10 pb-6">
+            <h2 className="text-4xl font-bold pb-2">
+              Olá, Gestor(a){" "}
+              <span className="text-[#EB8317]">{userData?.name}</span>
+            </h2>
+            <div className="xl:items-start items-center flex flex-col xl:flex-row">
+              <div className="mt-12">
+                <Escala />
+              </div>
+              <div className="mt-12">
+                <CalendarioCompromissos type="DisableEdit" />
+              </div>
+            </div>
+          </div>
+          <FooterMobile />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 };
 
 export default HomeGestor;
