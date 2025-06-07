@@ -15,7 +15,6 @@ export const Modalidade = () => {
                             { label: "Home", path: "/home-atleta" },
                             { label: "Faltas", path: "/home-atleta/faltas-atleta" },
                             { label: "Modalidades", path: "/home-atleta/modalidade" },
-                            { label: "Horário", path: "/home-atleta/horarios" },
                         ]}
                     />
                     <div className="p-8">

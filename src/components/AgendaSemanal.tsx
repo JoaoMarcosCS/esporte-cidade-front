@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../hooks/useAuth';
 import { useDecodedToken } from '../hooks/useDecodedToken';
 import api from '../services/api';
-import { getScheduleAthlete } from '../services/schedule';
-import dayjs from 'dayjs';
 
 interface Modality {
   id: number;
@@ -29,22 +27,13 @@ interface DayNote {
   modality: string;
   schedule: string;
 }
-const dayMap: { [key: string]: string } = {
-  seg: 'Segunda',
-  ter: 'Terça',
-  qua: 'Quarta',
-  qui: 'Quinta',
-  sex: 'Sexta',
-  sab: 'Sábado',
-};
 
 const AgendaSemanal: React.FC = () => {
   const user = useUser();
-   console.log("\n\n\n\n\n\n\n\nusuario",user);
   const decodedToken = useDecodedToken();
   const [notes, setNotes] = useState<DayNote[]>([]);
   const [loading, setLoading] = useState(true);
-  const [horarios, setHorarios] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
@@ -58,24 +47,46 @@ const AgendaSemanal: React.FC = () => {
         }
 
         try {
-          const responseData = await getScheduleAthlete(token);
-          setHorarios(responseData);
-          console.log('Resposta da API:', responseData);
+          const response = await api.get<Enrollment[]>('/enrollment', {
+            params: {
+              approved: true
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          
+          // Log para debug
+          console.log('Resposta da API:', response.data);
+          
+          const dayMap: Record<string, string> = {
+            'seg': 'Segunda',
+            'ter': 'Terça',
+            'qua': 'Quarta',
+            'qui': 'Quinta',
+            'sex': 'Sexta',
+            'sab': 'Sábado',
+            'dom': 'Domingo'
+          };
 
-          const formattedNotes = responseData.map((modality: any) => {
+          const formattedNotes = response.data.map((enrollment: Enrollment) => {
             // Convert days_of_week string to array if it's not already
-            const days = typeof modality.days_of_week === 'string'
-              ? modality.days_of_week.split(',').map((day: any) => day.trim())
-              : modality.days_of_week || [];
-
+            const days = typeof enrollment.modality.days_of_week === 'string'
+              ? enrollment.modality.days_of_week.split(',').map(day => day.trim())
+              : enrollment.modality.days_of_week || [];
+            
             // Create notes for each day
             return days.map((day: string) => ({
-              day: dayMap[day] || day, // converte 'ter' para 'Terça'
-              modality: modality.name,
-              schedule: modality.start_time,
-              address: Array.isArray(modality.class_locations)
-                ? modality.class_locations.join(', ')
-                : modality.class_locations || 'Local não especificado'
+              day: dayMap[day.toLowerCase()] || day,
+              modality: enrollment.modality.name,
+              schedule: enrollment.modality.start_time,
+              address: enrollment.modality.class_locations
+                ? (Array.isArray(enrollment.modality.class_locations)
+                    ? enrollment.modality.class_locations[0]
+                    : typeof enrollment.modality.class_locations === "string"
+                      ? enrollment.modality.class_locations.split(",")[0].trim()
+                      : 'Local não especificado')
+                : 'Local não especificado'
             }));
           }).flat();
 
@@ -84,18 +95,28 @@ const AgendaSemanal: React.FC = () => {
           console.error('Erro ao buscar horário:', error.response?.data || error.message);
           // Se falhar, usa os dados padrão
           setNotes([
-            { day: 'Segunda', modality: "-", schedule: "-", address: '-' },
-            { day: 'Terça', modality: "-", schedule: "-", address: '-' },
-            { day: 'Quarta', modality: "-", schedule: "-", address: '-' },
-            { day: 'Quinta', modality: "-", schedule: "-", address: '-' },
-            { day: 'Sexta', modality: "-", schedule: "-", address: '-' },
-            { day: 'Sábado', modality: "-", schedule: "-", address: '-' },
+            { day: 'Segunda', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+            { day: 'Terça', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+            { day: 'Quarta', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+            { day: 'Quinta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70' },
+            { day: 'Sexta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70,' },
+            { day: 'Sábado', modality: "Atletismo", schedule: "9h", address: 'Campo do Migule Vieira' },
           ]);
         } finally {
           setLoading(false);
         }
       } catch (error) {
         console.error('Erro ao buscar horário:', error);
+        // Se falhar, usa os dados padrão
+        setNotes([
+          { day: 'Segunda', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+          { day: 'Terça', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+          { day: 'Quarta', modality: "Atletismo", schedule: "18h", address: 'Centro polo esportivo' },
+          { day: 'Quinta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70' },
+          { day: 'Sexta', modality: "Judo", schedule: "18h", address: 'Rua Alencar Correa de Carvalho, 70,' },
+          { day: 'Sábado', modality: "Atletismo", schedule: "9h", address: 'Campo do Migule Vieira' },
+        ]);
+      } finally {
         setLoading(false);
       }
     };
@@ -124,17 +145,17 @@ const AgendaSemanal: React.FC = () => {
   const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
   return (
-    <div className="bg-[#F4F6FF] p-3 pt-0 rounded border border-black">
+    <div className="bg-white pt-0 border-blacbg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 p-6  border border-black  flex flex-col justify-between mb-4">
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6  sm:gap-4">
         {daysOfWeek.map((day, index) => {
           const dayNotes = notes.filter(note => note.day === day);
           return (
-            <div key={index} className="bg-[#F4F6FF] p-2 rounded text-center">
+            <div key={index} className="bg-white p-2 rounded text-center">
               <h3 className="font-semibold mb-2">{day}</h3>
               {dayNotes.length > 0 ? (
                 <div className="space-y-2">
                   {dayNotes.map((note, noteIndex) => (
-                    <div key={noteIndex} className="bg-[#F4F6FF] p-1">
+                    <div key={noteIndex} className="bg-white p-1">
                       <p className='text-gray-700 font-medium'>{note.modality}</p>
                       <p className='text-gray-600 text-sm'>{note.schedule}</p>
                       <p className='text-gray-500 text-sm'>{note.address}</p>

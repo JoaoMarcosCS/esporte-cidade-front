@@ -77,8 +77,6 @@ export const loginManager = async (credentials: { email: string; password: strin
     throw new Error(error.response?.data?.message || 'Erro ao fazer login');
   }
 };
-
-
 export const confirmPassword = async (formData: any, type: any) => {
   try {
     const response = await api.post("/auth/confirm-password", { password: formData.password, type: type });

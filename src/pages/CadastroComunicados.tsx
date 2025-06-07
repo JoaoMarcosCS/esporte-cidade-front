@@ -14,12 +14,12 @@ import {
     SidebarProvider,
 } from "../components/ui/sidebar"
 
-
-//depois da para trocar com o backend
-const nomeDoGestor = "maria"
-
+import { useAuthStatus } from "../hooks/useAuth";
 
 const CadastroComunicados = () => {
+
+    // Garante autenticação automática do gestor
+    useAuthStatus("3"); // "3" = gestor
 
     const GoTo = useNavigateTo();
     const userType = "gestor"
@@ -35,22 +35,17 @@ const CadastroComunicados = () => {
             <SidebarInset>
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
 
-                    <HeaderBasic
-                        type="usuario"
+                <HeaderBasic
+                        type="visitante"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/cadastrar-professor" },
-                             { label: "modalidades", path: "/home-gestor/cadastrar-modalidade" },
-                        ]}
-                    />
+                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
+                        ]} />
 
                     <div className="  ml-20 mt-10 pb-6">
                         <div className=" items-center flex flex-col ">
                             <div className="mt-12"> 
-                                <h2 className="text-start text-4xl font-bold  mb-8">
-                                    Olá, Gestor(a) <span className="text-[#EB8317]">{nomeDoGestor}</span>
-                                </h2>
                                 <CalendarioCompromissos type="EnableEdit" />
                             </div>
                         </div>

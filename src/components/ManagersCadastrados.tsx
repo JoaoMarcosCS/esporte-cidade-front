@@ -1,24 +1,24 @@
 import React from "react";
-import { Professor } from "@/types/Professor";
+import { Manager } from "@/types/Manager";
 
 interface Props {
-  professores: Professor[];
-  professorEdicao: Professor | null;
-  onEdit: (professor: Professor) => void;
+  managers: Manager[];
+  managerEdicao: Manager | null;
+  onEdit: (manager: Manager) => void;
   onDelete: (id: string) => void;
 }
 
-const ProfessoresCadastrados: React.FC<Props> = ({
-  professores,
-  professorEdicao,
+const ManagersCadastrados: React.FC<Props> = ({
+  managers,
+  managerEdicao,
   onEdit,
   onDelete,
 }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(6);
   const PER_PAGE_OPTIONS = [3, 6, 9, 12];
-  const totalPages = Math.ceil(professores.length / perPage) || 1;
-  const paginatedProfessores = professores.slice(
+  const totalPages = Math.ceil(managers.length / perPage) || 1;
+  const paginatedManagers = managers.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
@@ -29,15 +29,15 @@ const ProfessoresCadastrados: React.FC<Props> = ({
 
   React.useEffect(() => {
     setCurrentPage(1); // volta para página 1 ao atualizar lista
-  }, [professores, perPage]);
+  }, [managers, perPage]);
 
   return (
     <div>
-      <h2 className="font-bold text-3xl mb-10">Professores Cadastrados</h2>
+      <h2 className="font-bold text-3xl mb-10">Gestores Cadastrados</h2>
       <div className="bg-[#D9D9D9] border border-black p-4 rounded-lg">
         {/* Dropdown de quantidade de cards por página */}
         <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <label className="font-medium text-sm">Professores por página:</label>
+          <label className="font-medium text-sm">Gestores por página:</label>
           <select
             className="border border-black rounded px-2 py-1 text-sm bg-white"
             value={perPage}
@@ -51,29 +51,26 @@ const ProfessoresCadastrados: React.FC<Props> = ({
           </select>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {paginatedProfessores.map((professor) => (
+          {paginatedManagers.map((manager) => (
             <div
-              key={professor.id}
+              key={manager.id}
               className={`bg-white border border-black rounded-lg p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center relative`}
             >
               <div className="text-center w-full">
-                <h3 className="font-bold text-lg mb-1">{professor.name}</h3>
+                <h3 className="font-bold text-lg mb-1">{manager.name}</h3>
                 <p className="text-sm text-gray-700 mb-1">
-                  <span className="font-semibold">Modalidade:</span>{" "}
-                  {professor.modality?.name || "-"}
+                  <span className="font-semibold">Email:</span> {manager.email}
                 </p>
                 <p className="text-sm text-gray-700 mb-1">
-                  <span className="font-semibold">Email:</span>{" "}
-                  {professor.email}
+                  <span className="font-semibold">Telefone:</span> {manager.phone}
                 </p>
                 <p className="text-sm text-gray-700 mb-1">
-                  <span className="font-semibold">Telefone:</span>{" "}
-                  {professor.phone}
+                  <span className="font-semibold">CPF:</span> {manager.cpf}
                 </p>
               </div>
               <div className="flex gap-2 mt-3">
                 <button
-                  onClick={() => onEdit(professor)}
+                  onClick={() => onEdit(manager)}
                   className="w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform"
                   title="Editar"
                 >
@@ -84,11 +81,11 @@ const ProfessoresCadastrados: React.FC<Props> = ({
                   />
                 </button>
                 <button
-                  onClick={() => onDelete(professor.id.toString())}
+                  onClick={() => onDelete(manager.id?.toString() || "")}
                   className={`w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform ${
-                    professorEdicao?.id === professor.id ? "opacity-35" : ""
+                    managerEdicao?.id === manager.id ? "opacity-35" : ""
                   }`}
-                  disabled={professorEdicao?.id === professor.id}
+                  disabled={managerEdicao?.id === manager.id}
                   title="Excluir"
                 >
                   <img
@@ -128,4 +125,4 @@ const ProfessoresCadastrados: React.FC<Props> = ({
   );
 };
 
-export default ProfessoresCadastrados;
+export default ManagersCadastrados;

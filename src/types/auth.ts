@@ -29,6 +29,7 @@ export interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     fetchUser: () => Promise<void>;
+    updateUser: (updatedFields: Partial<User>) => void;
 }
 
 export interface AuthResponse {

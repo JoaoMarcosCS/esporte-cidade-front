@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -9,11 +9,21 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { loginManager } from "../services/auth";
 import { userSchema } from "../lib/schemaLoginUser";
 import { useAuth } from "../contexts/AuthContext";
+import { useAuthStatus } from "../hooks/useAuth";
+import CustomButton from "../components/customButtom";
 
 export const LoginGestor: React.FC = () => {
     const { login } = useAuth();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const GoTo = useNavigateTo();
+
+    // Redireciona automaticamente se já estiver autenticado
+    const { isAuthenticated, isLoading } = useAuthStatus("3");
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            GoTo("/home-gestor");
+        }
+    }, [isAuthenticated, isLoading, GoTo]);
 
     const {
         register,
@@ -125,24 +135,16 @@ export const LoginGestor: React.FC = () => {
                             </section>
 
                             <div className="py-10 flex justify-end gap-7">
-                                <button
-                                    type="button"
-                                    onClick={() => GoTo("/")}
-                                    className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
-                                >
+                                <CustomButton width="w-52" height="h-13" variant="gray" onClick={() => GoTo("/")}>
                                     Voltar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="h-13 md:w-52 font-bold font-inter bg-orange-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                                >
+                                </CustomButton>
+                                <CustomButton type="submit" variant="orange" width="w-52" height="h-13" disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         <Loader className="animate-spin" />
                                     ) : (
                                         "Confirmar"
                                     )}
-                                </button>
+                                </CustomButton>
                             </div>
                         </form>
                     </div>

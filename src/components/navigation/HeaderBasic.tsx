@@ -11,16 +11,44 @@ interface HeaderBasicProps {
   logo?: "show" | "hide";
   user?: {
     name: string;
-    profilePicture: string;
+    profilePicture?: string;
+    photo_url?: string;
   };
 }
 
 const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "show", user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpenDropdown, setMenuOpenDropdown] = useState(false);
+
+  // Fecha o dropdown de perfil ao clicar fora
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    function handleClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.dropdown-perfil')) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
   const GoTo = useNavigateTo();
   const { logout } = useAuth();
   const userData = useUser();
   const decodedToken = useDecodedToken();
+
+  // Fecha o dropdown Gestão ao clicar fora
+  React.useEffect(() => {
+    if (!menuOpenDropdown) return;
+    function handleClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.dropdown-gestao')) {
+        setMenuOpenDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpenDropdown]);
 
   const handleMenuToggle = () => {
     setMenuOpen((prev) => !prev);
@@ -63,25 +91,70 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
               {link.label}
             </button>
           ))}
+          {/* Dropdown Gestão para gestor */}
+          {type === "visitante" && (
+            <div className="relative dropdown-gestao">
+              <button
+                className="text-black font-bold transition-transform flex items-center gap-1"
+                onClick={() => setMenuOpenDropdown((v: boolean) => !v)}
+                type="button"
+              >
+                Gestão
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              <div
+                className={`absolute right-1 mt-2 w-40 bg-white border border-gray-200 rounded shadow-md z-50 transform transition-all duration-200 origin-top ${menuOpenDropdown ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
+                style={{ minWidth: 150 }}
+              >
+                <button
+                  onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/atletas"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Alunos
+                </button>
+                <button
+                  onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/cadastrar-professor"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Professores
+                </button>
+                <button
+                  onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/gestores"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Gestores
+                </button>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* Foto de perfil do usuário */}
-        <div className="relative">
+        <div className="relative dropdown-perfil">
            {logo === "show" && (
           <img
-            src={userData?.profilePicture || user?.profilePicture || "https://via.placeholder.com/40"}
+            src={
+              user?.photo_url ||
+              user?.profilePicture ||
+              userData?.photo_url ||
+              userData?.profilePicture ||
+              "https://via.placeholder.com/40"
+            }
             alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
             className="h-10 w-10 border border-black cursor-pointer rounded-full"
             onClick={handleMenuToggle}
           />
            )}
-          {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
-              <div className="px-4 py-3 border-b border-gray-200">
-                <h3 className="font-semibold">{userData?.name || user?.name || decodedToken?.name || 'Usuário'}</h3>
-                <p className="text-sm text-gray-500">{'Perfil'}</p>
-              </div>
-              <div className="py-1">
+          <div
+            className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50 transform transition-all duration-200 origin-top ${menuOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
+            style={{ minWidth: 180 }}
+          >
+            <div className="px-4 py-3 border-b border-gray-200">
+              <h3 className="font-semibold">{userData?.name || user?.name || decodedToken?.name || 'Usuário'}</h3>
+              <p className="text-sm text-gray-500">{'Perfil'}</p>
+            </div>
+            <div className="py-1">
+              {decodedToken?.role !== "3" && (
                 <button
                   onClick={() => {
                     GoTo("/home-atleta/editar-perfil");
@@ -91,26 +164,26 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
                 >
                   Editar Perfil
                 </button>
-                {decodedToken?.role === "atleta" && (
-                  <button
-                    onClick={() => {
-                      GoTo("/faltas-atleta");
-                      setMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Ver Faltas
-                  </button>
-                )}
+              )}
+              {decodedToken?.role === "atleta" && (
                 <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    GoTo("/faltas-atleta");
+                    setMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
-                  Logout
+                  Ver Faltas
                 </button>
-              </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+              >
+                Logout
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </header>
