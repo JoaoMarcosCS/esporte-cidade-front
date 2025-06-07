@@ -338,7 +338,7 @@ const CadastroAtleta: React.FC = () => {
   const validateEmail = async (email: string): Promise<boolean> => {
     console.log('[Email Validation] Starting validation for:', email);
 
-    if(!email){
+    if (!email) {
       return true
     }
     // Basic regex validation
@@ -768,30 +768,36 @@ const CadastroAtleta: React.FC = () => {
       title: "Fotos",
       content: (
         <div>
-          <h2 className="text-xl font-semibold mb-4">Fotos</h2>
-
-          {[
-            { label: "Foto de Frente do RG", name: "frontIdPhotoUrl" },
-            { label: "Foto de Verso do RG", name: "backIdPhotoUrl" },
-            { label: "Foto do Atleta", name: "athletePhotoUrl" },
-          ].map(input => (
-            <div className="mb-4" key={input.name}>
-              <label className="font-semibold block text-sm mb-1">{input.label}</label>
-              <label
-                htmlFor={input.name}
-                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] block w-full border border-black rounded-sm cursor-pointer text-gray-700"
-              >
-                Selecionar arquivo
-              </label>
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Fotos</h2>
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto de Frente do RG</label>
               <input
-                id={input.name}
                 type="file"
-                name={input.name}
-                onChange={e => handleImageUpload(e, input.name)}
-                className="hidden"
+                name="frontIdPhotoUrl"
+                onChange={e => handleImageUpload(e, 'frontIdPhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               />
             </div>
-          ))}
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto de Verso do RG</label>
+              <input
+                type="file"
+                name="backIdPhotoUrl"
+                onChange={e => handleImageUpload(e, 'backIdPhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto do Atleta</label>
+              <input
+                type="file"
+                name="athletePhotoUrl"
+                onChange={e => handleImageUpload(e, 'athletePhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+              />
+            </div>
+          </div>
         </div>
       ),
     },
