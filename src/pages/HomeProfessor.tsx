@@ -17,6 +17,25 @@ import { useState, useEffect } from "react";
 
 
 
+export function useMediaQuerie() {
+  const customBreakpoint = 854;
+  const [isMobile, setIsmobile] = React.useState<boolean | undefined>(
+    undefined
+  );
+  React.useEffect(() => {
+    const media = window.matchMedia(`(max-width:${customBreakpoint - 1}px)`);
+    const onChange = () => {
+      setIsmobile(window.innerWidth < customBreakpoint);
+    };
+    media.addEventListener("change", onChange);
+    setIsmobile(window.innerWidth < customBreakpoint);
+    return () => {
+      media.removeEventListener("change", onChange);
+    };
+  });
+  return !!isMobile;
+}
+
 const HomeProfessor = () => {
   const { user, loading, isAuthenticated } = useAuth();
 
@@ -24,8 +43,7 @@ const HomeProfessor = () => {
   const { isLoading: authCheckLoading } = useAuthStatus("2");
   const GoTo = useNavigateTo();
   const userType = "professor";
-  const rawUser = useUser();
-  const userData = rawUser?.[0];
+  const userData =useUser(); 
   //const { fetchUser } = useAuthStatus();
   const decodedToken = useDecodedToken();
 
@@ -71,7 +89,7 @@ const HomeProfessor = () => {
   }
   return (
     <SidebarProvider>
-      <AppSidebar type={userType} />
+      {/*<AppSidebar type={userType} />*/}
       <SidebarInset>
         <div className="min-h-screen bg-gray-100">
           <HeaderBasic

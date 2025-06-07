@@ -28,7 +28,7 @@ const ManagersCadastrados: React.FC<Props> = ({
   };
 
   React.useEffect(() => {
-    setCurrentPage(1); // volta para página 1 ao atualizar lista
+    setCurrentPage(1); 
   }, [managers, perPage]);
 
   return (

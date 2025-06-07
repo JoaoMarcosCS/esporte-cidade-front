@@ -18,11 +18,12 @@ const CadastroAtleta: React.FC = () => {
     const formData = new FormData();
     formData.append('profile', file);
     try {
-      const response = await fetch('http://localhost:3002/api/uploads/upload', {
-        method: 'POST',
-        body: formData,
+      const response = await api.post("/uploads/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      const data = await response.json();
+      const data = response.data;
       if (data.profile) {
         setAthlete(prev => ({ ...prev, [field]: data.profile }));
       }
@@ -30,6 +31,8 @@ const CadastroAtleta: React.FC = () => {
       console.error('Erro ao fazer upload da imagem:', err);
     }
   };
+
+
 
   const GoTo = useNavigateTo();
   const [athlete, setAthlete] = useState<Athlete>({
@@ -232,11 +235,11 @@ const CadastroAtleta: React.FC = () => {
       const formData = new FormData();
       formData.append("profile", file);
       try {
-        const response = await fetch("http://localhost:3002/uploads/upload", {
+        const response = await api.post("/uploads/upload", {
           method: "POST",
           body: formData,
         });
-        const data = await response.json();
+        const data = await response.data
         if (data.profile) {
           setAthlete((prevState) => ({
             ...prevState,

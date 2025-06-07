@@ -154,7 +154,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
               <p className="text-sm text-gray-500">{'Perfil'}</p>
             </div>
             <div className="py-1">
-              {decodedToken?.role !== "3" && (
+              {decodedToken?.role !== "3" && decodedToken?.role !== "2" && (
                 <button
                   onClick={() => {
                     GoTo("/home-atleta/editar-perfil");
