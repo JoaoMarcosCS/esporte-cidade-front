@@ -27,7 +27,8 @@ import {
   GestaoDeAtletas,
   GestaoDeManagers,
   TeacherRequestPasswordReset, // Added for password recovery
-  TeacherResetPassword      // Added for password recovery
+  TeacherResetPassword,   // Added for password recovery
+  HorarioProfessor
 } from "../pages";
 
 const router = createBrowserRouter(
@@ -140,6 +141,14 @@ const router = createBrowserRouter(
           element: (
             <ProtectedRoute requiredRole="2">
               <AprovarInscricoesProfessor />
+            </ProtectedRoute>
+          ),
+        },
+         {
+          path: "/home-professor/horario",
+          element: (
+            <ProtectedRoute requiredRole="2">
+              <HorarioProfessor />
             </ProtectedRoute>
           ),
         },

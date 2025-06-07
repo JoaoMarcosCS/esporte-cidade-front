@@ -13,6 +13,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import AgendaSemanal from "../components/AgendaSemanal";
+import { Escala } from "../components/Escala";
 
 
 
@@ -35,7 +37,7 @@ export function useMediaQuerie() {
   return !!isMobile;
 }
 
-const HomeProfessor = () => {
+const HorarioProfessor = () => {
   const { user, loading, isAuthenticated } = useAuth();
 
 
@@ -77,7 +79,7 @@ const HomeProfessor = () => {
     return <div>Loading...</div>;
   }
 
-  
+
   return (
     <SidebarProvider>
       <AppSidebar type={userType} />
@@ -97,29 +99,7 @@ const HomeProfessor = () => {
           />
 
           <div className="max-w-7xl pb-24 ml-24 mr-10 mt-14 ">
-            <h1 className="text-2xl font-bold">
-              Olá, Professor(a){" "}
-              <span className="text-[#EB8317]">{userData?.name}</span>!
-            </h1>
-
-            {isMobile ? (
-              <div className="mt-4 grid grid-cols-1 gap-8 items-start">
-                <div className="flex gap-8">
-                  <VisualizarAtendimentos />
-
-                </div>
-                <AtendimentosAnteriores />
-              </div>
-
-
-
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 space-x-10">
-                <VisualizarAtendimentos />
-
-                <AtendimentosAnteriores />
-              </div>
-            )}
+            <Escala />
           </div>
           <FooterMobile />
         </div>
@@ -128,4 +108,4 @@ const HomeProfessor = () => {
   );
 };
 
-export default HomeProfessor;
+export default HorarioProfessor;

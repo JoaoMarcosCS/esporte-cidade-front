@@ -124,9 +124,8 @@ const getDiasHojeEAmanha = () => {
 const { hoje, amanha } = getDiasHojeEAmanha();
 
 export const VisualizarAtendimentos = () => {
-    const user = useAuth()
-    const rawUser = useUser();
-    const userData = rawUser?.[0];
+    const user = useAuth() 
+    const userData = useUser();
     console.log(userData);
 
 
@@ -182,8 +181,8 @@ export const VisualizarAtendimentos = () => {
         fetchScheduleTeacher();
     }, []);
 
-    console.log('Hoje (abrev):', hoje);     
-    console.log('Amanhã (abrev):', amanha);  
+    console.log('Hoje (abrev):', hoje);
+    console.log('Amanhã (abrev):', amanha);
 
     console.log('Dias no formattedSchedule:');
     formattedSchedule.forEach((aula, i) => {
@@ -204,7 +203,27 @@ export const VisualizarAtendimentos = () => {
         <div className="mt-4">
             <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
             {aulas.length === 0 ? (
-                <p className="text-gray-500 text-center">Nenhuma aula agendada</p>
+
+                //sem Aulas 
+                 <>
+                    <Carousel opts={{ align: "start" }} className=" w-full max-w-3xl">
+                        <CarouselContent>
+                                <CarouselItem className=" basis-1/2 min-w-36">
+                                    <div className="p-1">
+                                        <Card>
+                                            <CardContent className="min-h-32 p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
+                                                <p>sem aulas Hoje</p>
+                                               
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+
+                        </CarouselContent>
+                        {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                        <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" /> */}
+                    </Carousel>
+                </>
             ) : (
                 <>
                     <Carousel opts={{ align: "start" }} className="w-full max-w-3xl">
@@ -213,7 +232,7 @@ export const VisualizarAtendimentos = () => {
                                 <CarouselItem key={index} className="basis-1/2 min-w-36">
                                     <div className="p-1">
                                         <Card>
-                                            <CardContent className="p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
+                                            <CardContent className="min-h-32 p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
                                                 <p>{aula.modalidade}</p>
                                                 <p className="text-orange-500">{aula.horario}</p>
                                                 <p className="text-sm text-gray-600">{aula.local}</p>
@@ -250,80 +269,22 @@ export const VisualizarAtendimentos = () => {
     );
 };
 
-export const QuantidadeAtendimentos = () => {
-    const content = [
-        {
-            title: "Quantidade de Atendimentos",
-            items: [
-                { modalidade: "Futebol", quantidade: 12 },
-                { modalidade: "Volley", quantidade: 2 },
-                { modalidade: "Natação", quantidade: 5 },
-                { modalidade: "Basquete", quantidade: 8 },
-                { modalidade: "Tênis", quantidade: 6 },
-                { modalidade: "Atletismo", quantidade: 4 },
-                { modalidade: "Ginástica", quantidade: 7 },
-                { modalidade: "Judô", quantidade: 3 },
-                { modalidade: "Ciclismo", quantidade: 9 },
-            ]
-        }
-
-    ]
-
-    const [currentPage, setCurrentPage] = React.useState(1)
-    const itemsPerPage = 3
-    const totalPages = Math.ceil(content[0].items.length / itemsPerPage)
-
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
-    const currentItems = content[0].items.slice(startIndex, endIndex)
-
-    return (
-        <div className="w-full  max-w-screen-md pt-10 ">
-            <h2 className="text-lg font-semibold mb-4">{content[0].title}</h2>
-            {currentItems.map((item, index) => (
-                <Card key={index} className="mb-4 bg-[#d9d9d9]  transition-colors">
-                    <CardContent className="p-5 flex justify-between items-center border rounded-md border-black">
-                        <p>
-                            <span className="font-inter">Modalidade:</span> <span className="font-semibold">{item.modalidade}</span>
-                        </p>
-                        <p className="text-orange-500 font-bold text-lg">{item.quantidade}</p>
-                    </CardContent>
-                </Card>
-            ))}
-            <div className="flex justify-between items-center mt-4">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="sr-only">Previous page</span>
-                </Button>
-                <span>
-                    Página {currentPage} de {totalPages}
-                </span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronRight className="h-4 w-4" />
-                    <span className="sr-only">Next page</span>
-                </Button>
-            </div>
-        </div>
-    )
-
-};
 
 export const AtendimentosAnteriores = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [selectedLocation, setSelectedLocation] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
+
+   const content = [
+        {
+            title: "Quantidade de Atendimentos",
+            items: [
+                { modalidade: "Futebol", quantidade: 12 },
+            ]
+        }
+
+    ]
+
 
     const filteredAttendances = useMemo(() => {
         return attendances.filter(attendance => {
@@ -377,6 +338,17 @@ export const AtendimentosAnteriores = () => {
             </div>
 
             <div className=" border rounded-md border-black bg-[#d9d9d9] p-4 rounded-lg shadow">
+               
+                    <Card className="mb-4 bg-[#d9d9d9]  transition-colors">
+                        <CardContent className="p-5 flex justify-between items-center border rounded-md border-black">
+                            <p>
+                                <span className="font-inter">Modalidade:</span> <span className="font-semibold">Futebol</span>
+                            </p>
+                            <p className="text-orange-500 font-bold text-lg">12</p>
+                        </CardContent>
+                    </Card>
+               
+
                 <div className=" grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
                     <p className="border-b-2 border-black pb-2">Data</p>
                     <p className="border-b-2 border-black pb-2">Local</p>

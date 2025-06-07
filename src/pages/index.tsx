@@ -22,6 +22,7 @@ export {default as GestaoDeAtletas} from "./GestaoDeAtletas"
 export {default as GestaoDeManagers} from "./GestaoDeManagers"
 export {default as TeacherRequestPasswordReset} from "./TeacherRequestPasswordReset";
 export {default as TeacherResetPassword} from "./TeacherResetPassword";
+export {default as HorarioProfessor} from "./horarioProfessor";
 
 
 

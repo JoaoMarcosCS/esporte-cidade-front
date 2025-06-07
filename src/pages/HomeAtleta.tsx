@@ -17,6 +17,7 @@ import {
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { checkProtectedRoute } from '../services/protectedRoutes'; // Importando o serviço
+import { Escala } from "../components/Escala";
 
 
 const HomeAtleta = () => {
@@ -46,7 +47,7 @@ const HomeAtleta = () => {
             <div className="grid grid-cols-1 md:grid-cols-1">
               <div className="col-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-4 md:mr-4">
                 <h3 className="font-semibold mb-2">HORÁRIO SEMANAL</h3>
-                <AgendaSemanal/>
+                <Escala/>
               </div>
 
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
