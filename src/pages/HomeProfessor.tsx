@@ -102,24 +102,17 @@ const HomeProfessor = () => {
               <span className="text-[#EB8317]">{userData?.name}</span>!
             </h1>
 
-            {isMobile ? (
-              <div className="mt-4 grid grid-cols-1 gap-8 items-start">
-                <div className="flex gap-8">
-                  <VisualizarAtendimentos />
-
-                </div>
-                <AtendimentosAnteriores />
-              </div>
+          
 
 
 
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 space-x-10">
+          
+              <div className="flex flex-col lg:flex-row gap-10">
                 <VisualizarAtendimentos />
 
                 <AtendimentosAnteriores />
               </div>
-            )}
+          
           </div>
           <FooterMobile />
         </div>

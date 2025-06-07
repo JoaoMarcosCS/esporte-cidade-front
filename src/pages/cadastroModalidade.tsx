@@ -132,18 +132,14 @@ export const CadastroModalidades: React.FC = () => {
                                         modalidadeEdicao={modalidadeSelecionada}
                                         setModalidades={setModalidades}
                                         onAssignTeacher={handleAssignTeacherClick}
-                                    />
-
-
-                                    <button
-                                        className="self-end mr-12 h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                                        onClick={() => {
+                                        onCreateClick={() => {
                                             setModalidadeSelecionada(null);
                                             setShowModal(true);
                                         }}
-                                    >
-                                        Cadastrar Nova Modalidade
-                                    </button>
+                                    />
+
+
+                                 
                                 </div>
                             </section>
 

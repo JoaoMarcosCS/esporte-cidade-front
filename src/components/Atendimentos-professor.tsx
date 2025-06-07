@@ -3,6 +3,8 @@ import { Card, CardContent } from "./ui/card"
 import { Button } from "../components/ui/button";
 import api from "../services/api";
 import { useAuth } from '../contexts/AuthContext';
+import { Atendiment } from "../types/Atendiments";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
 import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
@@ -27,6 +29,7 @@ import {
 } from "./ui/carousel"
 import { useUser } from "../hooks/useAuth";
 import { useDecodedToken } from "../hooks/useDecodedToken";
+import { getAtendiments } from "../services/modality";
 
 
 interface ScheduleItem {
@@ -109,6 +112,9 @@ const dayMap: Record<string, string> = {
     sex: 'Sexta',
     sab: 'Sábado',
 };
+
+
+
 const getDiasHojeEAmanha = () => {
     const hoje = dayjs();
     const amanha = hoje.add(1, 'day');
@@ -123,9 +129,11 @@ const getDiasHojeEAmanha = () => {
 };
 const { hoje, amanha } = getDiasHojeEAmanha();
 
+
 export const VisualizarAtendimentos = () => {
-    const user = useAuth() 
+    const user = useAuth()
     const userData = useUser();
+
     console.log(userData);
 
 
@@ -200,29 +208,23 @@ export const VisualizarAtendimentos = () => {
     console.log('aulasAmanha:', aulasAmanha);
 
     const renderCarousel = (aulas: any[], titulo: string) => (
-        <div className="mt-4">
+        <div className=" mt-4  items-center align-middle justify-center">
             <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
             {aulas.length === 0 ? (
 
                 //sem Aulas 
-                 <>
-                    <Carousel opts={{ align: "start" }} className=" w-full max-w-3xl">
-                        <CarouselContent>
-                                <CarouselItem className=" basis-1/2 min-w-36">
-                                    <div className="p-1">
-                                        <Card>
-                                            <CardContent className="min-h-32 p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
-                                                <p>sem aulas Hoje</p>
-                                               
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CarouselItem>
+                <>
 
-                        </CarouselContent>
-                        {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                    <Card>
+                        <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
+                            <p>sem aulas Hoje</p>
+
+                        </CardContent>
+                    </Card>
+
+                    {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
                         <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" /> */}
-                    </Carousel>
+
                 </>
             ) : (
                 <>
@@ -251,9 +253,9 @@ export const VisualizarAtendimentos = () => {
     );
 
     return (
-        <div className="flex flex-col gap-8">
-            <div>
-                <h1>Aulas do professor</h1>
+        <div className="mt-10 flex flex-col gap-8">
+            <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm">
+                <h1 className="text-lg font-bold">Horário</h1>
                 {loading ? (
                     <p>Carregando...</p>
                 ) : formattedSchedule.length === 0 ? (
@@ -274,40 +276,89 @@ export const AtendimentosAnteriores = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [selectedLocation, setSelectedLocation] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalAtendiments, setTotalAtendiments] = useState<number>(0);
+    const [Atendiments, setAtendiments] = useState<Atendiment[]>([]);
+    const [allAtendiments, setAllAtendiments] = useState<Atendiment[]>([]);
+    const [locations, setLocations] = useState<string[]>([]);
 
-   const content = [
-        {
-            title: "Quantidade de Atendimentos",
-            items: [
-                { modalidade: "Futebol", quantidade: 12 },
-            ]
-        }
+    const userData = useUser();
 
-    ]
+    const teacherId = userData?.id
 
 
-    const filteredAttendances = useMemo(() => {
-        return attendances.filter(attendance => {
-            const dateMatch = selectedDate ? attendance.data === format(selectedDate, "dd/MM/yyyy") : true;
-            const locationMatch = !selectedLocation || selectedLocation === "all" || attendance.local === selectedLocation;
-            return dateMatch && locationMatch;
-        });
+    useEffect(() => {
+        const fetchAtendiments = async () => {
+            try {
+                if (typeof teacherId === 'number') {
+                    const data = await getAtendiments(teacherId);
+                    setTotalAtendiments(data.length);
+                    setAllAtendiments(data);
+                    setAtendiments(data)
+                    const allLocations = data.flatMap((item: any) =>
+                        item.local.split(',').map((loc: any) => loc.trim())
+                    );
+                    const uniqueLocations: string[] = [];
+                    allLocations.forEach((loc: any) => {
+                        if (!uniqueLocations.includes(loc)) {
+                            uniqueLocations.push(loc);
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar atendimentos:", error);
+            }
+        };
+
+        fetchAtendiments();
+    }, [teacherId]);
+    useEffect(() => {
+        setCurrentPage(1);
     }, [selectedDate, selectedLocation]);
 
-    const totalPages = Math.ceil(filteredAttendances.length / 10);
-    const currentItems = filteredAttendances.slice(
-        (currentPage - 1) * 10,
-        currentPage * 10
+    //filtro por data
+    const filteredByDate = selectedDate
+        ? allAtendiments.filter(item => {
+            const itemDate = new Date(item.created_at);
+            return (
+                itemDate.getDate() === selectedDate.getDate() &&
+                itemDate.getMonth() === selectedDate.getMonth() &&
+                itemDate.getFullYear() === selectedDate.getFullYear()
+            );
+        })
+        : allAtendiments;
+
+    // Filtrar por local
+    const filteredAtendiments = selectedLocation !== 'all'
+        ? filteredByDate.filter(item =>
+            item.local
+                .split(',')
+                .map(loc => loc.trim().toLowerCase())
+                .includes(selectedLocation.toLowerCase())
+        )
+        : filteredByDate;
+
+
+    // controle de paginas    
+    const pageMax = 7
+    const totalFiltered = filteredAtendiments.length;
+    const totalPages = Math.ceil(totalFiltered / pageMax);
+    const currentItems = filteredAtendiments.slice(
+        (currentPage - 1) * pageMax,
+        currentPage * pageMax
     );
 
+
+    console.log("data:   ", Atendiments)
+    console.log("currentItems:   ", currentItems)
+
     return (
-        <div className="w-full mt-4 max-w-2xl  ">
+        <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-4 mb-4 ">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="bg-[#d9d9d9] hover:bg-[#d9d9d9]   hover:shadow-md hover:shadow-slate-700 
-                        flex w-40 justify-between items-center font-normal  border rounded-md border-black">
+                        <Button variant="outline" className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black">
                             {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Data</span>}
                             <ChevronDown className="ml-2 h-4 w-4 hover:shadow-lg hover:shadow-slate-900" />
                         </Button>
@@ -322,7 +373,7 @@ export const AtendimentosAnteriores = () => {
                     </PopoverContent>
                 </Popover>
                 <Select onValueChange={(value) => setSelectedLocation(value)}>
-                    <SelectTrigger className="bg-[#d9d9d9] hover:bg-[#d9d9d9] hover:shadow-md hover:shadow-slate-700 flex w-40 justify-between items-center font-normal h-12 border rounded-md border-black">
+                    <SelectTrigger className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-x-1 hover:translate- flex w-40 justify-between items-center font-normal h-[3.1rem] border border-black">
                         <SelectValue placeholder="Local" />
                     </SelectTrigger>
 
@@ -335,59 +386,103 @@ export const AtendimentosAnteriores = () => {
                         ))}
                     </SelectContent>
                 </Select>
+                <Button
+                    variant="ghost"
+                     className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black"
+                    onClick={() => {
+                        setSelectedDate(undefined);
+                        setSelectedLocation('all');
+                    }}
+                >
+                    Limpar filtros
+                </Button>
             </div>
 
-            <div className=" border rounded-md border-black bg-[#d9d9d9] p-4 rounded-lg shadow">
-               
-                    <Card className="mb-4 bg-[#d9d9d9]  transition-colors">
-                        <CardContent className="p-5 flex justify-between items-center border rounded-md border-black">
-                            <p>
-                                <span className="font-inter">Modalidade:</span> <span className="font-semibold">Futebol</span>
-                            </p>
-                            <p className="text-orange-500 font-bold text-lg">12</p>
-                        </CardContent>
-                    </Card>
-               
+            <Card className="mb-4 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black transition-colors">
+                <CardContent className="p-5 flex justify-between items-center rounded-md">
+                    <p>
+                        <span className="font-inter">Modalidade:</span>{" "}
+                        <span className="font-semibold">Futebol</span>
+                    </p>
+                    <p className="text-orange-500 font-bold text-lg">{totalFiltered}</p>
+                </CardContent>
+            </Card>
 
-                <div className=" grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
-                    <p className="border-b-2 border-black pb-2">Data</p>
-                    <p className="border-b-2 border-black pb-2">Local</p>
-                    <p className="border-b-2 border-black pb-2">Atendimento</p>
+
+            <div key={currentPage} // forçar a reinicialização da animação a cada página
+                className="min-h-[445px] bg-white opacity-100  translate-y-0  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-4">
+
+
+
+                <div className="grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
+                    <p className="transition-all border-b-2 border-black pb-2">Data</p>
+                    <p className="transition-all border-b-2 border-black pb-2">Local</p>
+                    <p className="transition-all border-b-2 border-black pb-2">Descrição</p>
                 </div>
-                {currentItems.map((item, index) => (
-                    <div key={index} className="grid grid-cols-3 gap-2 lg:gap-10 py-2  border-t border-gray-200">
-                        <p>{item.data}</p>
-                        <p>{item.local}</p>
-                        <p>{item.atendimento}</p>
+                {currentItems.map((item: any) => (
+                    <div key={item.id} className="animate-slide-in-fade  transition-all grid grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200">
+                        {/* data */}
+                        <p>{new Date(item.created_at).toLocaleDateString("pt-BR")}</p>
+                        {/* local */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <p className="trincate max-w-[250px] cursor-pointer">{item.local}</p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {item.local}
+                            </TooltipContent>
+                        </Tooltip>
+                        {/* descrição */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <p className="truncate max-w-[250px] cursor-pointer">
+                                    {item.description}
+                                </p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {item.description}
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 ))}
             </div>
 
-            <div className="flex justify-between items-center mt-4">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="sr-only">Página anterior</span>
-                </Button>
+
+            <div className="flex justify-evenly items-center mt-4">
+
                 <span>
                     Página {currentPage} de {totalPages}
                 </span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronRight className="h-4 w-4" />
-                    <span className="sr-only">Próxima página</span>
-                </Button>
+                <div className=" space-x-0.5">
+                    <Button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 border border-black text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]
+                                ${currentPage === 1
+                                ? "bg-white cursor-not-allowed text-gray-500"
+                                : "bg-[#EB8317] hover:bg-orange-600 transition-transform hover:shadow-none hover:-translate-x-1 hover:translate-y-1"
+                            }`}
+                        variant="default"
+                        size="default"  >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="sr-only">Página anterior</span>
+                    </Button>
+                    <Button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 border border-black text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]
+                                ${currentPage === totalPages
+                                ? "bg-white cursor-not-allowed text-gray-500"
+                                : "bg-[#EB8317] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                            }`}
+                        variant="default" 
+                        size="default"    
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                        <span className="sr-only">Próxima página</span>
+                    </Button>
+                </div>
             </div>
-        </div>
+        </div >
     );
 };

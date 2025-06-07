@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { getAllModalities, deleteModality } from "../services/modalityService";
+import React, { useEffect, useState } from "react";
 import { Modality } from "../types/Modality";
-import { split } from "postcss/lib/list";
-
+import { Professor } from "../types/Professor";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ModalidadesCadastradasProps {
     modalidades: Modality[];
@@ -11,6 +10,7 @@ interface ModalidadesCadastradasProps {
     modalidadeEdicao: Modality | null;
     setModalidades: React.Dispatch<React.SetStateAction<Modality[]>>;
     onAssignTeacher: (modalidade: Modality) => void;
+    onCreateClick: () => void; // <-- nova prop
 }
 
 export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
@@ -19,71 +19,154 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
     onDelete,
     modalidadeEdicao,
     onAssignTeacher,
-    setModalidades
+    setModalidades,
+    onCreateClick
 }) => {
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(6);
+    const PER_PAGE_OPTIONS = [3, 6, 9, 12];
 
-    return (
+    const totalPages = Math.ceil(modalidades.length / perPage) || 1;
 
-        <div>
-
-
-            <div className=" md:pb-10 bg-[#D9D9D9]">
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-left min-w-[600px]">
-                        <thead>
-                            <tr>
-                                <th className="px-4 py-3 text-lg font-bold">Nome</th>
-                                <th className="px-4 py-3 text-lg font-bold">Descrição</th>
-                                <th className="px-4 py-3 text-lg font-bold">Local</th>
-                                <th className="px-4 py-3 text-lg font-bold">Dias</th>
-                                <th className="px-4 py-3 text-lg font-bold">Professores</th>
-                                <th className="px-4 py-3 text-lg font-bold">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {modalidades.map((modalidade) => {
-                                return (
-                                    <tr key={modalidade.id} className="border-t border-gray-300">
-                                        <td className="px-4 py-3">{modalidade.name}</td>
-                                        <td className="px-4 py-3">{modalidade.description || "-"}</td>
-                                        <td className="px-4 py-3">{modalidade.class_locations || "-"}</td>
-                                        <td className="px-4 py-3">{modalidade.days_of_week || "-"}</td>
-                                        <td className="px-4 py-3">
-                                            {Array.isArray(modalidade.teachers) && modalidade.teachers.length > 0
-                                                ? (modalidade.teachers as { name: string }[]).map((teacher) => teacher.name).join(", ")
-                                                : "-"}
-                                        </td>
-                                        <td className="px-4 py-3 space-x-2 flex">
-                                            <button className="w-7" onClick={() => onAssignTeacher(modalidade)}>
-                                                <img src="/icon/teacher.png" alt="Atribuir professor" className="w-full" />
-                                            </button>
-
-                                            <button className="w-7 " onClick={() => onEdit(modalidade)}>
-                                                <img src="/icon/pencil.svg" alt="Editar" className="w-full" />
-                                            </button>
-                                            <button onClick={() => onDelete(modalidade.id)} className="w-7">
-                                                <img src="/icon/trash.svg" alt="Deletar" className="w-full" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                            {modalidades.length === 0 && (
-                                <tr>
-                                    <td colSpan={5} className="px-4 py-3 text-center text-gray-600">
-                                        Nenhuma modalidade cadastrada.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-
-        </div>
+    const paginatedModalidades = modalidades.slice(
+        (currentPage - 1) * perPage,
+        currentPage * perPage
     );
 
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    };
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [modalidades, perPage]);
+
+    return (
+        <div>
+            <h2 className="font-bold text-3xl m-4">Modalidades Cadastradas</h2>
+            <div className="bg-[#D9D9D9]  p-4 rounded-lg">
+                {/* Dropdown de quantidade de cards por página */}
+                <select
+                    className="transition-all  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 mb-6 border border-black flex h-7 justify-between items-center font-normal"
+                    value={perPage}
+                    onChange={(e) => setPerPage(Number(e.target.value))}
+                >
+                    {PER_PAGE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                            Modalidades por página: {opt}
+                        </option>
+                    ))}
+                </select>
+                {/* Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {paginatedModalidades.map((modalidade) => (
+                        <div
+                            key={modalidade.id}
+                            className="bg-white border border-black rounded-lg p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex flex-col relative"
+                        >
+                            <h3 className="font-bold text-lg mb-2">{modalidade.name}</h3>
+                            <p className="text-sm text-gray-700 mb-1">
+                                <span className="font-semibold">Descrição:</span>{" "}
+                                {modalidade.description || "-"}
+                            </p>
+                            <p className="text-sm text-gray-700 mb-1">
+                                <span className="font-semibold">Local:</span>{" "}
+                                {modalidade.class_locations || "-"}
+                            </p>
+                            <p className="text-sm text-gray-700 mb-1">
+                                <span className="font-semibold">Dias:</span>{" "}
+                                {modalidade.days_of_week || "-"}
+                            </p>
+                            <p className="text-sm text-gray-700 mb-2">
+                                <span className="font-semibold">Professores:</span>{" "}
+                                {Array.isArray(modalidade.teachers) && modalidade.teachers.length > 0
+                                    ? (modalidade.teachers as Professor[]).map((t) => t.name).join(", ")
+                                    : "-"}
+                            </p>
+
+                            <div className="flex gap-3 mt-auto">
+                                <button
+                                    onClick={() => onAssignTeacher(modalidade)}
+                                    className="w-8 h-8 flex items-center justify-center hover:scale-125 transition-transform"
+                                    title="Atribuir professor"
+                                >
+                                    <img src="/icon/teacher.png" alt="Atribuir professor" className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => onEdit(modalidade)}
+                                    className="w-8 h-8 flex items-center justify-center hover:scale-125 transition-transform"
+                                    title="Editar"
+                                >
+                                    <img src="/icon/pencil.svg" alt="Editar" className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => onDelete(modalidade.id)}
+                                    className={`w-8 h-8 flex items-center justify-center hover:scale-125 transition-transform ${modalidadeEdicao?.id === modalidade.id ? "opacity-35" : ""
+                                        }`}
+                                    disabled={modalidadeEdicao?.id === modalidade.id}
+                                    title="Excluir"
+                                >
+                                    <img src="/icon/trash.svg" alt="Deletar" className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Mensagem de vazio */}
+                {modalidades.length === 0 && (
+                    <div className="text-center text-gray-600 mt-6">
+                        Nenhuma modalidade cadastrada.
+                    </div>
+                )}
+
+                {/* Paginação */}
+                {totalPages > 1 && (
+                    <div className="flex justify-between gap-2 me-10 items-center mt-6 ">
+
+                        <button
+                            className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                            onClick={onCreateClick}
+                        >
+                            Cadastrar Nova Modalidade
+                        </button>
+                        
+                        <div>
+                            <span className="mx-2 text-sm font-semibold">
+                                Página {currentPage} de {totalPages}
+                            </span>
+
+
+
+
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                className={`px-4 py-2 rounded-l-md border border-black ${currentPage === 1
+                                    ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                                    : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:-translate-x-1 hover:translate-y-1 hover:shadow-none"
+                                    }`}
+                                disabled={currentPage === 1}
+                            >
+                                <ChevronLeft className="h-6 w-4" />
+                            </button>
+
+
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className={`px-4 py-2 rounded-r-md border border-black ${currentPage === totalPages
+                                    ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                                    : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                                    }`}
+                            >
+                                <ChevronRight className="h-6 w-4" /> {/*&gt; */}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div >
+    );
 };
