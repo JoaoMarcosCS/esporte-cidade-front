@@ -136,6 +136,13 @@ const CadastroAtleta: React.FC = () => {
           console.log('[Form Navigation] Email validation failed');
           return;
         }
+
+        console.log('[Form Navigation] Validating password');
+        const isPasswordValid = await validatePassword(athlete.password);
+        if (!isPasswordValid) {
+          console.log('[Form Navigation] Password validation failed');
+          return;
+        }
       }
 
       console.log('[Form Navigation] All validations passed, moving to step:', currentStep + 1);
@@ -385,6 +392,61 @@ const CadastroAtleta: React.FC = () => {
       return false;
     }
   };
+
+  const validatePassword = async (password: string): Promise<boolean> => {
+  console.log('[Password Validation] Starting validation for:', password);
+
+  if (!password) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha não pode estar vazia",
+    }));
+    return false;
+  }
+
+  if (password.length < 6) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha deve ter pelo menos 6 caracteres",
+    }));
+    return false;
+  }
+
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  if (!hasLetter || !hasNumber) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha deve conter letras e números",
+    }));
+    return false;
+  }
+
+  try {
+    console.log('[Password Validation] Making API validation request');
+    const response = await api.post("/validation/password", { password });
+    console.log('[Password Validation] API response:', response.data);
+
+    if (response.data.valid) {
+      setErrors((prev) => ({ ...prev, password: "" }));
+      return true;
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        password: response.data.message || "Senha inválida",
+      }));
+      return false;
+    }
+
+  } catch (error: unknown) {
+    console.error("[Password Validation] Error during validation:", error);
+
+    return false;
+  }
+};
+
+
   const validateRequiredFields = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -655,7 +717,7 @@ const CadastroAtleta: React.FC = () => {
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="Crie uma senha"
             />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
           </div>
         </div>
       ),

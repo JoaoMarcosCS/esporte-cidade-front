@@ -3,6 +3,7 @@ import ModuloConfirmacao from "./ModuloConfirmacao";
 import { AtletaAtivos } from "../pages/Chamada";
 import api from "../services/api";
 import useNavigateTo from "../hooks/useNavigateTo";
+import CustomButton from "./customButtom";
 
 interface AttendanceProps {
   userType: "professor" | "atleta";
@@ -83,12 +84,12 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         modalityId: student.modalityId, // Certifique-se que modalityId existe no student
         athleteId: student.id,
         present: student.status === "PRESENTE",
-        created_at: formattedDateTime, 
+        created_at: formattedDateTime,
       }));
 
       const response = await api.post(
         `modality/${students[0].modalityId}/receive-atendiments`,
-        atendiments 
+        atendiments
       );
 
       console.log("Chamada gravada com sucesso:", response.data);
@@ -104,35 +105,53 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
   };
 
   return (
-    <div className="p-6 min-h-screen">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-gray-700 mb-1">Modalidade:</label>
-          <div className="w-full p-2 border border-black bg-[#d9d9d9]">
-            {modalityName || "Carregando..."}
+    <div className="p-6 min-h-screen ">
+      <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+
+        {/* <div className="bg-[#d9d9d9] flex p-4   items-center w-full border border-black rounded-lg">
+          <div className="bg-white opacity-100 p-2  min-w-48 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-row border-black ">
+            <label className="  text-gray-700 mb-1">Modalidade:</label>
+            <div className=" w-full pl-2 ">
+              {modalityName || "Carregando..."}
+            </div>
+          </div>
+        </div> */}
+
+
+
+
+        <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg">
+          <div className="bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black ">
+
+            <label className="block text-gray-700 mb-1">
+              Informe a data da chamada:
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={dateTime.date}
+              onChange={handleDateTimeChange}
+              className="w-full p-2 "
+            />
           </div>
         </div>
-        <div>
-          <label className="block text-gray-700 mb-1">
-            Informe a data da chamada:
-          </label>
-          <input
-            type="date"
-            name="date"
-            value={dateTime.date}
-            onChange={handleDateTimeChange}
-            className="w-full p-2 border border-black bg-[#d9d9d9]"
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 mb-1">Informe o horário:</label>
-          <input
-            type="time"
-            name="time"
-            value={dateTime.time}
-            onChange={handleDateTimeChange}
-            className="w-full p-2 border border-black bg-[#d9d9d9]"
-          />
+
+
+
+        <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg">
+
+          <div className="bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black ">
+
+            <label className="block text-gray-700 mb-1">Informe o horário:</label>
+            <input
+              type="time"
+              name="time"
+              value={dateTime.time}
+              onChange={handleDateTimeChange}
+              className="w-full p-2 "
+            />
+          </div>
         </div>
       </div>
 
@@ -140,13 +159,13 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         Gerar Lista de Chamada
       </button> */}
 
-      <div className="space-y-4 mt-6">
+      <div className="space-y-4 mt-6 bg-[#d9d9d9] border border-black p-4">
         <p className="text-2xl font-semibold">Alunos da modalidade</p>
 
         {students.map((student) => (
           <div
             key={student.id}
-            className="p-4 bg-[#d9d9d9] border border-black flex flex-col cursor-pointer"
+            className="p-4 bg-white opacity-100    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black flex flex-col cursor-pointer"
             onClick={() => toggleStatus(student.id)}
           >
             <div className="flex items-center">
@@ -155,8 +174,8 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
                 alt={student.name}
                 className="rounded-full mr-4 w-12 h-12 sm:w-14 sm:h-14 object-cover"
                 style={{
-                  maxWidth: "56px", 
-                  minWidth: "48px", 
+                  maxWidth: "56px",
+                  minWidth: "48px",
                 }}
               />
               <div className="flex-1">
@@ -176,12 +195,13 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
           </div>
         ))}
       </div>
-      <button
+      <CustomButton
+        variant="orange"
         onClick={handleOpenModal}
-        className="bg-[#EB8317] mb-6 text-black py-2 px-4 mt-6 rounded border border-black"
+        className="mt-8 self-end"
       >
-        Gravar Chamada
-      </button>
+        Gravar chamada
+      </CustomButton>
       <ModuloConfirmacao
         isOpen={isModalOpen}
         onClose={handleCloseModal}

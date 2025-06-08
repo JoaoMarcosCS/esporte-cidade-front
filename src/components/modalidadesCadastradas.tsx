@@ -48,7 +48,7 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
             <div className="bg-[#D9D9D9]  p-4 rounded-lg">
                 {/* Dropdown de quantidade de cards por página */}
                 <select
-                    className="transition-all  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 mb-6 border border-black flex h-7 justify-between items-center font-normal"
+                    className="transition-all  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  mb-6 border border-black flex h-7 justify-between items-center font-normal"
                     value={perPage}
                     onChange={(e) => setPerPage(Number(e.target.value))}
                 >
@@ -114,58 +114,62 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
                     ))}
                 </div>
 
-                {/* Mensagem de vazio */}
-                {modalidades.length === 0 && (
-                    <div className="text-center text-gray-600 mt-6">
-                        Nenhuma modalidade cadastrada.
-                    </div>
-                )}
+                <div className="justify-between gap-2 me-10 mt-10 flex flex-row">
+                    <button
+                        className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                        onClick={onCreateClick}
+                    >
+                        Cadastrar Nova Modalidade
+                    </button>
 
-                {/* Paginação */}
-                {totalPages > 1 && (
-                    <div className="flex justify-between gap-2 me-10 items-center mt-6 ">
-
-                        <button
-                            className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                            onClick={onCreateClick}
-                        >
-                            Cadastrar Nova Modalidade
-                        </button>
-                        
-                        <div>
-                            <span className="mx-2 text-sm font-semibold">
-                                Página {currentPage} de {totalPages}
-                            </span>
-
-
-
-
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                className={`px-4 py-2 rounded-l-md border border-black ${currentPage === 1
-                                    ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
-                                    : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:-translate-x-1 hover:translate-y-1 hover:shadow-none"
-                                    }`}
-                                disabled={currentPage === 1}
-                            >
-                                <ChevronLeft className="h-6 w-4" />
-                            </button>
-
-
-
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className={`px-4 py-2 rounded-r-md border border-black ${currentPage === totalPages
-                                    ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
-                                    : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
-                                    }`}
-                            >
-                                <ChevronRight className="h-6 w-4" /> {/*&gt; */}
-                            </button>
+                    {/* Mensagem de vazio */}
+                    {modalidades.length === 0 && (
+                        <div className="text-center text-gray-600 mt-6">
+                            Nenhuma modalidade cadastrada.
                         </div>
-                    </div>
-                )}
+                    )}
+
+                    {/* Paginação */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center ">
+
+
+
+                            <div>
+                                <span className="mx-2 text-sm font-semibold">
+                                    Página {currentPage} de {totalPages}
+                                </span>
+
+
+
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    className={`px-4 py-2 rounded-l-md border border-black ${currentPage === 1
+                                        ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                                        : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:-translate-x-1 hover:translate-y-1 hover:shadow-none"
+                                        }`}
+                                    disabled={currentPage === 1}
+                                >
+                                    <ChevronLeft className="h-6 w-4" />
+                                </button>
+
+
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`px-4 py-2 rounded-r-md border border-black ${currentPage === totalPages
+                                        ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                                        : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                                        }`}
+                                >
+                                    <ChevronRight className="h-6 w-4" /> {/*&gt; */}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div >
     );

@@ -234,7 +234,7 @@ export const VisualizarAtendimentos = () => {
                                 <CarouselItem key={index} className="basis-1/2 min-w-36">
                                     <div className="p-1">
                                         <Card>
-                                            <CardContent className="min-h-32 p-6 border rounded-md  min-w-52 border-black bg-[#d9d9d9]">
+                                            <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black">
                                                 <p>{aula.modalidade}</p>
                                                 <p className="text-orange-500">{aula.horario}</p>
                                                 <p className="text-sm text-gray-600">{aula.local}</p>

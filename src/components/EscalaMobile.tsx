@@ -8,6 +8,7 @@ import {
   SelectValue
 } from "./ui/select";
 import { Button } from "./ui/button";
+import CustomButton from "./customButtom";
 
 const diasSemana = [
   'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
@@ -100,7 +101,7 @@ export const EscalaMobile = () => {
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
           <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
               <SelectValue placeholder="Filtrar por modalidade" />
             </SelectTrigger>
             <SelectContent>
@@ -114,7 +115,7 @@ export const EscalaMobile = () => {
         </div>
         <div className="flex-1">
           <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
               <SelectValue placeholder="Filtrar por professor" />
             </SelectTrigger>
             <SelectContent>
@@ -126,26 +127,27 @@ export const EscalaMobile = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button
-          variant="outline"
+        <CustomButton
+          variant="orange"
+          className="min-w-40"
           onClick={() => {
             setSelectedModality('');
             setSelectedTeacher('');
           }}
         >
           Limpar filtros
-        </Button>
+        </CustomButton>
       </div>
       <div className="w-full max-w-6xl mx-auto">
         <h2 className="text-lg font-semibold mb-2">Escala Semanal</h2>
-        <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
+        <div className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
           <div className="grid grid-cols-1 gap-2 mb-2">
             {diasSemana.map(dia => (
               <div key={dia} className="border-b-2 border-black pb-2">
                 <button
                   onClick={() => setActiveDay(activeDay === dia ? null : dia)}
                   className={`w-full text-left p-2 font-semibold transition-colors duration-200 ${
-                    activeDay === dia ? 'bg-[#D9D9D9]' : 'hover:bg-gray-100'
+                    activeDay === dia ? 'bg-slate-200' : 'hover:bg-gray-100'
                   }`}
                 >
                   {dia}
@@ -157,7 +159,7 @@ export const EscalaMobile = () => {
                   <div className="pl-4">
                     {aulasPorDia[dia].map((aula, idx) => (
                       <div key={idx} className="border-b border-gray-300 last:border-0">
-                        <div className="p-2 bg-[#D9D9D9] rounded">
+                        <div className="p-2 bg-white rounded">
                           <div className="flex flex-col gap-1">
                             <p className="text-sm font-medium">{aula.schedule}</p>
                             <p className="text-sm text-gray-600">{aula.modality}</p>
@@ -168,7 +170,7 @@ export const EscalaMobile = () => {
                       </div>
                     ))}
                     {aulasPorDia[dia].length === 0 && (
-                      <div className="p-4 bg-[#D9D9D9] rounded">
+                      <div className="p-4 bg-white rounded">
                         <p className="text-sm text-gray-600">Sem aulas</p>
                       </div>
                     )}
