@@ -1,5 +1,6 @@
 import React from "react";
 import { Manager } from "@/types/Manager";
+import { useUser } from "../hooks/useAuth";
 
 interface Props {
   managers: Manager[];
@@ -14,11 +15,20 @@ const ManagersCadastrados: React.FC<Props> = ({
   onEdit,
   onDelete,
 }) => {
+  const user = useUser();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(6);
   const PER_PAGE_OPTIONS = [3, 6, 9, 12];
   const totalPages = Math.ceil(managers.length / perPage) || 1;
-  const paginatedManagers = managers.slice(
+  // Garante que o manager logado sempre fique em primeiro
+  const sortedManagers = React.useMemo(() => {
+    if (!user) return managers;
+    const loggedManager = managers.find(m => String(m.id) === String(user.id));
+    const otherManagers = managers.filter(m => String(m.id) !== String(user.id));
+    return loggedManager ? [loggedManager, ...otherManagers] : managers;
+  }, [managers, user]);
+
+  const paginatedManagers = sortedManagers.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
@@ -28,7 +38,7 @@ const ManagersCadastrados: React.FC<Props> = ({
   };
 
   React.useEffect(() => {
-    setCurrentPage(1); 
+    setCurrentPage(1);
   }, [managers, perPage]);
 
   return (
@@ -80,13 +90,14 @@ const ManagersCadastrados: React.FC<Props> = ({
                     className="w-5 h-5"
                   />
                 </button>
+                
                 <button
                   onClick={() => onDelete(manager.id?.toString() || "")}
                   className={`w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform ${
-                    managerEdicao?.id === manager.id ? "opacity-35" : ""
+                    managerEdicao?.id === manager.id || String(user?.id) === String(manager.id) ? "hidden" : ""
                   }`}
-                  disabled={managerEdicao?.id === manager.id}
-                  title="Excluir"
+                  
+                  title={String(user?.id) === String(manager.id) ? "Você não pode excluir o próprio cadastro." : "Excluir"}
                 >
                   <img
                     src="/icon/trash.svg"

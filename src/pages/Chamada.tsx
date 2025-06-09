@@ -33,7 +33,7 @@ const Chamada: React.FC = () => {
 
   const userData = userStorage ? JSON.parse(userStorage) : null;
 
-  // Acessa a propriedade '0' do objeto e depois a modalidade
+  
   const userModalityId = userData?.modality?.id || null;
 
   useEffect(() => {
@@ -85,6 +85,7 @@ const Chamada: React.FC = () => {
               },
             ]}
           />
+          <div className="mb-10">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <p>Carregando atletas...</p>
@@ -99,8 +100,10 @@ const Chamada: React.FC = () => {
               initialStudents={atletasAtivos} // Passando os atletas como prop
             />
           )}
-
           <FooterMobile />
+          </div>
+          
+
         </div>
       </SidebarInset>
     </SidebarProvider>
