@@ -48,7 +48,7 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
             <div className="bg-[#D9D9D9]  p-4 rounded-lg">
                 {/* Dropdown de quantidade de cards por página */}
                 <select
-                    className="transition-all  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  mb-6 border border-black flex h-7 justify-between items-center font-normal"
+                    className="transition-all  rounded-lg  mb-6 border border-black flex h-7 justify-between items-center font-normal"
                     value={perPage}
                     onChange={(e) => setPerPage(Number(e.target.value))}
                 >

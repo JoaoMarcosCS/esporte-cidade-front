@@ -136,10 +136,10 @@ const AtletaFaltas = () => {
                       <div className="text-6xl font-bold text-[#EB8317]">
                         {String(totalFaltas).padStart(2, "0")}
                       </div>
-                      <div className="text-gray-600">
+                      {/* <div className="text-gray-600">
                         Número de faltas permitidas:{" "}
-                        <span className="font-semibold">10</span>
-                      </div>
+                        <span className="font-semibold">3</span>
+                      </div> */}
                     </div>
                   </section>
 
@@ -147,11 +147,11 @@ const AtletaFaltas = () => {
                   {/* Filtros */}
                   <section className="flex flex-wrap gap-4 mb-8 m-4    " >
                     <select
-                      className="hover:cursor-pointer hover:translate-x-1 hover:translate-y-1 transition-all hover:shadow-none  min-w-44 w-1/3 md:w-1/6 px-4 py-2 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  border border-black  flex flex-col justify-between"
+                      className="hover:cursor-pointer  transition-all   min-w-44 w-1/3 md:w-1/6 px-4 py-2 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  border border-black  flex flex-col justify-between"
                       value={filters.modalityId}
                       onChange={handleModalityChange}
                     >
-                      <option value="">Todas modalidades</option>
+                      <option  value="">Todas modalidades</option>
                       {modalities.map((modality) => (
                         <option key={modality.id} value={modality.id}>
                           {modality.name}

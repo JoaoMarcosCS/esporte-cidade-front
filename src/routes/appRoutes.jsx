@@ -26,16 +26,11 @@ import {
   CadastroModalidades,
   GestaoDeAtletas,
   GestaoDeManagers,
-<<<<<<< HEAD
-  TeacherRequestPasswordReset,
-  TeacherResetPassword,
+  TeacherRequestPasswordReset,// Added for password recovery
+  TeacherResetPassword,  // Added for password recovery
   ManagerRequestPasswordReset, 
-  ManagerResetPassword     
-=======
-  TeacherRequestPasswordReset, // Added for password recovery
-  TeacherResetPassword,   // Added for password recovery
+  ManagerResetPassword,        
   HorarioProfessor
->>>>>>> feature/visualizar-horario
 } from "../pages";
 
 import { RelatorioGeralGestor } from "../pages/RelatorioGeralGestor";

@@ -34,18 +34,28 @@ const CadastroComunicados = () => {
             <AppSidebar type="gestor" />
             <SidebarInset>
                 <div className="min-h-screen flex flex-col  bg-white pb-16">
-
-                <HeaderBasic
+                    <HeaderBasic
                         type="visitante"
                         links={[
                             { label: "Home", path: "/home-gestor" },
-                            { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
-                        ]} />
+                            {
+                                label: "Comunicados",
+                                path: "/home-gestor/cadastrar-comunicado",
+                            },
+                            {
+                                label: "Modalidades",
+                                path: "/home-gestor/cadastrar-modalidade",
+                            },
+                            {
+                                label: "Relatório Geral",
+                                path: "/home-gestor/relatorio-geral",
+                            },
+                        ]}
+                    />
 
                     <div className="  ml-20 mt-10 pb-6">
                         <div className=" items-center flex flex-col ">
-                            <div className="mt-12"> 
+                            <div className="mt-12">
                                 <CalendarioCompromissos type="EnableEdit" />
                             </div>
                         </div>

@@ -101,16 +101,9 @@ const HomeProfessor = () => {
               Olá, Professor(a){" "}
               <span className="text-[#EB8317]">{userData?.name}</span>!
             </h1>
-
-          
-
-
-
-          
               <div className="flex flex-col lg:flex-row gap-10">
-                <VisualizarAtendimentos />
-
-                <AtendimentosAnteriores />
+                <VisualizarAtendimentos/>
+                <AtendimentosAnteriores/>
               </div>
           
           </div>

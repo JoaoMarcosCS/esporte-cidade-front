@@ -1,11 +1,12 @@
 import React, { forwardRef, useEffect, useState } from "react";
-import { Professor } from "@/types/Professor";
-import { Modality } from "@/types/Modality";
+import { Professor } from "../types/Professor";
+import { Modality } from "../types/Modality";
 import { getModalities } from "../services/modalidadesService";
 import Textbox from "./Textbox";
 import Datepicker from "./Datepicker";
 import Dropdown from "./Dropdown";
 import { Button } from "./ui/button";
+import CustomButton from "./customButtom";
 
 interface Props {
   professorEdicao?: Professor | null; // Dados do professor sendo editado
@@ -16,7 +17,7 @@ interface Props {
 const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
   ({ professorEdicao, onSubmit, onCancelEdit }, ref) => {
     const [formData, setFormData] = useState<Professor>({
-      id: "-1",
+      id: -1,
       name: "",
       password: "",
       cpf: "",
@@ -37,7 +38,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
       }
       else {
         setFormData({
-          id: "-1",
+          id: -1,
           name: "",
           password: "",
           cpf: "",
@@ -113,7 +114,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
       e.preventDefault();
       await onSubmit(formData);
       setFormData({
-        id: "-1",
+        id: -1,
         name: "",
         password: "",
         cpf: "",
@@ -195,14 +196,17 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
             </section >
 
             <div className="w-full flex justify-between">
-              <Button variant="default" type="submit">
+              <button
+              type="submit"
+                className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
                 {professorEdicao ? "Salvar Alterações" : "Cadastrar"}
-              </Button>
+              </button>
+
 
               {professorEdicao && (
-                <Button variant="destructive" type="button" onClick={onCancelEdit}>
+                <button className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300" type="button" onClick={onCancelEdit}>
                   Cancelar
-                </Button>
+                </button>
               )}
             </div>
           </div>

@@ -6,7 +6,8 @@ import FormularioAtletas from "../components/FormularioAtletas";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import api from '../services/api';
-import { Modality } from "@/types/Modality";
+import { Modality } from "../types/Modality";
+import { ConfirmModal } from "../components/ComfirmModal";
 
 const GestaoDeAtletas: React.FC = () => {
   const [athletes, setAthletes] = useState<Athlete[]>([]);
@@ -16,6 +17,14 @@ const GestaoDeAtletas: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedModality, setSelectedModality] = useState<string>("");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+
+  const handleDeleteClick = (id: number) => {
+    setIdParaExcluir(id);
+    setModalAberto(true);
+  };
+
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -94,12 +103,18 @@ const GestaoDeAtletas: React.FC = () => {
     }
   }
 
-  const handleDelete = async (id: string) => {
+
+
+  const handleDelete = async () => {
+    if (idParaExcluir === null) return;
     try {
-      await api.delete(`/athletes/${id}`);
+      await api.delete(`/athletes/${idParaExcluir}`);
       await fetchAllData();
     } catch (error) {
       console.error('Erro ao deletar atleta:', error);
+    } finally {
+      setModalAberto(false);
+      setIdParaExcluir(null);
     }
   };
 
@@ -129,7 +144,7 @@ const GestaoDeAtletas: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
@@ -139,6 +154,12 @@ const GestaoDeAtletas: React.FC = () => {
 
       <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
         <main className="space-y-8 mt-6">
+          <ConfirmModal
+            isOpen={modalAberto}
+            onClose={() => { setModalAberto(false); }}
+            onConfirm={handleDelete}
+            message="Tem certeza que deseja excluir este atleta? Confirme com sua senha para continuar."
+          />
           <section>
             <h1 className="text-2xl font-bold mb-6">Gestão de Atletas</h1>
             <div className="flex flex-col md:flex-row gap-4 mb-4 bg-[#D9D9D9] border border-black rounded-lg p-4">
@@ -150,7 +171,7 @@ const GestaoDeAtletas: React.FC = () => {
                 onChange={e => setSearch(e.target.value)}
               />
               <select
-                className="border border-black rounded px-3 py-2 w-full md:w-1/3"
+                className="cursor-pointer border border-black rounded px-3 py-2 w-full md:w-1/3"
                 value={selectedModality}
                 onChange={e => setSelectedModality(e.target.value)}
               >
@@ -168,7 +189,7 @@ const GestaoDeAtletas: React.FC = () => {
               <AtletasCadastrados
                 athletes={filteredAthletes}
                 onEdit={handleEditClick}
-                onDelete={handleDelete}
+                onDelete={handleDeleteClick}
                 selectedAthlete={selectedAthlete}
               />
             )}
@@ -177,12 +198,12 @@ const GestaoDeAtletas: React.FC = () => {
           <section ref={formRef} >
             <h2 className="text-xl font-semibold mb-4">
               {selectedAthlete ? <FormularioAtletas
-              athlete={selectedAthlete}
-              onSubmit={handleAddOrEdit}
-              onCancel={() => setSelectedAthlete(null)}
-            /> : ''}
+                athlete={selectedAthlete}
+                onSubmit={handleAddOrEdit}
+                onCancel={() => setSelectedAthlete(null)}
+              /> : ''}
             </h2>
-            
+
           </section>
         </main>
       </div>

@@ -1,7 +1,7 @@
 import { Modality } from "./Modality";
 
 export interface Professor {
-    id: string;
+    id: number;
     name: string;
     password: string;
     cpf: string;

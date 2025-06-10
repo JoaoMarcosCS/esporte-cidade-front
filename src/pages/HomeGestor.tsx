@@ -47,7 +47,7 @@ const HomeGestor = () => {
               <span className="text-[#EB8317]">{userData?.name}</span>
             </h2>
             <div className="xl:items-start items-center flex flex-col xl:flex-row">
-              <div className="mt-12">
+              <div className="mt-12 pr-8">
                 <Escala />
               </div>
               <div className="mt-12">

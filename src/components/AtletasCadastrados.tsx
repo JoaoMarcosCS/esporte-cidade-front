@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Athlete } from '../types/Athlete';
 import api from '../services/api';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface AtletasCadastradosProps {
   athletes?: Athlete[];
   onEdit?: (athlete: Athlete) => void;
-  onDelete?: (id: string) => Promise<void>;
+  onDelete?: (id: number) => void;
   selectedAthlete?: Athlete | null;
 }
 
@@ -61,18 +62,18 @@ export default function AtletasCadastrados({
       setAthletes(mappedAthletes);
       setLoading(false);
     }
-    setCurrentPage(1); 
+    setCurrentPage(1);
   }, [athletesProp, perPage]);
 
   const [orderBy, setOrderBy] = useState<'matricula' | 'alfabetica'>('matricula');
 
- 
+
   const getSortedAthletes = () => {
     if (orderBy === 'alfabetica') {
       // Ordena por nome
       return [...athletes].sort((a, b) => a.name.localeCompare(b.name));
     }
-   
+
     return [...athletes].sort((a, b) => {
       if (!a.id || !b.id) return 0;
       // Se id for string, converte para número se possível
@@ -85,7 +86,7 @@ export default function AtletasCadastrados({
   };
   const sortedAthletes = getSortedAthletes();
 
- 
+
   const totalPages = Math.ceil(sortedAthletes.length / perPage) || 1;
   const paginatedAthletes = sortedAthletes.slice((currentPage - 1) * perPage, currentPage * perPage);
 
@@ -128,7 +129,7 @@ export default function AtletasCadastrados({
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (onDelete) return onDelete(id);
     if (!window.confirm('Tem certeza que deseja excluir este atleta?')) return;
     try {
@@ -151,10 +152,11 @@ export default function AtletasCadastrados({
       <h2 className="text-xl font-bold mb-4">Atletas Cadastrados</h2>
       {/* Filtro de ordenação e quantidade de cards */}
       <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex items-center gap-2">
-          <label className="font-medium text-sm">Ordenar por:</label>
+
+        <div className="rounded flex items-center p-1  gap-2 bg-white border border-black">
+          <label className="font-medium text-sm ">Ordenar por:</label>
           <select
-            className="border border-black rounded px-2 py-1 text-sm bg-white"
+            className="cursor-pointer px-2 py-1 text-sm "
             value={orderBy}
             onChange={e => { setOrderBy(e.target.value as 'matricula' | 'alfabetica'); setCurrentPage(1); }}
           >
@@ -162,10 +164,10 @@ export default function AtletasCadastrados({
             <option value="alfabetica">Nome (A-Z)</option>
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="rounded p-1 bg-white border border-black flex items-center gap-2">
           <label className="font-medium text-sm">Atletas por página:</label>
           <select
-            className="border border-black rounded px-2 py-1 text-sm bg-white"
+            className="cursor-pointer px-2 py-1 text-sm "
             value={perPage}
             onChange={e => setPerPage(Number(e.target.value))}
           >
@@ -204,7 +206,9 @@ export default function AtletasCadastrados({
               )}
               <button
                 className="w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform"
-                onClick={() => handleDelete(athlete.id || '')}
+                onClick={() => {
+                  if (athlete.id !== undefined) handleDelete(athlete.id);
+                }}
                 disabled={!athlete.id}
                 title="Excluir"
               >
@@ -215,27 +219,47 @@ export default function AtletasCadastrados({
         ))}
       </div>
       {/* Paginação */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-6 gap-2">
-          <button
-            className="px-3 py-1 rounded border border-black bg-white hover:bg-gray-200 disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Anterior
-          </button>
-          <span className="mx-2 text-sm font-semibold">
-            Página {currentPage} de {totalPages}
-          </span>
-          <button
-            className="px-3 py-1 rounded border border-black bg-white hover:bg-gray-200 disabled:opacity-50"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Próxima
-          </button>
-        </div>
-      )}
+      <div className='justify-end items-end mt-10 mr-10 flex flex-row'>
+        {totalPages > 1 && (
+          <div className="flex items-center ">
+
+
+
+            <div>
+              <span className="mx-2 text-sm font-semibold">
+                Página {currentPage} de {totalPages}
+              </span>
+
+
+
+
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`px-4 py-2 rounded-l-md border border-black ${currentPage === 1
+                  ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                  : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:-translate-x-1 hover:translate-y-1 hover:shadow-none"
+                  }`}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-6 w-4" />
+              </button>
+
+
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-r-md border border-black ${currentPage === totalPages
+                  ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                  : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                  }`}
+              >
+                <ChevronRight className="h-6 w-4" /> {/*&gt; */}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
