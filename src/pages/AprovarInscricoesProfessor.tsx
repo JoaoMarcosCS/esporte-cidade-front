@@ -111,7 +111,7 @@ const AprovarInscricoesProfessor: React.FC = () => {
               {enrollments.map((enrollment) => (
                 <div
                   key={enrollment.id}
-                  className="bg-[#D9D9D9] border border-black rounded-lg shadow-md p-6 flex flex-col justify-between"
+                  className=" border border-black bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  p-6 flex flex-col justify-between"
                 >
                   <div>
                     <h2 className="font-bold text-lg mb-2 text-black">

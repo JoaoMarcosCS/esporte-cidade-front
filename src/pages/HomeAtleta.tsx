@@ -45,13 +45,13 @@ const HomeAtleta = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-1">
-              <div className="col-span-2 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-4 md:mr-4">
-                <h3 className="font-semibold mb-2">HORÁRIO SEMANAL</h3>
+              <div className="col-span-2  p-4 rounded  mb-4">
+                <h3 className="font-semibold text-lg mb-2">HORÁRIO SEMANAL</h3>
                 <Escala/>
               </div>
 
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0 md:mr-4">
+                <div className="ml-4 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0 md:mr-4">
                   <h3 className="font-semibold mb-2">AUSÊNCIA DE PROFESSOR</h3>
                   <FaltaProfessor />
                 </div>

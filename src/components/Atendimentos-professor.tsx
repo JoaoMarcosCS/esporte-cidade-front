@@ -5,7 +5,7 @@ import api from "../services/api";
 import { useAuth } from '../contexts/AuthContext';
 import { Atendiment } from "../types/Atendiments";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
-
+import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
@@ -366,6 +366,7 @@ export const AtendimentosAnteriores = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                             mode="single"
+                            locale={ptBR}
                             selected={selectedDate}
                             onSelect={setSelectedDate}
                             initialFocus

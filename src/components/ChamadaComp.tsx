@@ -105,10 +105,10 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
   };
 
   return (
-    <div className="p-6 min-h-screen ">
-      <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="p-6 min-h-screen  px-20 ">
 
-
+      <h2 className="text-2xl font-bold pl-6 pt-8">Realizar Chamada</h2>
+      <div className=" grid grid-cols-1 sm:grid-cols-2   gap-6 pt-8 ">
         {/* <div className="bg-[#d9d9d9] flex p-4   items-center w-full border border-black rounded-lg">
           <div className="bg-white opacity-100 p-2  min-w-48 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-row border-black ">
             <label className="  text-gray-700 mb-1">Modalidade:</label>
@@ -121,7 +121,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
 
 
 
-        <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg">
+        <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg ">
           <div className="bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black ">
 
             <label className="block text-gray-700 mb-1">
@@ -159,13 +159,13 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         Gerar Lista de Chamada
       </button> */}
 
-      <div className="space-y-4 mt-6 bg-[#d9d9d9] border border-black p-4">
+      <div className="space-y-4 mt-6 bg-[#d9d9d9] border border-black p-4  ">
         <p className="text-2xl font-semibold">Alunos da modalidade</p>
 
         {students.map((student) => (
           <div
             key={student.id}
-            className="p-4 bg-white opacity-100    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black flex flex-col cursor-pointer"
+            className="p-4 animate-slide-in-fade   bg-[#d9d9d9] opacity-100  rounded-lg  border border-black flex flex-col cursor-pointer"
             onClick={() => toggleStatus(student.id)}
           >
             <div className="flex items-center">
@@ -182,9 +182,9 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
 
                 <h3 className="font-semibold">{student.name}</h3>
                 <p
-                  className={`font-bold ${student.status === "PRESENTE"
-                    ? "text-green-500"
-                    : "text-red-500"
+                  className={`  font-bold ${student.status === "PRESENTE"
+                    ? "text-green-500 transition-all "
+                    : "text-red-500 transition-all "
                     }`}
                 >
                   {student.status}
