@@ -26,8 +26,10 @@ import {
   CadastroModalidades,
   GestaoDeAtletas,
   GestaoDeManagers,
-  TeacherRequestPasswordReset, // Added for password recovery
-  TeacherResetPassword      // Added for password recovery
+  TeacherRequestPasswordReset,
+  TeacherResetPassword,
+  ManagerRequestPasswordReset, 
+  ManagerResetPassword     
 } from "../pages";
 
 import { RelatorioGeralGestor } from "../pages/RelatorioGeralGestor";
@@ -74,6 +76,15 @@ const router = createBrowserRouter(
         {
           path: "/password-reset/:teacherId/:token",
           element: <TeacherResetPassword />,
+        },
+        // Rotas de recuperação de senha do Gestor (PUBLICAS)
+        {
+          path: "/recuperar-senha/gestor",
+          element: <ManagerRequestPasswordReset />,
+        },
+        {
+          path: "manager/password-reset/:managerId/:token",
+          element: <ManagerResetPassword />,
         },
 
         // ROTAS PRIVADAS

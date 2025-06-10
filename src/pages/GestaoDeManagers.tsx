@@ -57,6 +57,7 @@ const GestaoDeManagers: React.FC = () => {
           { label: "Home", path: "/home-gestor" },
           { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
+          { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
           
         ]}
       />
