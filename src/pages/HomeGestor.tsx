@@ -12,7 +12,6 @@ import { CalendarioCompromissos } from "../components/Comunicados";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import { useUser } from "../hooks/useAuth";
 
-const nomeDoGestor = "maria";
 
 const HomeGestor = () => {
   const GoTo = useNavigateTo();

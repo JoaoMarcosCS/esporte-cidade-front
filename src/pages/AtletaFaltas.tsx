@@ -25,7 +25,7 @@ const AtletaFaltas = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({ modalityId: "" });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
+  const itemsPerPage = 8;
 
   // Get authenticated user data
   const user = useUser();
@@ -145,9 +145,9 @@ const AtletaFaltas = () => {
 
 
                   {/* Filtros */}
-                  <section className="flex flex-wrap gap-4 mb-8 m-4   " >
+                  <section className="flex flex-wrap gap-4 mb-8 m-4    " >
                     <select
-                      className="w-1/3 md:w-1/6 px-4 py-2 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  border border-black  flex flex-col justify-between"
+                      className="hover:cursor-pointer hover:translate-x-1 hover:translate-y-1 transition-all hover:shadow-none  min-w-44 w-1/3 md:w-1/6 px-4 py-2 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  border border-black  flex flex-col justify-between"
                       value={filters.modalityId}
                       onChange={handleModalityChange}
                     >
@@ -220,8 +220,8 @@ const AtletaFaltas = () => {
                           setCurrentPage((prev) => Math.max(prev - 1, 1))
                         }
                         className={`px-4 py-2 rounded-l-md border border-black ${currentPage === 1
-                          ? "bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
-                          : "bg-[#EB8317] text-white hover:bg-orange-600"
+                          ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                          : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:-translate-x-1 hover:translate-y-1 hover:shadow-none"
                           }`}
                         disabled={currentPage === 1}
                       >
@@ -232,8 +232,8 @@ const AtletaFaltas = () => {
                           setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                         }
                         className={`px-4 py-2 rounded-r-md border border-black ${currentPage === totalPages
-                          ? "bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
-                          : "bg-[#EB8317] text-white hover:bg-orange-600"
+                          ? "bg-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-not-allowed"
+                          : "bg-[#EB8317] text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
                           }`}
                         disabled={currentPage === totalPages}
                       >

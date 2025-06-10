@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Textbox from "./Textbox";
-import { confirmPassword } from "../services/auth"; // ajuste o caminho conforme necessário
+import { confirmPassword } from "../services/auth"; 
+import { useUser } from "../hooks/useAuth";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -18,7 +19,9 @@ export const ConfirmModal: React.FC<ConfirmationModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ password: '' });
-  const type = "manager"
+  const userData = useUser();
+
+  const type = userData?.role;
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

@@ -105,14 +105,12 @@ export const CadastroModalidades: React.FC = () => {
 
                 <section className="bg-[#F4F6FF] pb-20">
                     <HeaderBasic
-                        type="usuario"
+                        type="visitante"
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
-                            { label: "Professores", path: "/home-gestor/professores" },
                             { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
-                        ]}
-                    />
+                        ]} />
                     <FooterMobile />
 
                     <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
@@ -130,18 +128,14 @@ export const CadastroModalidades: React.FC = () => {
                                         modalidadeEdicao={modalidadeSelecionada}
                                         setModalidades={setModalidades}
                                         onAssignTeacher={handleAssignTeacherClick}
-                                    />
-
-
-                                    <button
-                                        className="self-end mr-12 h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                                        onClick={() => {
+                                        onCreateClick={() => {
                                             setModalidadeSelecionada(null);
                                             setShowModal(true);
                                         }}
-                                    >
-                                        Cadastrar Nova Modalidade
-                                    </button>
+                                    />
+
+
+
                                 </div>
                             </section>
 

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
@@ -17,11 +18,12 @@ const CadastroAtleta: React.FC = () => {
     const formData = new FormData();
     formData.append('profile', file);
     try {
-      const response = await fetch('http://localhost:3002/api/uploads/upload', {
-        method: 'POST',
-        body: formData,
+      const response = await api.post("/uploads/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      const data = await response.json();
+      const data = response.data;
       if (data.profile) {
         setAthlete(prev => ({ ...prev, [field]: data.profile }));
       }
@@ -29,6 +31,8 @@ const CadastroAtleta: React.FC = () => {
       console.error('Erro ao fazer upload da imagem:', err);
     }
   };
+
+
 
   const GoTo = useNavigateTo();
   const [athlete, setAthlete] = useState<Athlete>({
@@ -132,6 +136,13 @@ const CadastroAtleta: React.FC = () => {
           console.log('[Form Navigation] Email validation failed');
           return;
         }
+
+        console.log('[Form Navigation] Validating password');
+        const isPasswordValid = await validatePassword(athlete.password);
+        if (!isPasswordValid) {
+          console.log('[Form Navigation] Password validation failed');
+          return;
+        }
       }
 
       console.log('[Form Navigation] All validations passed, moving to step:', currentStep + 1);
@@ -231,11 +242,11 @@ const CadastroAtleta: React.FC = () => {
       const formData = new FormData();
       formData.append("profile", file);
       try {
-        const response = await fetch("http://localhost:3002/uploads/upload", {
+        const response = await api.post("/uploads/upload", {
           method: "POST",
           body: formData,
         });
-        const data = await response.json();
+        const data = await response.data
         if (data.profile) {
           setAthlete((prevState) => ({
             ...prevState,
@@ -337,7 +348,7 @@ const CadastroAtleta: React.FC = () => {
   const validateEmail = async (email: string): Promise<boolean> => {
     console.log('[Email Validation] Starting validation for:', email);
 
-    if(!email){
+    if (!email) {
       return true
     }
     // Basic regex validation
@@ -381,6 +392,61 @@ const CadastroAtleta: React.FC = () => {
       return false;
     }
   };
+
+  const validatePassword = async (password: string): Promise<boolean> => {
+  console.log('[Password Validation] Starting validation for:', password);
+
+  if (!password) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha não pode estar vazia",
+    }));
+    return false;
+  }
+
+  if (password.length < 6) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha deve ter pelo menos 6 caracteres",
+    }));
+    return false;
+  }
+
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  if (!hasLetter || !hasNumber) {
+    setErrors((prev) => ({
+      ...prev,
+      password: "A senha deve conter letras e números",
+    }));
+    return false;
+  }
+
+  try {
+    console.log('[Password Validation] Making API validation request');
+    const response = await api.post("/validation/password", { password });
+    console.log('[Password Validation] API response:', response.data);
+
+    if (response.data.valid) {
+      setErrors((prev) => ({ ...prev, password: "" }));
+      return true;
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        password: response.data.message || "Senha inválida",
+      }));
+      return false;
+    }
+
+  } catch (error: unknown) {
+    console.error("[Password Validation] Error during validation:", error);
+
+    return false;
+  }
+};
+
+
   const validateRequiredFields = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -651,7 +717,7 @@ const CadastroAtleta: React.FC = () => {
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="Crie uma senha"
             />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
           </div>
         </div>
       ),
@@ -767,30 +833,36 @@ const CadastroAtleta: React.FC = () => {
       title: "Fotos",
       content: (
         <div>
-          <h2 className="text-xl font-semibold mb-4">Fotos</h2>
-
-          {[
-            { label: "Foto de Frente do RG", name: "frontIdPhotoUrl" },
-            { label: "Foto de Verso do RG", name: "backIdPhotoUrl" },
-            { label: "Foto do Atleta", name: "athletePhotoUrl" },
-          ].map(input => (
-            <div className="mb-4" key={input.name}>
-              <label className="font-semibold block text-sm mb-1">{input.label}</label>
-              <label
-                htmlFor={input.name}
-                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] block w-full border border-black rounded-sm cursor-pointer text-gray-700"
-              >
-                Selecionar arquivo
-              </label>
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Fotos</h2>
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto de Frente do RG</label>
               <input
-                id={input.name}
                 type="file"
-                name={input.name}
-                onChange={e => handleImageUpload(e, input.name)}
-                className="hidden"
+                name="frontIdPhotoUrl"
+                onChange={e => handleImageUpload(e, 'frontIdPhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               />
             </div>
-          ))}
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto de Verso do RG</label>
+              <input
+                type="file"
+                name="backIdPhotoUrl"
+                onChange={e => handleImageUpload(e, 'backIdPhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="font-semibold block text-sm">Foto do Atleta</label>
+              <input
+                type="file"
+                name="athletePhotoUrl"
+                onChange={e => handleImageUpload(e, 'athletePhotoUrl')}
+                className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+              />
+            </div>
+          </div>
         </div>
       ),
     },

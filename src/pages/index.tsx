@@ -25,6 +25,8 @@ export {default as TeacherResetPassword} from "./TeacherResetPassword";
 export {default as ManagerRequestPasswordReset} from "./ManagerRequestPasswordReset";
 export {default as ManagerResetPassword} from "./ManagerResetPassword";
 
+export {default as HorarioProfessor} from "./horarioProfessor";
+
 
 
 

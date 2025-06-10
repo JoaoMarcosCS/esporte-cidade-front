@@ -62,8 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 throw new Error('Tipo de usuário inválido');
             }
-
             const userFromApi = response.data;
+            //const userFromApi = Array.isArray(response.data) ? response.data[0] : response.data;
             console.log('[fetchUser] Resposta da API do usuário:', userFromApi);
 
             if (userFromApi) {

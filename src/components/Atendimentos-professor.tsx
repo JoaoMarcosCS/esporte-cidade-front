@@ -3,12 +3,16 @@ import { Card, CardContent } from "./ui/card"
 import { Button } from "../components/ui/button";
 import api from "../services/api";
 import { useAuth } from '../contexts/AuthContext';
-
-import { ChevronLeft, ChevronRight, ChevronDown,  } from 'lucide-react'
+import { Atendiment } from "../types/Atendiments";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { ptBR } from "date-fns/locale";
+import { ChevronLeft, ChevronRight, ChevronDown, } from 'lucide-react'
 import { Calendar } from "./ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { format } from "date-fns"
-
+import { getScheduleTeacher } from "../services/schedule";
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
 import {
     Select,
     SelectContent,
@@ -16,7 +20,6 @@ import {
     SelectTrigger,
     SelectValue
 } from "./ui/select"
-
 import {
     Carousel,
     CarouselContent,
@@ -24,6 +27,10 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "./ui/carousel"
+import { useUser } from "../hooks/useAuth";
+import { useDecodedToken } from "../hooks/useDecodedToken";
+import { getAtendiments } from "../services/modality";
+
 
 interface ScheduleItem {
     name: string;
@@ -79,6 +86,7 @@ interface ContentItem {
     items: CardItem[]
 }
 
+dayjs.locale('pt-br');
 const attendances: Attendance[] = [
     { data: "10/12/2023", local: "Raspadão", atendimento: "Futebol" },
     { data: "11/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
@@ -94,317 +102,263 @@ const attendances: Attendance[] = [
     { data: "21/12/2023", local: "Pista de Atletismo", atendimento: "Atletismo" },
 ]
 
-const locations = Array.from(new Set(attendances.map(a => a.local)))
+const locations = Array.from(new Set(attendances.map(a => a.local)));
+const dayMap: Record<string, string> = {
+    dom: 'Domingo',
+    seg: 'Segunda',
+    ter: 'Terça',
+    qua: 'Quarta',
+    qui: 'Quinta',
+    sex: 'Sexta',
+    sab: 'Sábado',
+};
+
+
+
+const getDiasHojeEAmanha = () => {
+    const hoje = dayjs();
+    const amanha = hoje.add(1, 'day');
+
+    const hojeAbrev = hoje.format('ddd').toLowerCase(); // já com locale pt-br, 'ter'
+    const amanhaAbrev = amanha.format('ddd').toLowerCase(); // 'qua'
+
+    return {
+        hoje: hojeAbrev,
+        amanha: amanhaAbrev
+    };
+};
+const { hoje, amanha } = getDiasHojeEAmanha();
+
 
 export const VisualizarAtendimentos = () => {
-    const [schedule, setSchedule] = useState<ScheduleSection[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-    const [selectedLocation, setSelectedLocation] = useState<string>('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const { user, isAuthenticated, fetchUser } = useAuth();
+    const user = useAuth()
+    const userData = useUser();
 
-    // Log component state when it mounts
-    useEffect(() => {
-        console.log('VisualizarAtendimentos component mounted');
-        console.log('Current user:', user);
-        console.log('Is authenticated:', isAuthenticated);
+    console.log(userData);
 
-        // Try to fetch user data if not authenticated
-        if (!isAuthenticated && !user) {
-            console.log('Attempting to fetch user data');
-            fetchUser().catch(err => {
-                console.error('Error fetching user data:', err);
-            });
-        }
-    }, [isAuthenticated, user, fetchUser]);
 
-    const fetchSchedule = useCallback(async () => {
+
+
+    const decodedToken = useDecodedToken();
+    const [loading, setLoading] = useState(true);
+    const [formattedSchedule, setFormattedSchedule] = useState<any[]>([]);
+
+    const { hoje, amanha } = getDiasHojeEAmanha();
+
+    const fetchScheduleTeacher = async () => {
         try {
-            console.log('Attempting to fetch schedule');
-            console.log('Current auth state:', { isAuthenticated, user });
+            setLoading(true);
 
-            if (!isAuthenticated) {
-                console.log('User is not authenticated');
-                return;
-            }
+            console.log("asdasdsad\n\n\n\n\n", userData?.name);
 
-            if (!user?.id) {
-                console.log('User ID not found:', user);
-                return;
-            }
 
-            console.log('Fetching schedule for user:', user.id);
-            
-            // Log the API endpoint being called
-            const endpoint = `/schedule/teacher/${user.id}`;
-            console.log('Calling API endpoint:', endpoint);
+            if (!userData) return;
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-            try {
-                const response = await api.get(endpoint);
-                console.log('API Response:', response.data);
-                
-                // Check if response data exists
-                if (!response.data) {
-                    console.error('No data received from API');
-                    setSchedule([
-                        {
-                            title: "Aulas de Hoje",
-                            items: []
-                        },
-                        {
-                            title: "Aulas de Amanhã",
-                            items: []
-                        }
-                    ]);
-                    return;
-                }
+            const responseData = await getScheduleTeacher(token);
+            const scheduleArray = Array.isArray(responseData)
+                ? responseData
+                : responseData ? [responseData] : [];
 
-                // Transform the backend response to match our component's expected format
-                const todaySchedules = response.data.today ? response.data.today.map((schedule: any) => ({
-                    name: schedule.name,
-                    time: schedule.time,
-                    date: new Date(schedule.date).toISOString().split('T')[0]
-                })) : [];
+            const formatted = scheduleArray.map((classInfo: any) => {
+                const days = typeof classInfo.days === 'string'
+                    ? classInfo.days.split(',').map((d: string) => d.trim())
+                    : [];
 
-                const tomorrowSchedules = response.data.tomorrow ? response.data.tomorrow.map((schedule: any) => ({
-                    name: schedule.name,
-                    time: schedule.time,
-                    date: new Date(schedule.date).toISOString().split('T')[0]
-                })) : [];
+                return days.map((day: string) => ({
+                    dia: day, // manter a abreviação original para comparação direta
+                    modalidade: classInfo.name,
+                    horario: `${classInfo.start_time} - ${classInfo.end_time}`,
+                    local: Array.isArray(classInfo.class_locations)
+                        ? classInfo.class_locations.join(', ')
+                        : classInfo.class_locations || 'Local não especificado',
+                }));
+            }).flat();
 
-                console.log('Transformed schedules:', {
-                    today: todaySchedules,
-                    tomorrow: tomorrowSchedules
-                });
-
-                setSchedule([
-                    {
-                        title: "Aulas de Hoje",
-                        items: todaySchedules
-                    },
-                    {
-                        title: "Aulas de Amanhã",
-                        items: tomorrowSchedules
-                    }
-                ]);
-
-            } catch (error: unknown) {
-                console.error('Erro ao carregar o horário:', error);
-                console.error('Error details:', {
-                    message: error instanceof Error ? error.message : 'Unknown error',
-                    stack: error instanceof Error ? error.stack : undefined
-                });
-                
-                setSchedule([
-                    {
-                        title: "Aulas de Hoje",
-                        items: []
-                    },
-                    {
-                        title: "Aulas de Amanhã",
-                        items: []
-                    }
-                ]);
-            }
-        } catch (error: unknown) {
-            console.error('Erro ao carregar o horário:', error);
-            console.error('Error details:', {
-                message: error instanceof Error ? error.message : 'Unknown error',
-                stack: error instanceof Error ? error.stack : undefined
-            });
-            
-            setSchedule([
-                {
-                    title: "Aulas de Hoje",
-                    items: []
-                },
-                {
-                    title: "Aulas de Amanhã",
-                    items: []
-                }
-            ]);
+            setFormattedSchedule(formatted);
+            console.log("formatado: ", formatted)
+        } catch (error: any) {
+            console.error("Erro ao buscar horário do professor:", error.response?.data || error.message);
+        } finally {
+            setLoading(false);
         }
-    }, [isAuthenticated, user?.id]);
+    };
 
     useEffect(() => {
-        console.log('Auth state changed:', { isAuthenticated, user });
-        
-        if (isAuthenticated && user?.id) {
-            console.log('Starting schedule fetch with interval');
-            fetchSchedule();
-            const intervalId = setInterval(fetchSchedule, 60000);
-            return () => {
-                console.log('Clearing schedule fetch interval');
-                clearInterval(intervalId);
-            };
-        } else {
-            console.log('Not authenticated or no user ID, clearing schedule');
-            setSchedule([
-                {
-                    title: "Aulas de Hoje",
-                    items: []
-                },
-                {
-                    title: "Aulas de Amanhã",
-                    items: []
-                }
-            ]);
-        }
-    }, [isAuthenticated, user?.id, fetchSchedule]);
+        fetchScheduleTeacher();
+    }, []);
 
-    if (!isAuthenticated || !user) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <p className="text-gray-500">Carregando dados do usuário...</p>
-            </div>
-        );
-    }
+    console.log('Hoje (abrev):', hoje);
+    console.log('Amanhã (abrev):', amanha);
 
-    
+    console.log('Dias no formattedSchedule:');
+    formattedSchedule.forEach((aula, i) => {
+        console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
+    });
+
+    const filtrarAulasPorDia = (dia: string) => {
+        return formattedSchedule.filter(aula => aula.dia === dia);
+    };
+
+    const aulasHoje = filtrarAulasPorDia(hoje);
+    const aulasAmanha = filtrarAulasPorDia(amanha);
+
+    console.log('aulasHoje:', aulasHoje);
+    console.log('aulasAmanha:', aulasAmanha);
+
+    const renderCarousel = (aulas: any[], titulo: string) => (
+        <div className=" mt-4  items-center align-middle justify-center">
+            <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
+            {aulas.length === 0 ? (
+
+                //sem Aulas 
+                <>
+
+                    <Card>
+                        <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
+                            <p>sem aulas Hoje</p>
+
+                        </CardContent>
+                    </Card>
+
+                    {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                        <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" /> */}
+
+                </>
+            ) : (
+                <>
+                    <Carousel opts={{ align: "start" }} className="w-full max-w-3xl">
+                        <CarouselContent>
+                            {aulas.map((aula, index) => (
+                                <CarouselItem key={index} className="basis-1/2 min-w-36">
+                                    <div className="p-1">
+                                        <Card>
+                                            <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black">
+                                                <p>{aula.modalidade}</p>
+                                                <p className="text-orange-500">{aula.horario}</p>
+                                                <p className="text-sm text-gray-600">{aula.local}</p>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        {/* <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
+                        <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" /> */}
+                    </Carousel>
+                </>
+            )}
+        </div>
+    );
 
     return (
-        <div className="flex flex-col gap-8">
-            {schedule.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mt-4">
-                    <h2 className="text-lg font-semibold text-start mb-4">{section.title}</h2>
-                    {section.items.length === 0 ? (
-                        <p className="text-gray-500 text-center">Nenhuma aula agendada</p>
-                    ) : (
-                        <>
-                            <p className="text-gray-500 text-center mb-4">Total de aulas: {section.items.length}</p>
-                            <Carousel
-                                opts={{
-                                    align: "start",
-                                }}
-                                className="w-full max-w-3xl"
-                            >
-                                <CarouselContent>
-                                    {section.items.map((item, itemIndex) => (
-                                        <CarouselItem
-                                            key={itemIndex}
-                                            className="basis-1/2 min-w-36"
-                                        >
-                                            <div className="p-1">
-                                                <Card>
-                                                    <CardContent className="p-6 border rounded-md border-black bg-[#d9d9d9]">
-                                                        <p>{item.name}</p>
-                                                        <p className="text-orange-500">
-                                                            {item.time}
-                                                        </p>
-                                                    </CardContent>
-                                                </Card>
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
-                                </CarouselContent>
-                                <CarouselPrevious className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
-                                <CarouselNext className="bg-[#d9d9d9] shadow-none border-none hover:bg-orange-500" />
-                            </Carousel>
-                        </>
-                    )}
-                </div>
-            ))}
+        <div className="mt-10 flex flex-col gap-8">
+            <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm">
+                <h1 className="text-lg font-bold">Horário</h1>
+                {loading ? (
+                    <p>Carregando...</p>
+                ) : formattedSchedule.length === 0 ? (
+                    <p>Nenhuma aula encontrada</p>
+                ) : (
+                    <>
+                        {renderCarousel(aulasHoje, `Aulas de hoje (${hoje.toUpperCase()})`)}
+                        {renderCarousel(aulasAmanha, `Aulas de amanhã (${amanha.toUpperCase()})`)}
+                    </>
+                )}
+            </div>
         </div>
     );
 };
 
-export const QuantidadeAtendimentos = () => {
-    const content = [
-        {
-            title: "Quantidade de Atendimentos",
-            items: [
-                { modalidade: "Futebol", quantidade: 12 },
-                { modalidade: "Volley", quantidade: 2 },
-                { modalidade: "Natação", quantidade: 5 },
-                { modalidade: "Basquete", quantidade: 8 },
-                { modalidade: "Tênis", quantidade: 6 },
-                { modalidade: "Atletismo", quantidade: 4 },
-                { modalidade: "Ginástica", quantidade: 7 },
-                { modalidade: "Judô", quantidade: 3 },
-                { modalidade: "Ciclismo", quantidade: 9 },
-            ]
-        }
-
-    ]
-
-    const [currentPage, setCurrentPage] = React.useState(1)
-    const itemsPerPage = 3
-    const totalPages = Math.ceil(content[0].items.length / itemsPerPage)
-
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
-    const currentItems = content[0].items.slice(startIndex, endIndex)
-
-    return (
-        <div className="w-full  max-w-screen-md pt-10 ">
-            <h2 className="text-lg font-semibold mb-4">{content[0].title}</h2>
-            {currentItems.map((item, index) => (
-                <Card key={index} className="mb-4 bg-[#d9d9d9]  transition-colors">
-                    <CardContent className="p-5 flex justify-between items-center border rounded-md border-black">
-                        <p>
-                            <span className="font-inter">Modalidade:</span> <span className="font-semibold">{item.modalidade}</span>
-                        </p>
-                        <p className="text-orange-500 font-bold text-lg">{item.quantidade}</p>
-                    </CardContent>
-                </Card>
-            ))}
-            <div className="flex justify-between items-center mt-4">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="sr-only">Previous page</span>
-                </Button>
-                <span>
-                    Página {currentPage} de {totalPages}
-                </span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronRight className="h-4 w-4" />
-                    <span className="sr-only">Next page</span>
-                </Button>
-            </div>
-        </div>
-    )
-
-};
 
 export const AtendimentosAnteriores = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const [selectedLocation, setSelectedLocation] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalAtendiments, setTotalAtendiments] = useState<number>(0);
+    const [Atendiments, setAtendiments] = useState<Atendiment[]>([]);
+    const [allAtendiments, setAllAtendiments] = useState<Atendiment[]>([]);
+    const [locations, setLocations] = useState<string[]>([]);
 
-    const filteredAttendances = useMemo(() => {
-        return attendances.filter(attendance => {
-            const dateMatch = selectedDate ? attendance.data === format(selectedDate, "dd/MM/yyyy") : true;
-            const locationMatch = !selectedLocation || selectedLocation === "all" || attendance.local === selectedLocation;
-            return dateMatch && locationMatch;
-        });
+    const userData = useUser();
+
+    const teacherId = userData?.id
+
+
+    useEffect(() => {
+        const fetchAtendiments = async () => {
+            try {
+                if (typeof teacherId === 'number') {
+                    const data = await getAtendiments(teacherId);
+                    setTotalAtendiments(data.length);
+                    setAllAtendiments(data);
+                    setAtendiments(data)
+                    const allLocations = data.flatMap((item: any) =>
+                        item.local.split(',').map((loc: any) => loc.trim())
+                    );
+                    const uniqueLocations: string[] = [];
+                    allLocations.forEach((loc: any) => {
+                        if (!uniqueLocations.includes(loc)) {
+                            uniqueLocations.push(loc);
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar atendimentos:", error);
+            }
+        };
+
+        fetchAtendiments();
+    }, [teacherId]);
+    useEffect(() => {
+        setCurrentPage(1);
     }, [selectedDate, selectedLocation]);
 
-    const totalPages = Math.ceil(filteredAttendances.length / 10);
-    const currentItems = filteredAttendances.slice(
-        (currentPage - 1) * 10,
-        currentPage * 10
+    //filtro por data
+    const filteredByDate = selectedDate
+        ? allAtendiments.filter(item => {
+            const itemDate = new Date(item.created_at);
+            return (
+                itemDate.getDate() === selectedDate.getDate() &&
+                itemDate.getMonth() === selectedDate.getMonth() &&
+                itemDate.getFullYear() === selectedDate.getFullYear()
+            );
+        })
+        : allAtendiments;
+
+    // Filtrar por local
+    const filteredAtendiments = selectedLocation !== 'all'
+        ? filteredByDate.filter(item =>
+            item.local
+                .split(',')
+                .map(loc => loc.trim().toLowerCase())
+                .includes(selectedLocation.toLowerCase())
+        )
+        : filteredByDate;
+
+
+    // controle de paginas    
+    const pageMax = 7
+    const totalFiltered = filteredAtendiments.length;
+    const totalPages = Math.ceil(totalFiltered / pageMax);
+    const currentItems = filteredAtendiments.slice(
+        (currentPage - 1) * pageMax,
+        currentPage * pageMax
     );
 
+
+    console.log("data:   ", Atendiments)
+    console.log("currentItems:   ", currentItems)
+
     return (
-        <div className="w-full mt-4 max-w-2xl mx-auto ">
+        <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-4 mb-4 ">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="bg-[#d9d9d9] hover:bg-[#d9d9d9]   hover:shadow-md hover:shadow-slate-700 
-                        flex w-40 justify-between items-center font-normal  border rounded-md border-black">
+                        <Button variant="outline" className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black">
                             {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Data</span>}
                             <ChevronDown className="ml-2 h-4 w-4 hover:shadow-lg hover:shadow-slate-900" />
                         </Button>
@@ -412,6 +366,7 @@ export const AtendimentosAnteriores = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                             mode="single"
+                            locale={ptBR}
                             selected={selectedDate}
                             onSelect={setSelectedDate}
                             initialFocus
@@ -419,9 +374,10 @@ export const AtendimentosAnteriores = () => {
                     </PopoverContent>
                 </Popover>
                 <Select onValueChange={(value) => setSelectedLocation(value)}>
-                    <SelectTrigger className="bg-[#d9d9d9] hover:shadow-md hover:shadow-slate-700  w-40  border rounded-md border-black">
+                    <SelectTrigger className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-x-1 hover:translate- flex w-40 justify-between items-center font-normal h-[3.1rem] border border-black">
                         <SelectValue placeholder="Local" />
                     </SelectTrigger>
+
                     <SelectContent>
                         <SelectItem value="all">Todos os locais</SelectItem>
                         {locations.map((location) => (
@@ -431,48 +387,103 @@ export const AtendimentosAnteriores = () => {
                         ))}
                     </SelectContent>
                 </Select>
+                <Button
+                    variant="ghost"
+                     className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black"
+                    onClick={() => {
+                        setSelectedDate(undefined);
+                        setSelectedLocation('all');
+                    }}
+                >
+                    Limpar filtros
+                </Button>
             </div>
-    
-            <div className=" border rounded-md border-black bg-[#d9d9d9] p-4 rounded-lg shadow">
-                <div className=" grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
-                    <p className="border-b-2 border-black pb-2">Data</p>
-                    <p className="border-b-2 border-black pb-2">Local</p>
-                    <p className="border-b-2 border-black pb-2">Atendimento</p>
+
+            <Card className="mb-4 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black transition-colors">
+                <CardContent className="p-5 flex justify-between items-center rounded-md">
+                    <p>
+                        <span className="font-inter">Modalidade:</span>{" "}
+                        <span className="font-semibold">Futebol</span>
+                    </p>
+                    <p className="text-orange-500 font-bold text-lg">{totalFiltered}</p>
+                </CardContent>
+            </Card>
+
+
+            <div key={currentPage} // forçar a reinicialização da animação a cada página
+                className="min-h-[445px] bg-white opacity-100  translate-y-0  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-4">
+
+
+
+                <div className="grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
+                    <p className="transition-all border-b-2 border-black pb-2">Data</p>
+                    <p className="transition-all border-b-2 border-black pb-2">Local</p>
+                    <p className="transition-all border-b-2 border-black pb-2">Descrição</p>
                 </div>
-                {currentItems.map((item, index) => (
-                    <div key={index} className="grid grid-cols-3 gap-2 lg:gap-10 py-2  border-t border-gray-200">
-                        <p>{item.data}</p>
-                        <p>{item.local}</p>
-                        <p>{item.atendimento}</p>
+                {currentItems.map((item: any) => (
+                    <div key={item.id} className="animate-slide-in-fade  transition-all grid grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200">
+                        {/* data */}
+                        <p>{new Date(item.created_at).toLocaleDateString("pt-BR")}</p>
+                        {/* local */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <p className="trincate max-w-[250px] cursor-pointer">{item.local}</p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {item.local}
+                            </TooltipContent>
+                        </Tooltip>
+                        {/* descrição */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <p className="truncate max-w-[250px] cursor-pointer">
+                                    {item.description}
+                                </p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {item.description}
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 ))}
             </div>
-    
-            <div className="flex justify-between items-center mt-4">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="sr-only">Página anterior</span>
-                </Button>
+
+
+            <div className="flex justify-evenly items-center mt-4">
+
                 <span>
                     Página {currentPage} de {totalPages}
                 </span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="bg-[#d9d9d9] hover:bg-orange-500"
-                >
-                    <ChevronRight className="h-4 w-4" />
-                    <span className="sr-only">Próxima página</span>
-                </Button>
+                <div className=" space-x-0.5">
+                    <Button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 border border-black text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]
+                                ${currentPage === 1
+                                ? "bg-white cursor-not-allowed text-gray-500"
+                                : "bg-[#EB8317] hover:bg-orange-600 transition-transform hover:shadow-none hover:-translate-x-1 hover:translate-y-1"
+                            }`}
+                        variant="default"
+                        size="default"  >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="sr-only">Página anterior</span>
+                    </Button>
+                    <Button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 border border-black text-white rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]
+                                ${currentPage === totalPages
+                                ? "bg-white cursor-not-allowed text-gray-500"
+                                : "bg-[#EB8317] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                            }`}
+                        variant="default" 
+                        size="default"    
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                        <span className="sr-only">Próxima página</span>
+                    </Button>
+                </div>
             </div>
-        </div>
+        </div >
     );
 };
