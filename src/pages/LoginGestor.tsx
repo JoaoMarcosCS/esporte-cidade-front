@@ -11,6 +11,8 @@ import { userSchema } from "../lib/schemaLoginUser";
 import { useAuth } from "../contexts/AuthContext";
 import { useAuthStatus } from "../hooks/useAuth";
 import CustomButton from "../components/customButtom";
+import { Link } from "react-router-dom";
+
 
 export const LoginGestor: React.FC = () => {
     const { login } = useAuth();
@@ -127,9 +129,9 @@ export const LoginGestor: React.FC = () => {
                                                 </p>
                                             )}
                                         </div>
-                                        <a href="#" className="text-blue-600 mt-2 block">
+                                        <Link to="/recuperar-senha/gestor" className="text-blue-600 mt-2 block">
                                             Esqueci minha senha
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </section>

@@ -14,6 +14,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { Navigate } from "react-router-dom";
 
+
 export function useMediaQuerie() {
   const customBreakpoint = 854;
   const [isMobile, setIsmobile] = React.useState<boolean | undefined>(
@@ -70,7 +71,7 @@ const HomeProfessor = () => {
   }
   return (
     <SidebarProvider>
-      <AppSidebar type={userType} />
+      {/*<AppSidebar type={userType} />*/}
       <SidebarInset>
         <div className="min-h-screen bg-gray-100">
           <HeaderBasic

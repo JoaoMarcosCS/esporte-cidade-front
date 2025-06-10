@@ -136,8 +136,34 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
       }
     }
 
+    // Calcula a data máxima permitida para nascimento (18 anos atrás)
+    function getMaxBirthday() {
+      const today = new Date();
+      today.setFullYear(today.getFullYear() - 18);
+      return today.toISOString().split('T')[0];
+    }
+
+    function isOver18(dateString: string) {
+      if (!dateString) return false;
+      const birthday = new Date(dateString);
+      const today = new Date();
+      today.setFullYear(today.getFullYear() - 18);
+      return birthday <= today;
+    }
+
+    function formatDateBR(dateString: string) {
+      if (!dateString) return '';
+      const [year, month, day] = dateString.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
     function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
+      const maxDate = getMaxBirthday();
+      if (!isOver18(form.birthday)) {
+        alert(`O gestor deve ter pelo menos 18 anos (data de nascimento até ${formatDateBR(maxDate)}).`);
+        return;
+      }
       onSubmit(form);
     }
 
@@ -155,7 +181,7 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
           <div className="md:flex md:flex-wrap justify-start gap-x-10 gap-y-10">
             <div className="md:w-2/5 gap-10">
               <Textbox value={form.name || ""} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" required={true} />
-              <Datepicker label="Data de nascimento" name="birthday" value={form.birthday || ""} onChange={handleChange} iconPath="/icon/date.svg" />
+              <Datepicker label="Data de nascimento" name="birthday" value={form.birthday || ""} onChange={handleChange} iconPath="/icon/date.svg" max={getMaxBirthday()} />
               <Textbox value={form.password || ""} onChange={handleChange} name="password" label={managerEdicao ? "Nova senha (opcional)" : "Senha"} iconPath="/icon/id.svg" placeholder={managerEdicao ? "Nova senha (caso deseje alterar)." : "Insira a senha"} type="password" required={managerEdicao === null} />
               <Textbox value={form.phone || ""} onChange={handleChange} name="phone" label="Telefone" iconPath="/icon/phone.svg" placeholder="(__)_____-____" type="text" required={true} />
               <label className="block text-sm font-semibold">Foto</label>
@@ -163,7 +189,6 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
                 <img
                   src={form.photo_url}
                   alt="Pré-visualização"
-                  className="mb-2 mt-2 rounded w-32 h-32 object-cover border"
                 />
               )}
               <input
@@ -173,6 +198,8 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
                 onChange={handlePhotoUpload}
                 disabled={uploading}
               />
+              
+              
             </div>
             <div className="md:w-2/5">
               <Textbox value={form.cpf || ""} onChange={handleChange} name="cpf" label="CPF" iconPath="/icon/id.svg" placeholder="Insira o CPF" type="text" required={true} />

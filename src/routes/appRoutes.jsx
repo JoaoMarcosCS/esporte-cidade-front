@@ -1,10 +1,10 @@
-import { createBrowserRouter } from "react-router-dom"; 
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 import {
   CadastroAtleta,
-  Home,
+  // Home, // Removed unused import
   Chamada,
   ErrorPage,
   HomeAtleta,
@@ -14,7 +14,7 @@ import {
   LoginGestor,
   ProfileSelect,
   AtletasLista,
-  FaltasAtleta,
+  // FaltasAtleta, // Removed unused import
   EditarPerfil,
   HomeGestor,
   CadastroComunicados,
@@ -25,8 +25,14 @@ import {
   AprovarInscricoesProfessor,
   CadastroModalidades,
   GestaoDeAtletas,
-  GestaoDeManagers
+  GestaoDeManagers,
+  TeacherRequestPasswordReset,
+  TeacherResetPassword,
+  ManagerRequestPasswordReset, 
+  ManagerResetPassword     
 } from "../pages";
+
+import { RelatorioGeralGestor } from "../pages/RelatorioGeralGestor";
 
 const router = createBrowserRouter(
   [
@@ -61,6 +67,24 @@ const router = createBrowserRouter(
         {
           path: "/home-atleta/cadastro",
           element: <CadastroAtleta />,
+        },
+        // Rotas de recuperação de senha do Professor (PUBLICAS)
+        {
+          path: "/recuperar-senha/professor",
+          element: <TeacherRequestPasswordReset />,
+        },
+        {
+          path: "/password-reset/:teacherId/:token",
+          element: <TeacherResetPassword />,
+        },
+        // Rotas de recuperação de senha do Gestor (PUBLICAS)
+        {
+          path: "/recuperar-senha/gestor",
+          element: <ManagerRequestPasswordReset />,
+        },
+        {
+          path: "manager/password-reset/:managerId/:token",
+          element: <ManagerResetPassword />,
         },
 
         // ROTAS PRIVADAS
@@ -153,17 +177,17 @@ const router = createBrowserRouter(
         {
           path: "/home-Gestor/cadastrar-Modalidade",
           element: (
-           <ProtectedRoute requiredRole="3">
+            <ProtectedRoute requiredRole="3">
               <CadastroModalidades />
-           </ProtectedRoute>
+            </ProtectedRoute>
           ),
         },
         {
           path: "/home-Gestor/cadastrar-professor",
           element: (
-           <ProtectedRoute requiredRole="3">
+            <ProtectedRoute requiredRole="3">
               <GestaoDeProfessores />
-           </ProtectedRoute>
+            </ProtectedRoute>
           ),
         },
         {
@@ -187,6 +211,14 @@ const router = createBrowserRouter(
           element: (
             <ProtectedRoute requiredRole="3">
               <GestaoDeManagers />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/home-gestor/relatorio-geral",
+          element: (
+            <ProtectedRoute requiredRole="3">
+              <RelatorioGeralGestor />
             </ProtectedRoute>
           ),
         },

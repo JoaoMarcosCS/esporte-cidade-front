@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ChamadaComp from "../components/ChamadaComp";
 import HeaderBasic from "../components/navigation/HeaderBasic";
-import useNavigateTo from "../hooks/useNavigateTo";
 import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
@@ -34,8 +33,8 @@ const Chamada: React.FC = () => {
 
   const userData = userStorage ? JSON.parse(userStorage) : null;
 
-  // Acessa a propriedade '0' do objeto e depois a modalidade
-  const userModalityId = userData?.["0"]?.modality?.id || null;
+  
+  const userModalityId = userData?.modality?.id || null;
 
   useEffect(() => {
     const fetchAtletasAtivos = async () => {
@@ -43,7 +42,7 @@ const Chamada: React.FC = () => {
         setLoading(true);
 
         const response = await api.get(
-          `modality/${userModalityId}/athletes-availible`
+          `modality/${userModalityId}/athletes-available`
         );
 
         const atletasFormatados = response.data.map((atleta: AtletaAtivos) => ({
@@ -86,6 +85,7 @@ const Chamada: React.FC = () => {
               },
             ]}
           />
+          <div className="mb-10">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <p>Carregando atletas...</p>
@@ -100,8 +100,10 @@ const Chamada: React.FC = () => {
               initialStudents={atletasAtivos} // Passando os atletas como prop
             />
           )}
-
           <FooterMobile />
+          </div>
+          
+
         </div>
       </SidebarInset>
     </SidebarProvider>

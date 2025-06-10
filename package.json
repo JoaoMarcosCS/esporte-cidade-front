@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "dom": "^0.0.3",
     "embla-carousel-react": "^8.5.1",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -31,6 +32,7 @@
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
+    "react-toastify": "^11.0.5",
     "router": "^2.0.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
@@ -64,9 +66,11 @@
     ]
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-toastify": "^4.0.2",
     "autoprefixer": "^10.4.20",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14"
   }

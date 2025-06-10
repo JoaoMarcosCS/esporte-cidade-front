@@ -23,29 +23,29 @@ export const CadastroModalidades: React.FC = () => {
     const [modalAssignTeacherOpen, setModalAssignTeacherOpen] = useState(false);
     const [modalidadeParaAssign, setModalidadeParaAssign] = useState<Modality | null>(null);
 
-    //modal form
-    const [showModal, setShowModal] = useState(false);
+  //modal form
+  const [showModal, setShowModal] = useState(false);
 
-    //modal confirmar delete
-    const [modalAberto, setModalAberto] = useState(false);
-    const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
-    const handleDeleteClick = (id: number) => {
-        setIdParaExcluir(id);
-        setModalAberto(true);
-    };
+  //modal confirmar delete
+  const [modalAberto, setModalAberto] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+  const handleDeleteClick = (id: number) => {
+    setIdParaExcluir(id);
+    setModalAberto(true);
+  };
 
-    useEffect(() => {
-        fetchModalidades();
-    }, []);
+  useEffect(() => {
+    fetchModalidades();
+  }, []);
 
-    const fetchModalidades = async () => {
-        try {
-            const data = await getAllModalities();
-            setModalidades(data);
-        } catch (error) {
-            console.error("Erro ao carregar modalidades:", error);
-        }
-    };
+  const fetchModalidades = async () => {
+    try {
+      const data = await getAllModalities();
+      setModalidades(data);
+    } catch (error) {
+      console.error("Erro ao carregar modalidades:", error);
+    }
+  };
 
     const handleCreate = async (data: Omit<Modality, "id" | "teachers" | "registred_athletes">) => {
         try {
@@ -83,21 +83,19 @@ export const CadastroModalidades: React.FC = () => {
     const confirmarExclusao = async () => {
         if (idParaExcluir === null) return;
 
-        try {
-            await deleteModality(idParaExcluir);
-            setModalidades((prev) => prev.filter((mod) => mod.id !== idParaExcluir));
-            if (modalidadeSelecionada?.id === idParaExcluir) {
-                setModalidadeSelecionada(null);
-            }
-        } catch (error) {
-            console.error("Erro ao deletar modalidade:", error);
-        } finally {
-            setModalAberto(false);
-            setIdParaExcluir(null);
-        }
-    };
-
-
+    try {
+      await deleteModality(idParaExcluir);
+      setModalidades((prev) => prev.filter((mod) => mod.id !== idParaExcluir));
+      if (modalidadeSelecionada?.id === idParaExcluir) {
+        setModalidadeSelecionada(null);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar modalidade:", error);
+    } finally {
+      setModalAberto(false);
+      setIdParaExcluir(null);
+    }
+  };
 
     return (
         <SidebarProvider>

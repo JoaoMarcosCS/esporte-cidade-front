@@ -83,12 +83,12 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         modalityId: student.modalityId, // Certifique-se que modalityId existe no student
         athleteId: student.id,
         present: student.status === "PRESENTE",
-        created_at: formattedDateTime, // Mantém como Date object
+        created_at: formattedDateTime, 
       }));
 
       const response = await api.post(
         `modality/${students[0].modalityId}/receive-atendiments`,
-        atendiments // Envia o array diretamente
+        atendiments 
       );
 
       console.log("Chamada gravada com sucesso:", response.data);
@@ -96,7 +96,6 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
       GoTo("/home-professor");
     } catch (error) {
       console.error("Erro ao gravar chamada:", error);
-      // Aqui você pode adicionar tratamento de erro para o usuário
     }
   };
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,8 +155,8 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
                 alt={student.name}
                 className="rounded-full mr-4 w-12 h-12 sm:w-14 sm:h-14 object-cover"
                 style={{
-                  maxWidth: "56px", // Define um tamanho máximo
-                  minWidth: "48px", // Define um tamanho mínimo
+                  maxWidth: "56px", 
+                  minWidth: "48px", 
                 }}
               />
               <div className="flex-1">
