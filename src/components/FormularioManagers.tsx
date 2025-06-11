@@ -23,8 +23,16 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
       password: "",
     });
     const [uploading, setUploading] = useState(false);
+    const [passwordError, setPasswordError] = useState<string>("");
 
-    // Funções de máscara reutilizáveis
+    function isStrongPassword(password: string): boolean {
+      return /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /[0-9]/.test(password) &&
+        /[^A-Za-z0-9]/.test(password);
+    }
+
+    
     function maskCpf(cpf: string) {
       let v = cpf.replace(/\D/g, "");
       if (v.length <= 3) return v;
@@ -160,8 +168,14 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
     function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
       const maxDate = getMaxBirthday();
+      setPasswordError("");
       if (!isOver18(form.birthday)) {
         alert(`O gestor deve ter pelo menos 18 anos (data de nascimento até ${formatDateBR(maxDate)}).`);
+        return;
+      }
+      // Só valida se for cadastro novo ou alteração de senha
+      if ((managerEdicao === null || form.password) && !isStrongPassword(form.password || "")) {
+        setPasswordError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.");
         return;
       }
       onSubmit(form);
@@ -183,12 +197,16 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
               <Textbox value={form.name || ""} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" required={true} />
               <Datepicker label="Data de nascimento" name="birthday" value={form.birthday || ""} onChange={handleChange} iconPath="/icon/date.svg" max={getMaxBirthday()} />
               <Textbox value={form.password || ""} onChange={handleChange} name="password" label={managerEdicao ? "Nova senha (opcional)" : "Senha"} iconPath="/icon/id.svg" placeholder={managerEdicao ? "Nova senha (caso deseje alterar)." : "Insira a senha"} type="password" required={managerEdicao === null} />
+              {passwordError && (
+                <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
+              )}
               <Textbox value={form.phone || ""} onChange={handleChange} name="phone" label="Telefone" iconPath="/icon/phone.svg" placeholder="(__)_____-____" type="text" required={true} />
               <label className="block text-sm font-semibold">Foto</label>
               {form.photo_url && (
                 <img
                   src={form.photo_url}
                   alt="Pré-visualização"
+                  style={{ width: 96, height: 96, objectFit: 'cover', border: '2px solid #e5e7eb', marginBottom: 8 }}
                 />
               )}
               <input

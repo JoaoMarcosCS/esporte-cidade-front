@@ -20,7 +20,15 @@ const emptyForm = {
 const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit, onCancel }) => {
   const [form, setForm] = useState<any>(emptyForm);
   const [editMode, setEditMode] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const isEditing = !!athlete;
+
+  function isStrongPassword(password: string): boolean {
+    return /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password);
+  }
   useEffect(() => {
     if (athlete) {
       console.log('[EDIT] Iniciando edição do atleta:', athlete);
@@ -152,9 +160,14 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isEditing && !editMode) return;
+    setPasswordError("");
     setEmailError("");
     setSuccessMessage("");
     setGenericError("");
+    if ((!isEditing || form.password) && !isStrongPassword(form.password || "")) {
+      setPasswordError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+      return;
+    }
     // Converte a data de nascimento para yyyy-mm-dd (ISO)
     const parseBirthday = (dateStr: string) => {
       if (!dateStr) return '';
@@ -330,6 +343,9 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         <div>
           <label className="block text-sm mb-1">Senha</label>
           <input name="password" type="password" value={form.password} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+          {passwordError && (
+            <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
+          )}
         </div>
         <div>
           <label className="block text-sm mb-1">Alergias Alimentares</label>

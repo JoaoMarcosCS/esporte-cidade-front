@@ -28,6 +28,15 @@ const TeacherResetPassword: React.FC = () => {
       return;
     }
 
+    // Validação de senha forte
+    if (!(/[a-z]/.test(password) &&
+          /[A-Z]/.test(password) &&
+          /[0-9]/.test(password) &&
+          /[^A-Za-z0-9]/.test(password))) {
+      setError('A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('As senhas não coincidem.');
       return;

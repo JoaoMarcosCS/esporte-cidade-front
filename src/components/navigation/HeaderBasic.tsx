@@ -110,7 +110,7 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
                   onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/atletas"); }}
                   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
-                  Alunos
+                  Atletas
                 </button>
                 <button
                   onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/cadastrar-professor"); }}
