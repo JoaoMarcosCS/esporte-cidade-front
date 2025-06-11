@@ -53,11 +53,11 @@ const FaltaProfessor: React.FC = () => {
   }
 
   return (
-    <div className="">
+    <div className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 p-6  border border-black  flex flex-col justify-between mb-4">
       {user?.isGestor ? (
         <select
           multiple
-          className="w-full p-2 rounded border border-gray-300 shadow-sm focus:outline-none focus:border-blue-500"
+          className="bg-white w-full p-2 rounded focus:outline-none focus:border-blue-500"
           onChange={handleProfessorSelect}
           value={selectedProfessors}
         >
@@ -68,7 +68,7 @@ const FaltaProfessor: React.FC = () => {
           ))}
         </select>
       ) : (
-        <p className="p-2 rounded border border-black bg-[#F4F6FF] shadow-md">
+        <p className="bg-white p-2 rounded">
           {selectedProfessors.length > 0
             ? selectedProfessors.join(', ')
             : 'Não há ausência de professor'}

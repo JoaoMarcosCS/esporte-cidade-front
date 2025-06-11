@@ -1,4 +1,4 @@
-import { Professor } from "@/types/Professor";
+import { Professor } from "../types/Professor";
 import axios from "axios";
 import api from "./api";
 
@@ -16,8 +16,8 @@ export const getProfessores = async (): Promise<Professor[]> => {
 
 export const saveProfessor = async (professor: Professor): Promise<Professor> => {
     try {
-        const method = professor.id === "-1" ? "POST" : "PUT";
-        const url = professor.id === "-1" ? API_URL : `${API_URL}/${professor.id}`;
+        const method = professor.id == -1 ? "POST" : "PUT";
+        const url = professor.id === -1 ? API_URL : `${API_URL}/${professor.id}`;
 
         const professorToSave: Partial<Professor> = { ...professor };
         delete professorToSave.id;
@@ -28,7 +28,7 @@ export const saveProfessor = async (professor: Professor): Promise<Professor> =>
 
         return response.data;
     } catch (error) {
-        console.error(professor.id === "-1" ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
+        console.error(professor.id === -1 ? "Erro ao adicionar professor" : "Erro ao editar professor:", error);
         throw error;
     }
 };

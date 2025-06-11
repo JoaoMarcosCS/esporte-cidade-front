@@ -9,6 +9,7 @@ import {
 } from "./ui/select";
 import { Button } from "./ui/button";
 import { EscalaMobile } from './EscalaMobile';
+import CustomButton from "./customButtom";
 
 const diasSemana = [
   'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
@@ -110,13 +111,13 @@ export const Escala = () => {
   return (
     <>
       {/* Versão desktop */}
-      <div className="hidden md:block">
+      <div className="hidden md:block bg-[#d9d9d9] p-4 rounded-lg border border-black p-4 pb-8  ">
         <h2 className="text-lg font-semibold mb-1">Escala Semanal</h2>
         <div className="mr-16 lg:mr-6">
-          <div className="flex gap-4 mb-4">
+          <div className="flex gap-4 px-16 mb-4">
             <div className="flex-1">
               <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
                   <SelectValue placeholder="Filtrar por modalidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -130,7 +131,7 @@ export const Escala = () => {
             </div>
             <div className="flex-1">
               <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
                   <SelectValue placeholder="Filtrar por professor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,19 +143,24 @@ export const Escala = () => {
                 </SelectContent>
               </Select>
             </div>
-            <button
-              className="bg-[#EB8317] p-2 border border-black rounded-sm hover:bg-[#EB8317]/75"
+           
+
+            <CustomButton
+            variant="orange"
               onClick={() => {
                 setSelectedModality('');
                 setSelectedTeacher('');
               }}
             >
-              Limpar filtros
-            </button>
+              Limpar Fitros 
+            </CustomButton>
+
+           
+        
           </div>
-          <div className="w-full max-w-6xl mx-auto">
-            
-            <div className="border rounded-md border-black bg-[#d9d9d9] p-4 shadow">
+          <div className="w-full max-w-6xl mx-auto ">
+
+            <div className=" bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-4 border min-w-52 border-black ">
               <div className="grid grid-cols-6 gap-2 lg:gap-6 font-semibold mb-2">
                 {diasSemana.map(dia => (
                   <p key={dia} className="border-b-2 border-black pb-2">{dia}</p>
@@ -185,10 +191,10 @@ export const Escala = () => {
         </div>
       </div>
       {/* Versão mobile */}
-      <div className="block md:hidden">
+      <div className="block md:hidden p-4 border border-black bg-[#d9d9d9]">
         <EscalaMobile />
       </div>
-      
+
     </>
   );
 };

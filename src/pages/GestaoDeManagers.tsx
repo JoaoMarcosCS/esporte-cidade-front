@@ -7,12 +7,22 @@ import FooterMobile from "../components/navigation/FooterMobile";
 import { getManagers, saveManager, deleteManager } from "../services/managerService";
 
 import { useAuth } from "../contexts/AuthContext";
+import { ConfirmModal } from "../components/ComfirmModal";
 
 const GestaoDeManagers: React.FC = () => {
   const [managers, setManagers] = useState<Manager[]>([]);
   const [selectedManager, setSelectedManager] = useState<Manager | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const { fetchUser, user } = useAuth();
+  const [modalAberto, setModalAberto] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+  
+  const handleDeleteClick = (id: number) => {
+    setIdParaExcluir(id);
+    setModalAberto(true);
+  };
+
+
 
   const fetchManagers = async () => {
     try {
@@ -47,14 +57,18 @@ const GestaoDeManagers: React.FC = () => {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleDelete = async (id: string | null) => {
+  const handleDelete = async () => {
+    if (!idParaExcluir) return;
     try {
-      if (!id) return;
-      await deleteManager(Number(id));
-      setManagers(prev => prev.filter(m => Number(m.id) !== Number(id)));
+      await deleteManager(idParaExcluir);
+      setManagers(prev => prev.filter(m => Number(m.id) !== Number(idParaExcluir)));
     } catch (error) {
       console.error('Erro ao deletar gerente:', error);
+    } finally {
+      setModalAberto(false);
+      setIdParaExcluir(null);
     }
+
   };
 
   return (
@@ -63,10 +77,10 @@ const GestaoDeManagers: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
-          
+
         ]}
       />
 
@@ -74,11 +88,19 @@ const GestaoDeManagers: React.FC = () => {
 
       <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
         <main className="space-y-8 mt-6">
+          <ConfirmModal
+            isOpen={modalAberto}
+            onClose={() => {setModalAberto(false);}}
+            onConfirm={handleDelete}
+            message="Tem certeza que deseja excluir este Gestor? Confirme com sua senha para continuar."
+          />
+
+
           <section>
             <ManagersCadastrados
               managers={managers}
               onEdit={handleEditClick}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
               managerEdicao={selectedManager}
             />
           </section>

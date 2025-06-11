@@ -3,169 +3,221 @@ import { Modality } from "@/types/Modality";
 import { ModalidadesCadastradas } from "../components/modalidadesCadastradas";
 import FormularioModalidades from "../components/FormularioModalidades";
 import {
-  getAllModalities,
-  createModality,
-  deleteModality,
+    getAllModalities,
+    createModality,
+    deleteModality,
+    updateModality,
+    getModalityById
 } from "../services/modalityService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { ConfirmModal } from "../components/ComfirmModal";
+import AssignTeacherForm from "../components/AssignTeacherModal";
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
+import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 
 export const CadastroModalidades: React.FC = () => {
-  const [modalidades, setModalidades] = useState<Modality[]>([]);
-  const [modalidadeSelecionada, setModalidadeSelecionada] =
-    useState<Modality | null>(null);
-  const formularioRef = useRef<HTMLFormElement>(null);
+    const [modalidades, setModalidades] = useState<Modality[]>([]);
+    const [modalidadeSelecionada, setModalidadeSelecionada] = useState<Modality | null>(null);
+    const formularioRef = useRef<HTMLFormElement>(null);
+    const [modalAssignTeacherOpen, setModalAssignTeacherOpen] = useState(false);
+    const [modalidadeParaAssign, setModalidadeParaAssign] = useState<Modality | null>(null);
 
-  //modal form
-  const [showModal, setShowModal] = useState(false);
+    //modal form
+    const [showModal, setShowModal] = useState(false);
 
-  //modal confirmar delete
-  const [modalAberto, setModalAberto] = useState(false);
-  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
-  const handleDeleteClick = (id: number) => {
-    setIdParaExcluir(id);
-    setModalAberto(true);
-  };
+    //modal confirmar delete
+    const [modalAberto, setModalAberto] = useState(false);
+    const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+    const handleDeleteClick = (id: number) => {
+        setIdParaExcluir(id);
+        setModalAberto(true);
+    };
 
-  useEffect(() => {
-    fetchModalidades();
-  }, []);
+    useEffect(() => {
+        fetchModalidades();
+    }, []);
 
-  const fetchModalidades = async () => {
-    try {
-      const data = await getAllModalities();
-      setModalidades(data);
-    } catch (error) {
-      console.error("Erro ao carregar modalidades:", error);
-    }
-  };
+    const fetchModalidades = async () => {
+        try {
+            const data = await getAllModalities();
+            setModalidades(data);
+        } catch (error) {
+            console.error("Erro ao carregar modalidades:", error);
+        }
+    };
 
-  const handleCreate = async (
-    data: Omit<Modality, "id" | "teachers" | "registred_athletes">
-  ) => {
-    try {
-      await createModality(data);
-      await fetchModalidades();
-    } catch (error) {
-      console.error("Erro ao salvar modalidade:", error);
-      throw error;
-    }
-  };
+    const handleCreate = async (data: Omit<Modality, "id" | "teachers" | "registred_athletes">) => {
+        try {
+            await createModality(data);
+            await fetchModalidades()
+        } catch (error) {
+            console.error("Erro ao salvar modalidade:", error);
+            throw error;
+        }
+    };
+    const handleAssignTeacherClick = (modality: Modality) => {
+        setModalidadeParaAssign(modality);
+        setModalAssignTeacherOpen(true);
+    };
 
-  const handleEditClick = (modality: Modality) => {
-    setModalidadeSelecionada(modality);
-    formularioRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    const handleUpdate = async (
+        id: number,
+        data: Omit<Modality, "id" | "teachers" | "registred_athletes">
+    ) => {
+        try {
+            await updateModality(id, data);
+            await fetchModalidades();
+        } catch (error) {
+            console.error("Erro ao atualizar modalidade:", error);
+            throw error;
+        }
+    };
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteModality(id);
-      setModalidades((prev) => prev.filter((mod) => mod.id !== id));
-      if (modalidadeSelecionada?.id === id) {
-        setModalidadeSelecionada(null);
-      }
-    } catch (error) {
-      console.error("Erro ao deletar modalidade:", error);
-      throw error;
-    }
-  };
-  const confirmarExclusao = async () => {
-    if (idParaExcluir === null) return;
+    const handleEditClick = (modality: Modality) => {
+        setModalidadeSelecionada(modality);
+        setShowModal(true);
+        console.log("clicou")
+    };
 
-    try {
-      await deleteModality(idParaExcluir);
-      setModalidades((prev) => prev.filter((mod) => mod.id !== idParaExcluir));
-      if (modalidadeSelecionada?.id === idParaExcluir) {
-        setModalidadeSelecionada(null);
-      }
-    } catch (error) {
-      console.error("Erro ao deletar modalidade:", error);
-    } finally {
-      setModalAberto(false);
-      setIdParaExcluir(null);
-    }
-  };
+    const confirmarExclusao = async () => {
+        if (idParaExcluir === null) return;
 
-  return (
-    <section className="bg-[#F4F6FF] pb-20">
-      <HeaderBasic
-        type="visitante"
-        links={[
-          { label: "Home", path: "/home-gestor" },
-          {
-            label: "Comunicados",
-            path: "/home-gestor/cadastrar-comunicado",
-          },
-          {
-            label: "Modalidades",
-            path: "/home-gestor/cadastrar-modalidade",
-          },
-          {
-            label: "Relatório Geral",
-            path: "/home-gestor/relatorio-geral",
-          },
-        ]}
-      />
-      <FooterMobile />
+        try {
+            await deleteModality(idParaExcluir);
+            setModalidades((prev) => prev.filter((mod) => mod.id !== idParaExcluir));
+            if (modalidadeSelecionada?.id === idParaExcluir) {
+                setModalidadeSelecionada(null);
+            }
+        } catch (error) {
+            console.error("Erro ao deletar modalidade:", error);
+        } finally {
+            setModalAberto(false);
+            setIdParaExcluir(null);
+        }
+    };
 
-      <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
-        <main className="space-y-8 mt-6">
-          <section>
-            <div className="flex justify-evenly">
-              <h2 className="font-bold text-3xl mb-10">
-                Modalidades Cadastradas
-              </h2>
-              <button
-                className="h-10 md:w-fit font-bold font-inter bg-orange-600 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                onClick={() => {
-                  setModalidadeSelecionada(null);
-                  setShowModal(true);
-                }}
-              >
-                Cadastrar Nova Modalidade
-              </button>
-            </div>
+    return (
+        <SidebarProvider>
 
-            <ModalidadesCadastradas
-              modalidades={modalidades}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
-              modalidadeEdicao={modalidadeSelecionada}
-              setModalidades={setModalidades}
-            />
-          </section>
+            <AppSidebar type="atleta" />
+            <SidebarInset>
 
-          <ConfirmModal
-            isOpen={modalAberto}
-            onClose={() => setModalAberto(false)}
-            onConfirm={confirmarExclusao}
-          />
+                <section className="bg-[#F4F6FF] pb-20">
+                    <HeaderBasic
+                        type="visitante"
+                        links={[
+                            { label: "Home", path: "/home-gestor" },
+                            {
+                                label: "Comunicados",
+                                path: "/home-gestor/cadastrar-comunicado",
+                            },
+                            {
+                                label: "Modalidades",
+                                path: "/home-gestor/cadastrar-modalidade",
+                            },
+                            {
+                                label: "Relatório Geral",
+                                path: "/home-gestor/relatorio-geral",
+                            },
+                        ]}
+                    />
+                    <FooterMobile />
 
-          <section className="flex justify-end">
-            {showModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl relative">
-                  <FormularioModalidades
-                    ref={formularioRef}
-                    modalityEdicao={modalidadeSelecionada}
-                    onSubmit={async (data) => {
-                      await handleCreate(data);
-                      setShowModal(false);
-                      await fetchModalidades();
-                    }}
-                    onCancelEdit={() => {
-                      setModalidadeSelecionada(null);
-                      setShowModal(false);
-                      fetchModalidades();
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </section>
-        </main>
-      </div>
-    </section>
-  );
+                    <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
+                        <main className="space-y-8 mt-6">
+                            <section>
+                                <div className="flex ">
+                                    <h2 className="font-bold text-3xl mb-10">Modalidades Cadastradas</h2>
+                                </div>
+
+                                <div className="flex flex-col  border border-black md:pb-20 bg-[#D9D9D9]">
+                                    <ModalidadesCadastradas
+                                        modalidades={modalidades}
+                                        onEdit={handleEditClick}
+                                        onDelete={handleDeleteClick}
+                                        modalidadeEdicao={modalidadeSelecionada}
+                                        setModalidades={setModalidades}
+                                        onAssignTeacher={handleAssignTeacherClick}
+                                        onCreateClick={() => {
+                                            setModalidadeSelecionada(null);
+                                            setShowModal(true);
+                                        }}
+                                    />
+
+
+
+                                </div>
+                            </section>
+
+                            <div className="flex justify-end">
+                                <ConfirmModal
+                                    isOpen={modalAberto}
+                                    onClose={() => setModalAberto(false)}
+                                    onConfirm={confirmarExclusao}
+                                    message="Tem certeza que deseja excluir esta modalidade?"
+                                />
+                            </div>
+
+                            <section className="flex justify-end">
+
+                                {/* modal cadastro */}
+
+                                {showModal && (
+                                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                                        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl relative">
+
+                                            <FormularioModalidades
+                                                ref={formularioRef}
+                                                modalityEdicao={modalidadeSelecionada}
+                                                onSubmit={async (data) => {
+                                                    if (modalidadeSelecionada) {
+                                                        await handleUpdate(modalidadeSelecionada.id, data);
+                                                    } else {
+                                                        await handleCreate(data);
+                                                    }
+                                                    setShowModal(false);
+                                                    setModalidadeSelecionada(null);
+                                                    await fetchModalidades();
+                                                }}
+                                                onCancelEdit={() => {
+                                                    setModalidadeSelecionada(null);
+                                                    setShowModal(false);
+                                                    fetchModalidades();
+                                                }}
+                                            />
+
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+
+                            <section className="flex justify-end">
+
+                                {/* modal atribuição */}
+                                {modalAssignTeacherOpen && modalidadeParaAssign && (
+                                    <div className="fixed top-0 left-0 right-0 bottom-0 min-h-screen z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl relative">
+                                            <AssignTeacherForm
+                                                modality={modalidadeParaAssign}
+                                                onCancel={() => {
+                                                    setModalidadeParaAssign(null);
+                                                    setModalAssignTeacherOpen(false);
+                                                }}
+                                                onSubmitSuccess={() => {
+                                                    setModalidadeParaAssign(null);
+                                                    setModalAssignTeacherOpen(false);
+                                                    fetchModalidades();
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+                        </main>
+                    </div>
+                </section>
+            </SidebarInset>
+        </SidebarProvider>
+    );
 };

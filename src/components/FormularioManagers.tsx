@@ -226,13 +226,12 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
             </div>
           </div>
           <div className="w-full flex justify-between">
-            <Button variant="default" type="submit">
+            <button className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300" type="submit">
               {managerEdicao ? "Salvar Alterações" : "Cadastrar"}
-            </Button>
+            </button>
             {managerEdicao && (
-              <Button variant="destructive" type="button" onClick={onCancelEdit}>
-                Cancelar
-              </Button>
+
+              <button type="button" className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Cancelar</button>
             )}
           </div>
         </form>

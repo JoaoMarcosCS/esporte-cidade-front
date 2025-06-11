@@ -5,10 +5,20 @@ import FormularioProfessores from "../components/FormularioProfessores";
 import { getProfessores, saveProfessor, deleteProfessor } from "../services/professorService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
+import { ConfirmModal } from "../components/ComfirmModal";
 
 const GestaoDeProfessor: React.FC = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
+
+
+  const handleDeleteClick = (id: number) => {
+    setIdParaExcluir(id);
+    setModalAberto(true);
+  };
+
 
   const formularioRef = useRef<HTMLFormElement>(null);
 
@@ -41,22 +51,34 @@ const GestaoDeProfessor: React.FC = () => {
     formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleDelete = async (id: string | null) => {
+  const handleDelete = async () => {
+    if (!idParaExcluir) return;
     try {
-      await deleteProfessor(Number(id));
-      setProfessores(prev => prev.filter(prof => Number(prof.id) !== Number(id)));
+      await deleteProfessor((idParaExcluir));
+      setProfessores(prev => prev.filter(prof => Number(prof.id) !== idParaExcluir));
     } catch (error) {
       console.error('Erro ao deletar professor:', error);
+    } finally{
+      setModalAberto(false);
+          setIdParaExcluir(null);
     }
   };
 
   return (
     <section className="bg-[#F4F6FF] pb-20">
+      <ConfirmModal
+        isOpen={modalAberto}
+        onClose={() => { setModalAberto(false); }}
+        onConfirm={handleDelete}
+        message="Tem certeza que deseja excluir este Professor? Confirme com sua senha para continuar."
+      />
+
+
       <HeaderBasic
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" }, 
+          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
@@ -70,7 +92,7 @@ const GestaoDeProfessor: React.FC = () => {
             <ProfessoresCadastrados
               professores={professores}
               onEdit={handleEditClick}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
               professorEdicao={selectedProfessor}
             />
           </section>

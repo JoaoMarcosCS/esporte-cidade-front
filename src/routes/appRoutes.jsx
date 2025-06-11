@@ -26,10 +26,11 @@ import {
   CadastroModalidades,
   GestaoDeAtletas,
   GestaoDeManagers,
-  TeacherRequestPasswordReset,
-  TeacherResetPassword,
+  TeacherRequestPasswordReset,// Added for password recovery
+  TeacherResetPassword,  // Added for password recovery
   ManagerRequestPasswordReset, 
-  ManagerResetPassword     
+  ManagerResetPassword,        
+  HorarioProfessor
 } from "../pages";
 
 import { RelatorioGeralGestor } from "../pages/RelatorioGeralGestor";
@@ -153,6 +154,14 @@ const router = createBrowserRouter(
           element: (
             <ProtectedRoute requiredRole="2">
               <AprovarInscricoesProfessor />
+            </ProtectedRoute>
+          ),
+        },
+         {
+          path: "/home-professor/horario",
+          element: (
+            <ProtectedRoute requiredRole="2">
+              <HorarioProfessor />
             </ProtectedRoute>
           ),
         },

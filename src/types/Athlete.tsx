@@ -10,7 +10,7 @@ export interface Address {
 }
 
 export interface Athlete {
-    id?: string;
+    id?: number;
     name: string;
     cpf: string;
     rg: string;

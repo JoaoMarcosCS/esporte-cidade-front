@@ -10,6 +10,7 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { useHookFormMask } from "use-mask-input";
 import { Link } from 'react-router-dom';
 import { useAuth } from "../contexts/AuthContext";
+import CustomButton from "../components/customButtom";
 
 export const LoginProfessor: React.FC = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -126,24 +127,16 @@ export const LoginProfessor: React.FC = () => {
                             </section>
 
                             <div className="py-10 flex justify-end gap-7">
-                                <button
-                                    type="button"
-                                    onClick={() => GoTo("/")}
-                                    className="h-13 md:w-52 font-bold font-inter bg-gray-200 text-gray-700 py-3 px-9 rounded-lg hover:bg-gray-300 transition duration-300"
-                                >
+                                <CustomButton width="w-52" height="h-13" variant="gray" onClick={() => GoTo("/")}>
                                     Voltar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="h-13 md:w-52 font-bold font-inter bg-orange-600 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-                                >
+                                </CustomButton>
+                                <CustomButton  type="submit" variant="orange" width="w-52" height="h-13" disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         <Loader className="animate-spin" />
                                     ) : (
                                         "Confirmar"
                                     )}
-                                </button>
+                                </CustomButton>
                             </div>
                         </form>
                        
