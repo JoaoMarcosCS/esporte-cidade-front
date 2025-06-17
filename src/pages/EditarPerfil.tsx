@@ -21,7 +21,24 @@ const athleteSchema = z
     street: z.string().optional(),
     neighborhood: z.string().optional(),
     city: z.string().optional(),
-    password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+    password: z.string()
+      .min(6, "Senha deve ter pelo menos 6 caracteres")
+      .refine(
+        (val) => /[a-z]/.test(val),
+        { message: "A senha deve conter pelo menos uma letra minúscula" }
+      )
+      .refine(
+        (val) => /[A-Z]/.test(val),
+        { message: "A senha deve conter pelo menos uma letra maiúscula" }
+      )
+      .refine(
+        (val) => /[0-9]/.test(val),
+        { message: "A senha deve conter pelo menos um número" }
+      )
+      .refine(
+        (val) => /[^A-Za-z0-9]/.test(val),
+        { message: "A senha deve conter pelo menos um caractere especial" }
+      ),
     confirmPassword: z
       .string()
       .min(6, "Confirmação de senha deve ter pelo menos 6 caracteres"),

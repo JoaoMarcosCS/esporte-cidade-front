@@ -5,12 +5,15 @@ import FormularioManagers from "../components/FormularioManagers";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import { getManagers, saveManager, deleteManager } from "../services/managerService";
+
+import { useAuth } from "../contexts/AuthContext";
 import { ConfirmModal } from "../components/ComfirmModal";
 
 const GestaoDeManagers: React.FC = () => {
   const [managers, setManagers] = useState<Manager[]>([]);
   const [selectedManager, setSelectedManager] = useState<Manager | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const { fetchUser, user } = useAuth();
   const [modalAberto, setModalAberto] = useState(false);
   const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
   
@@ -38,11 +41,16 @@ const GestaoDeManagers: React.FC = () => {
     try {
       await saveManager(manager);
       await fetchManagers();
+      // Se o manager editado é o usuário logado, atualize o contexto global
+      if (user && user.id === manager.id) {
+        await fetchUser();
+      }
       setSelectedManager(null);
     } catch (error) {
       console.error("Erro ao salvar gerente:", error);
     }
   };
+
 
   const handleEditClick = (manager: Manager) => {
     setSelectedManager(manager);

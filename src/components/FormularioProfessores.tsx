@@ -31,6 +31,15 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
     });
 
     const [modalities, setModalities] = useState<Modality[]>([]);
+    const [passwordError, setPasswordError] = useState<string>("");
+
+    function isStrongPassword(password: string): boolean {
+      
+      return /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /[0-9]/.test(password) &&
+        /[^A-Za-z0-9]/.test(password);
+    }
 
     useEffect(() => {
       if (professorEdicao) {
@@ -112,21 +121,19 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      await onSubmit(formData);
-      setFormData({
-        id: -1,
-        name: "",
-        password: "",
-        cpf: "",
-        rg: "",
-        birthday: "",
-        phone: "",
-        photo_url: "",
-        email: "",
-        about: "",
-        modality: null,
-      });
+      setPasswordError("");
+      // Só valida se for cadastro novo ou alteração de senha
+      if ((professorEdicao == null || formData.password) && !isStrongPassword(formData.password || "")) {
+        setPasswordError("A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+        return;
+      }
+      try {
+        await onSubmit(formData);
+      } catch (error) {
+        // Trate erros de submissão aqui
+      }
     };
+
 
     return (
       <div>
@@ -140,6 +147,9 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
               <Datepicker label="Data de nascimento" name="birthday" value={formData.birthday} onChange={handleChange} iconPath="/icon/date.svg" />
 
               <Textbox value={formData.password} onChange={handleChange} name="password" label={professorEdicao ? "Nova senha (opcional)" : "Senha"} iconPath="/icon/id.svg" placeholder={professorEdicao ? "Nova senha (caso deseje alterar)." : "Insira a senha"} type="password" required={professorEdicao === null} />
+              {passwordError && (
+                <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
+              )}
 
               <Textbox value={formData.phone} onChange={handleChange} name="phone" label="Telefone" iconPath="/icon/phone.svg" placeholder="(__)_____-____" type="text" required={true} />
 
