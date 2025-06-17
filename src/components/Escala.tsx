@@ -111,11 +111,11 @@ export const Escala = () => {
   return (
     <>
       {/* Versão desktop */}
-      <div className="hidden md:block bg-[#d9d9d9] p-4 rounded-lg border border-black p-4 pb-8  ">
+      <div className="hidden md:block bg-[#d9d9d9] rounded-lg border border-black p-4 pb-8">
         <h2 className="text-lg font-semibold mb-1">Escala Semanal</h2>
-        <div className="mr-16 lg:mr-6">
-          <div className="flex gap-4 px-16 mb-4">
-            <div className="flex-1">
+        <div className="mr-4 md:mr-6">
+          <div className="flex flex-wrap gap-4 px-4 md:px-8 xl:px-16 mb-4">
+            <div className="flex-1 min-w-[180px]">
               <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
                   <SelectValue placeholder="Filtrar por modalidade" />
@@ -129,7 +129,7 @@ export const Escala = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-[180px]">
               <Select value={selectedTeacher || 'all'} onValueChange={(value) => setSelectedTeacher(value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
                   <SelectValue placeholder="Filtrar por professor" />
@@ -143,20 +143,19 @@ export const Escala = () => {
                 </SelectContent>
               </Select>
             </div>
-           
 
-            <CustomButton
-            variant="orange"
-              onClick={() => {
-                setSelectedModality('');
-                setSelectedTeacher('');
-              }}
-            >
-              Limpar Fitros 
-            </CustomButton>
-
-           
-        
+            <div className="min-w-[160px]">
+              <CustomButton
+                variant="orange"
+                className="w-full"
+                onClick={() => {
+                  setSelectedModality('');
+                  setSelectedTeacher('');
+                }}
+              >
+                Limpar Filtros
+              </CustomButton>
+            </div>
           </div>
           <div className="w-full max-w-6xl mx-auto ">
 

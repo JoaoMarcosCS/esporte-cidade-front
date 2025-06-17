@@ -83,6 +83,7 @@ const Chamada: React.FC = () => {
                 label: "Aprovar Inscrições",
                 path: "/home-professor/aprovar-inscricoes",
               },
+              { label: "Horário", path: "/home-professor/horario" },
             ]}
           />
           <div className="mb-10">

@@ -95,7 +95,8 @@ const AprovarInscricoesProfessor: React.FC = () => {
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
-              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" }
+              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" },
+              { label: "Horário", path: "/home-professor/horario" },
             ]}
           />
           <div className="max-w-7xl w-3/4 mx-auto pb-24 mt-14 ">

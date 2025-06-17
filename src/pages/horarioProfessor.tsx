@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import AgendaSemanal from "../components/AgendaSemanal";
 import { Escala } from "../components/Escala";
 
-
+import AgendaProfessor from "../components/Horario-professor";
 
 export function useMediaQuerie() {
   const customBreakpoint = 854;
@@ -95,13 +95,17 @@ const HorarioProfessor = () => {
                 label: "Aprovar Inscrições",
                 path: "/home-professor/aprovar-inscricoes",
               },
+              { label: "Horário", path: "/home-professor/horario" },
             ]}
           />
-
-          <div className="max-w-7xl pb-24 ml-24 mr-10 mt-14 ">
-            <Escala />
+          <div className="max-w-7xl w-3/4 mx-auto  mt-14 ">
+            <h1 className="text-2xl md:text-3xl font-bold mb-8 ">Horario Semanal</h1>
+          
+          <div className="max-w-7xl mt-14 ">
+            <AgendaProfessor />
           </div>
-          <FooterMobile />
+          </div>
+          <FooterMobile />  
         </div>
       </SidebarInset>
     </SidebarProvider>

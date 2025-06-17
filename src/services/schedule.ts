@@ -23,7 +23,7 @@ export const getScheduleTeacher = async (token: string) => {
       },
     });
 
-    console.log("Full API response structure:", response.data);
+    //console.log("Full API response structure:", response.data);
     return response.data; 
   } catch (error: any) {
     console.error("Full error object:", error);

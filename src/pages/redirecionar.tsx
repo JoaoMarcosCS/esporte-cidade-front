@@ -8,7 +8,7 @@ export const RedirecionarHome: React.FC = () => {
     return (
         <div>
             <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-                <HeaderBasic type="visitante"
+                <HeaderBasic 
                     logo="hide" />
                 <main className="flex flex-col justify-center  items-center flex-1">
                     <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">

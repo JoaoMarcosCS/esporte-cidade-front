@@ -98,7 +98,7 @@ export const EscalaMobile = () => {
 
   return (
     <div className="sm:w-[400px] mr-10 ">
-      <div className="flex gap-4 mb-4 ">
+      <div className="flex md:flex-row flex-col gap-4 mb-4 ">
         <div className="flex-1">
           <Select value={selectedModality || 'all'} onValueChange={(value) => setSelectedModality(value === 'all' ? '' : value)}>
             <SelectTrigger className="w-full bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border min-h-10 border-black">
@@ -129,7 +129,7 @@ export const EscalaMobile = () => {
         </div>
         <CustomButton
           variant="orange"
-          className="min-w-40"
+          className="min-w-40 "
           onClick={() => {
             setSelectedModality('');
             setSelectedTeacher('');

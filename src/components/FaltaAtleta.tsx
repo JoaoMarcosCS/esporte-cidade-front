@@ -63,7 +63,7 @@ const FaltaAtleta = () => {
       {absences.map((falta, index) => (
         <div
           key={index}
-          className=" hover:translate-x-1 hover:translate-y-1 transition-all  hover:shadow-none flex flex-col cursor-pointer p-4  border border-black bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 justify-between mb-4 "
+          className="  transition-all   flex flex-col cursor-pointer p-4  border border-black bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 justify-between mb-4 "
           onClick={handleNavigate}
         >
           <div className="text-[#EB8317] text-lg font-bold mb-2">{falta.modalidade}</div>

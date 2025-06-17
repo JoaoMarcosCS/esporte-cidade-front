@@ -21,9 +21,8 @@ import { Escala } from "../components/Escala";
 
 
 const HomeAtleta = () => {
-  const { user} = useAuth();
-  console.log("\n\n\n\n\nusuariopaaaaaan\n\n\n\n\n\n",user);
-  
+  const { user } = useAuth();
+
   const userData = useUser();
   return (
     <SidebarProvider>
@@ -44,10 +43,10 @@ const HomeAtleta = () => {
               Olá, <span className="text-[#EB8317]">{userData?.name}</span>!
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-1">
-              <div className="col-span-2  p-4 rounded  mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 mb-4">
+              <div className="ml-4 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-8 md:mr-4">
                 <h3 className="font-semibold text-lg mb-2">HORÁRIO SEMANAL</h3>
-                <Escala/>
+                <AgendaSemanal />
               </div>
 
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
