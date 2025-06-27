@@ -12,16 +12,16 @@ const FaltaAtleta = () => {
   useEffect(() => {
     const fetchAbsences = async () => {
       try {
-        console.log("auth:", auth);
+        //console.log("auth:", auth);
         const athleteName = auth?.user?.name;
         if (!athleteName) {
-          console.log("Nome do usuário não disponível");
+          //console.log("Nome do usuário não disponível");
           return;
         }
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const response = await axios.get(`http://localhost:3002/api/absences?athlete=${encodeURIComponent(athleteName)}`, { headers });
-        console.log("Resposta da API (faltas):", response.data);
+        //console.log("Resposta da API (faltas):", response.data);
         const absencesArray = Array.isArray(response.data)
           ? response.data
           : Array.isArray(response.data.absences)

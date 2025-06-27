@@ -29,7 +29,7 @@ const Chamada: React.FC = () => {
 
   const userStorage = localStorage.getItem("user");
 
-  console.log(userStorage);
+  //console.log(userStorage);
 
   const userData = userStorage ? JSON.parse(userStorage) : null;
 
@@ -54,7 +54,7 @@ const Chamada: React.FC = () => {
           modalityId: userModalityId,
         }));
 
-        console.log(atletasFormatados);
+        //console.log(atletasFormatados);
 
         setAtletasAtivos(atletasFormatados);
       } catch (err) {

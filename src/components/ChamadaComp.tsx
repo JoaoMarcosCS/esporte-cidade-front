@@ -92,7 +92,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         atendiments
       );
 
-      console.log("Chamada gravada com sucesso:", response.data);
+      //console.log("Chamada gravada com sucesso:", response.data);
       setIsModalOpen(false);
       GoTo("/home-professor");
     } catch (error) {

@@ -34,9 +34,9 @@ const AprovarInscricoesProfessor: React.FC = () => {
     setStatusMsg(null);
     try {
       const response = await api.get('/enrollment/?approved=false');
-      console.log('Dados recebidos da API:', response.data);
-      console.log('Quantidade de inscrições:', response.data.length);
-      console.log('Primeira inscrição (se disponível):', response.data[0]);
+      //console.log('Dados recebidos da API:', response.data);
+      //console.log('Quantidade de inscrições:', response.data.length);
+      //console.log('Primeira inscrição (se disponível):', response.data[0]);
       setEnrollments(response.data);
     } catch (error: any) {
       setStatusMsg('Erro ao buscar inscrições pendentes');

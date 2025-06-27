@@ -67,7 +67,7 @@ export const Escala = () => {
         const modalidades = await getModalidades();
         const formattedAulas: Aula[] = [];
         modalidades.forEach((mod: any) => {
-          console.log('MODALIDADE:', mod);
+          //console.log('MODALIDADE:', mod);
           let days = mod.days_of_week;
           if (typeof days === 'string') {
             days = days.split(',').map((d: string) => d.trim());

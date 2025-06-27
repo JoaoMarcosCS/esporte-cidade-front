@@ -42,7 +42,7 @@ const dayMap: { [key: string]: string } = {
  const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const AgendaSemanal: React.FC = () => {
   const user = useUser();
-  console.log("\n\n\n\n\n\n\n\nusuario", user);
+  //console.log("\n\n\n\n\n\n\n\nusuario", user);
   const decodedToken = useDecodedToken();
   const [notes, setNotes] = useState<DayNote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ const AgendaSemanal: React.FC = () => {
         try {
           const responseData = await getScheduleAthlete(token);
           setHorarios(responseData);
-          console.log('Resposta da API:', responseData);
+          //console.log('Resposta da API:', responseData);
 
           const formattedNotes = responseData.map((modality: any) => {
             // Convert days_of_week string to array if it's not already
@@ -88,7 +88,7 @@ const AgendaSemanal: React.FC = () => {
             }
             return daysOfWeek.indexOf(a.day) - daysOfWeek.indexOf(b.day);
           });
-          console.log("Notas ordenadas:", sortedNotes);
+          //console.log("Notas ordenadas:", sortedNotes);
           setNotes(sortedNotes);
         } catch (error: any) {
           console.error('Erro ao buscar horário:', error.response?.data || error.message);

@@ -137,7 +137,7 @@ export const VisualizarAtendimentos = () => {
     const user = useAuth()
     const userData = useUser();
 
-    console.log(userData);
+    //console.log(userData);
 
 
 
@@ -152,7 +152,7 @@ export const VisualizarAtendimentos = () => {
         try {
             setLoading(true);
 
-            console.log("asdasdsad\n\n\n\n\n", userData?.name);
+            //console.log("asdasdsad\n\n\n\n\n", userData?.name);
 
 
             if (!userData) return;
@@ -180,7 +180,7 @@ export const VisualizarAtendimentos = () => {
             }).flat();
 
             setFormattedSchedule(formatted);
-            console.log("formatado: ", formatted)
+            //console.log("formatado: ", formatted)
         } catch (error: any) {
             console.error("Erro ao buscar horário do professor:", error.response?.data || error.message);
         } finally {
@@ -192,12 +192,12 @@ export const VisualizarAtendimentos = () => {
         fetchScheduleTeacher();
     }, []);
 
-    console.log('Hoje (abrev):', hoje);
-    console.log('Amanhã (abrev):', amanha);
+    //console.log('Hoje (abrev):', hoje);
+    //console.log('Amanhã (abrev):', amanha);
 
-    console.log('Dias no formattedSchedule:');
+    //console.log('Dias no formattedSchedule:');
     formattedSchedule.forEach((aula, i) => {
-        console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
+        //console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
     });
 
     const filtrarAulasPorDia = (dia: string) => {
@@ -207,8 +207,8 @@ export const VisualizarAtendimentos = () => {
     const aulasHoje = filtrarAulasPorDia(hoje);
     const aulasAmanha = filtrarAulasPorDia(amanha);
 
-    console.log('aulasHoje:', aulasHoje);
-    console.log('aulasAmanha:', aulasAmanha);
+    //console.log('aulasHoje:', aulasHoje);
+    //console.log('aulasAmanha:', aulasAmanha);
 
     const renderCarousel = (aulas: any[], titulo: string) => (
         <div className=" mt-4  items-center align-middle justify-center cursor-pointer" onClick={() => GoTo("/home-professor/horario")}>
@@ -352,8 +352,8 @@ export const AtendimentosAnteriores = () => {
     );
 
 
-    console.log("data:   ", Atendiments)
-    console.log("currentItems:   ", currentItems)
+   // console.log("data:   ", Atendiments)
+   // console.log("currentItems:   ", currentItems)
 
     return (
         <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
