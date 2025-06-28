@@ -210,7 +210,7 @@ const FormularioModalidades = forwardRef<HTMLFormElement, FormularioModalidadesP
               value={formData.class_locations}
               onChange={handleChange}
               name="class_locations"
-              label="Locais de Aula separe por vírgula)"
+              label="Locais de Aula (separe por vírgula)"
               placeholder="Piscina, Quadra, Campo"
               required
               disabled={loading}

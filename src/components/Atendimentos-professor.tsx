@@ -30,6 +30,7 @@ import {
 import { useUser } from "../hooks/useAuth";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { getAtendiments } from "../services/modality";
+import useNavigateTo from "../hooks/useNavigateTo";
 
 
 interface ScheduleItem {
@@ -87,6 +88,7 @@ interface ContentItem {
 }
 
 dayjs.locale('pt-br');
+
 const attendances: Attendance[] = [
     { data: "10/12/2023", local: "Raspadão", atendimento: "Futebol" },
     { data: "11/12/2023", local: "Quadra Coberta", atendimento: "Basquete" },
@@ -131,10 +133,11 @@ const { hoje, amanha } = getDiasHojeEAmanha();
 
 
 export const VisualizarAtendimentos = () => {
+    const GoTo = useNavigateTo();
     const user = useAuth()
     const userData = useUser();
 
-    console.log(userData);
+    //console.log(userData);
 
 
 
@@ -149,7 +152,7 @@ export const VisualizarAtendimentos = () => {
         try {
             setLoading(true);
 
-            console.log("asdasdsad\n\n\n\n\n", userData?.name);
+            //console.log("asdasdsad\n\n\n\n\n", userData?.name);
 
 
             if (!userData) return;
@@ -177,7 +180,7 @@ export const VisualizarAtendimentos = () => {
             }).flat();
 
             setFormattedSchedule(formatted);
-            console.log("formatado: ", formatted)
+            //console.log("formatado: ", formatted)
         } catch (error: any) {
             console.error("Erro ao buscar horário do professor:", error.response?.data || error.message);
         } finally {
@@ -189,12 +192,12 @@ export const VisualizarAtendimentos = () => {
         fetchScheduleTeacher();
     }, []);
 
-    console.log('Hoje (abrev):', hoje);
-    console.log('Amanhã (abrev):', amanha);
+    //console.log('Hoje (abrev):', hoje);
+    //console.log('Amanhã (abrev):', amanha);
 
-    console.log('Dias no formattedSchedule:');
+    //console.log('Dias no formattedSchedule:');
     formattedSchedule.forEach((aula, i) => {
-        console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
+        //console.log(i, 'dia:', aula.dia, '| comparação com hoje:', aula.dia === hoje, '| comparação com amanhã:', aula.dia === amanha);
     });
 
     const filtrarAulasPorDia = (dia: string) => {
@@ -204,11 +207,11 @@ export const VisualizarAtendimentos = () => {
     const aulasHoje = filtrarAulasPorDia(hoje);
     const aulasAmanha = filtrarAulasPorDia(amanha);
 
-    console.log('aulasHoje:', aulasHoje);
-    console.log('aulasAmanha:', aulasAmanha);
+    //console.log('aulasHoje:', aulasHoje);
+    //console.log('aulasAmanha:', aulasAmanha);
 
     const renderCarousel = (aulas: any[], titulo: string) => (
-        <div className=" mt-4  items-center align-middle justify-center">
+        <div className=" mt-4  items-center align-middle justify-center cursor-pointer" onClick={() => GoTo("/home-professor/horario")}>
             <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
             {aulas.length === 0 ? (
 
@@ -349,8 +352,8 @@ export const AtendimentosAnteriores = () => {
     );
 
 
-    console.log("data:   ", Atendiments)
-    console.log("currentItems:   ", currentItems)
+   // console.log("data:   ", Atendiments)
+   // console.log("currentItems:   ", currentItems)
 
     return (
         <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
@@ -358,7 +361,7 @@ export const AtendimentosAnteriores = () => {
             <div className="flex gap-4 mb-4 ">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black">
+                        <Button variant="outline" className="transition-all bg-white rounded-lg hover:bg-slate-200   shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex w-40 justify-between items-center font-normal  border border-black">
                             {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Data</span>}
                             <ChevronDown className="ml-2 h-4 w-4 hover:shadow-lg hover:shadow-slate-900" />
                         </Button>
@@ -374,7 +377,7 @@ export const AtendimentosAnteriores = () => {
                     </PopoverContent>
                 </Popover>
                 <Select onValueChange={(value) => setSelectedLocation(value)}>
-                    <SelectTrigger className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-x-1 hover:translate- flex w-40 justify-between items-center font-normal h-[3.1rem] border border-black">
+                    <SelectTrigger className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-200  flex w-40 justify-between items-center font-normal h-[3.1rem] border border-black">
                         <SelectValue placeholder="Local" />
                     </SelectTrigger>
 
@@ -389,7 +392,7 @@ export const AtendimentosAnteriores = () => {
                 </Select>
                 <Button
                     variant="ghost"
-                     className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]  hover:shadow-none hover:translate-y-1 hover:translate-x-1 flex w-40 justify-between items-center font-normal  border border-black"
+                    className="transition-all hover:bg-slate-200   bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex w-40 justify-between items-center font-normal  border border-black"
                     onClick={() => {
                         setSelectedDate(undefined);
                         setSelectedLocation('all');
@@ -476,8 +479,8 @@ export const AtendimentosAnteriores = () => {
                                 ? "bg-white cursor-not-allowed text-gray-500"
                                 : "bg-[#EB8317] hover:bg-orange-600 transition-transform hover:shadow-none hover:translate-x-1 hover:translate-y-1"
                             }`}
-                        variant="default" 
-                        size="default"    
+                        variant="default"
+                        size="default"
                     >
                         <ChevronRight className="h-4 w-4" />
                         <span className="sr-only">Próxima página</span>

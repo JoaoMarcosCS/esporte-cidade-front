@@ -34,9 +34,9 @@ const AprovarInscricoesProfessor: React.FC = () => {
     setStatusMsg(null);
     try {
       const response = await api.get('/enrollment/?approved=false');
-      console.log('Dados recebidos da API:', response.data);
-      console.log('Quantidade de inscrições:', response.data.length);
-      console.log('Primeira inscrição (se disponível):', response.data[0]);
+      //console.log('Dados recebidos da API:', response.data);
+      //console.log('Quantidade de inscrições:', response.data.length);
+      //console.log('Primeira inscrição (se disponível):', response.data[0]);
       setEnrollments(response.data);
     } catch (error: any) {
       setStatusMsg('Erro ao buscar inscrições pendentes');
@@ -95,7 +95,8 @@ const AprovarInscricoesProfessor: React.FC = () => {
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
-              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" }
+              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" },
+              { label: "Horário", path: "/home-professor/horario" },
             ]}
           />
           <div className="max-w-7xl w-3/4 mx-auto pb-24 mt-14 ">

@@ -37,7 +37,7 @@ export const updateModality = async (id: number, data: any) => {
 };
 
 export const deleteModality = async (id: number) => {
-  try {
+  try { 
     const response = await api.delete(`/modality/delete/${id}`);
     return response.data;
   } catch (error: any) {

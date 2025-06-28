@@ -12,16 +12,16 @@ const FaltaAtleta = () => {
   useEffect(() => {
     const fetchAbsences = async () => {
       try {
-        console.log("auth:", auth);
+        //console.log("auth:", auth);
         const athleteName = auth?.user?.name;
         if (!athleteName) {
-          console.log("Nome do usuário não disponível");
+          //console.log("Nome do usuário não disponível");
           return;
         }
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const response = await axios.get(`http://localhost:3002/api/absences?athlete=${encodeURIComponent(athleteName)}`, { headers });
-        console.log("Resposta da API (faltas):", response.data);
+        //console.log("Resposta da API (faltas):", response.data);
         const absencesArray = Array.isArray(response.data)
           ? response.data
           : Array.isArray(response.data.absences)
@@ -63,7 +63,7 @@ const FaltaAtleta = () => {
       {absences.map((falta, index) => (
         <div
           key={index}
-          className=" hover:translate-x-1 hover:translate-y-1 transition-all  hover:shadow-none flex flex-col cursor-pointer p-4  border border-black bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 justify-between mb-4 "
+          className="  transition-all   flex flex-col cursor-pointer p-4  border border-black bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] m-4 justify-between mb-4 "
           onClick={handleNavigate}
         >
           <div className="text-[#EB8317] text-lg font-bold mb-2">{falta.modalidade}</div>

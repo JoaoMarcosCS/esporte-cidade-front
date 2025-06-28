@@ -39,18 +39,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
-            console.log('[fetchUser] Token encontrado:', token);
+            //console.log('[fetchUser] Token encontrado:', token);
             if (!token) throw new Error('Token não encontrado');
 
             const decoded = decodeToken(token);
-            console.log('[fetchUser] Token decodificado:', decoded);
+            //console.log('[fetchUser] Token decodificado:', decoded);
             const userId = decoded.id;
             const role = decoded.role?.toString(); // Ensure role is string
 
             if (!userId) throw new Error('ID do usuário não encontrado no token');
             if (!role) throw new Error('Role do usuário não encontrado no token');
 
-            console.log('[fetchUser] ID do usuário:', userId, 'Role:', role);
+            //console.log('[fetchUser] ID do usuário:', userId, 'Role:', role);
 
             let response: AxiosResponse;
             if (role === "1" || role === 1) {
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
             const userFromApi = response.data;
             //const userFromApi = Array.isArray(response.data) ? response.data[0] : response.data;
-            console.log('[fetchUser] Resposta da API do usuário:', userFromApi);
+            //console.log('[fetchUser] Resposta da API do usuário:', userFromApi);
 
             if (userFromApi) {
                 // Check if userFromApi is an array and take the first element if so
@@ -120,9 +120,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 case 'teacher':
                     response = await loginTeacher(credentials);
                     // ADD CONSOLE LOGS HERE
-                    console.log("[AuthContext] Response from loginTeacher service:", JSON.stringify(response));
+                    //console.log("[AuthContext] Response from loginTeacher service:", JSON.stringify(response));
                     if (response && response.user) {
-                        console.log("[AuthContext] response.user from loginTeacher:", JSON.stringify(response.user));
+                        //console.log("[AuthContext] response.user from loginTeacher:", JSON.stringify(response.user));
                     }
                     // END CONSOLE LOGS
                     break;

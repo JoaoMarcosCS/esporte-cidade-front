@@ -11,6 +11,18 @@ interface Props {
   onCancelEdit: () => void;
 }
 
+const emptyForm = {
+  name: "",
+  cpf: "",
+  rg: "",
+  birthday: "",
+  phone: "",
+  photo_url: "",
+  email: "",
+  password: "",
+};
+
+
 const FormularioManagers = forwardRef<HTMLFormElement, Props>(
   ({ managerEdicao, onSubmit, onCancelEdit }, ref) => {
     const [form, setForm] = useState<Manager>({
@@ -33,7 +45,8 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
         /[^A-Za-z0-9]/.test(password);
     }
 
-    
+
+
     function maskCpf(cpf: string) {
       let v = cpf.replace(/\D/g, "");
       if (v.length <= 3) return v;
@@ -123,6 +136,7 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
       setForm((prev) => ({ ...prev, [name]: formatInputValue(name, value) }));
     }
 
+
     async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -182,6 +196,14 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
       onSubmit(form);
     }
 
+    function handleCancel() {
+      setForm(emptyForm);
+      setPasswordError("");
+      onCancelEdit(); 
+       // sai do modo de edição
+      
+    }
+
     return (
       <div>
         <form
@@ -189,10 +211,10 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
           className=""
           onSubmit={handleSubmit}
         >
-            <h2 className="font-bold text-3xl mb-4">
-              {managerEdicao ? "Editar Gestor" : "Cadastrar Gestor"}
-            </h2>
-          
+          <h2 className="font-bold text-3xl mb-4">
+            {managerEdicao ? "Editar Gestor" : "Cadastrar Gestor"}
+          </h2>
+
           <div className="md:flex md:flex-wrap justify-start gap-x-10 gap-y-10">
             <div className="md:w-2/5 gap-10">
               <Textbox value={form.name || ""} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" required={true} />
@@ -218,8 +240,8 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
                 onChange={handlePhotoUpload}
                 disabled={uploading}
               />
-              
-              
+
+
             </div>
             <div className="md:w-2/5">
               <Textbox value={form.cpf || ""} onChange={handleChange} name="cpf" label="CPF" iconPath="/icon/id.svg" placeholder="Insira o CPF" type="text" required={true} />
@@ -233,7 +255,7 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
             </button>
             {managerEdicao && (
 
-              <button type="button" className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Cancelar</button>
+              <button type="button"  onClick={handleCancel}className="mt- self-start md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Cancelar</button>
             )}
           </div>
         </form>

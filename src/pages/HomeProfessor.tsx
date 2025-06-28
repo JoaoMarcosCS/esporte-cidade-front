@@ -89,6 +89,7 @@ const HomeProfessor = () => {
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
+              { label: "Horário", path: "/home-professor/horario" },
               {
                 label: "Aprovar Inscrições",
                 path: "/home-professor/aprovar-inscricoes",

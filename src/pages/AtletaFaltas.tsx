@@ -4,6 +4,8 @@ import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import axios from "axios";
 import { useUser } from "../hooks/useAuth";
+import api from "../services/api";
+
 
 interface Falta {
   data: string;
@@ -29,7 +31,7 @@ const AtletaFaltas = () => {
 
   // Get authenticated user data
   const user = useUser();
-  console.log(user);
+  //console.log(user);
 
   useEffect(() => {
     const fetchFaltas = async () => {
@@ -42,14 +44,16 @@ const AtletaFaltas = () => {
         }
 
         // Properly encode the athlete name in the URL
-        const url = new URL("http://localhost:3002/api/absences");
-        url.searchParams.append("athlete", encodeURIComponent(user.name));
+        let endpoint = `absences?athlete=${user.name}`
+        //url.searchParams.append("athlete", encodeURIComponent(user.name));
 
         if (filters.modalityId) {
-          url.searchParams.append("modality", filters.modalityId);
+          endpoint.concat(`&modality=${filters.modalityId}`)
         }
+        const url = await api.get(`${endpoint}`);
 
-        const response = await axios.get(url.toString(), {
+
+        const response = await api.get(endpoint.toString(), {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }
@@ -60,6 +64,8 @@ const AtletaFaltas = () => {
 
         if (response.data.modalities && !modalities.length) {
           setModalities(response.data.modalities);
+          console.log("data: ", response);
+          
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -151,7 +157,7 @@ const AtletaFaltas = () => {
                       value={filters.modalityId}
                       onChange={handleModalityChange}
                     >
-                      <option  value="">Todas modalidades</option>
+                      <option value="">Todas modalidades</option>
                       {modalities.map((modality) => (
                         <option key={modality.id} value={modality.id}>
                           {modality.name}
