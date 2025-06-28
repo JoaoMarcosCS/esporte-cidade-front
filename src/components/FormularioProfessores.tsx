@@ -6,6 +6,7 @@ import Textbox from "./Textbox";
 import Datepicker from "./Datepicker";
 import Dropdown from "./Dropdown";
 import { Button } from "./ui/button";
+import PasswordRequirements from "./PasswordRequirements";
 import CustomButton from "./customButtom";
 
 interface Props {
@@ -147,6 +148,7 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
               <Datepicker label="Data de nascimento" name="birthday" value={formData.birthday} onChange={handleChange} iconPath="/icon/date.svg" />
 
               <Textbox value={formData.password} onChange={handleChange} name="password" label={professorEdicao ? "Nova senha (opcional)" : "Senha"} iconPath="/icon/id.svg" placeholder={professorEdicao ? "Nova senha (caso deseje alterar)." : "Insira a senha"} type="password" required={professorEdicao === null} />
+              <PasswordRequirements password={formData.password} />
               {passwordError && (
                 <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
               )}
@@ -226,3 +228,4 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
   }
 );
 export default FormularioProfessores;
+

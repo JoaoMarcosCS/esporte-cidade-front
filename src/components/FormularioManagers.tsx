@@ -3,6 +3,7 @@ import { Manager } from "@/types/Manager";
 import Textbox from "./Textbox";
 import Datepicker from "./Datepicker";
 import { Button } from "./ui/button";
+import PasswordRequirements from "./PasswordRequirements";
 
 interface Props {
   managerEdicao: Manager | null;
@@ -197,6 +198,7 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
               <Textbox value={form.name || ""} onChange={handleChange} name="name" label="Nome" iconPath="/icon/id.svg" placeholder="Insira o nome completo" type="text" required={true} />
               <Datepicker label="Data de nascimento" name="birthday" value={form.birthday || ""} onChange={handleChange} iconPath="/icon/date.svg" max={getMaxBirthday()} />
               <Textbox value={form.password || ""} onChange={handleChange} name="password" label={managerEdicao ? "Nova senha (opcional)" : "Senha"} iconPath="/icon/id.svg" placeholder={managerEdicao ? "Nova senha (caso deseje alterar)." : "Insira a senha"} type="password" required={managerEdicao === null} />
+              <PasswordRequirements password={form.password || ""} />
               {passwordError && (
                 <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
               )}
@@ -241,3 +243,4 @@ const FormularioManagers = forwardRef<HTMLFormElement, Props>(
 );
 
 export default FormularioManagers;
+

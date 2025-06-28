@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import PasswordRequirements from "./PasswordRequirements";
 import { Athlete } from "../types/Athlete";
 
 interface FormularioAtletasProps {
@@ -343,6 +344,7 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         <div>
           <label className="block text-sm mb-1">Senha</label>
           <input name="password" type="password" value={form.password} onChange={handleChange} className="w-full px-4 py-2 border border-gray-400 rounded-sm bg-gray-100 text-sm" disabled={isEditing && !editMode} />
+          <PasswordRequirements password={form.password} />
           {passwordError && (
             <span className="text-red-600 text-xs mt-1 block">{passwordError}</span>
           )}
@@ -495,3 +497,4 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
 };
 
 export default FormularioAtletas;
+

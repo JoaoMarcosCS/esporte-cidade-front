@@ -1,5 +1,5 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PasswordRequirements from "../components/PasswordRequirements";
 import MultipartForm from "../components/MultipartForm";
 import { Athlete } from "@/types/Athlete";
 import axios from "axios";
@@ -316,7 +316,7 @@ const CadastroAtleta: React.FC = () => {
     }
 
     try {
-      const response = await api.post("/validation/cpf", {
+      const response = await api.post("/validate-cpf", {
         cpf: cleanedCpf
       });
 
@@ -611,7 +611,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.cidade}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="cidade"
+              placeholder="Cidade"
             />
             {errors.cidade && <p className="text-red-500 text-sm">{errors.cidade}</p>}
           </div>
@@ -624,7 +624,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.bairro}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="bairro"
+              placeholder="Bairro"
             />
             {errors.bairro && <p className="text-red-500 text-sm">{errors.bairro}</p>}
           </div>
@@ -637,7 +637,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.rua}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="rua"
+              placeholder="Rua"
             />
             {errors.rua && <p className="text-red-500 text-sm">{errors.rua}</p>}
           </div>
@@ -650,7 +650,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.numeroDaCasa}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="numeroDaCasa"
+              placeholder="Numero Da Casa"
             />
             {errors.numeroDaCasa && <p className="text-red-500 text-sm">{errors.numeroDaCasa}</p>}
           </div>
@@ -664,7 +664,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.complemento}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="complemento"
+              placeholder="Complemento"
             />
             {errors.complemento && <p className="text-red-500 text-sm">{errors.complemento}</p>}
           </div>
@@ -677,7 +677,7 @@ const CadastroAtleta: React.FC = () => {
               value={athlete.referencia}
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="referencia"
+              placeholder="Referência"
             />
             {errors.referencia && <p className="text-red-500 text-sm">{errors.referencia}</p>}
           </div>
@@ -716,7 +716,9 @@ const CadastroAtleta: React.FC = () => {
               onChange={handleChange}
               className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
               placeholder="Crie uma senha"
+              required
             />
+            <PasswordRequirements password={athlete.password} />
             {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
           </div>
         </div>
