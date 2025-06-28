@@ -82,7 +82,7 @@ const HomeProfessor = () => {
     <SidebarProvider>
       <AppSidebar type={userType} />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#F4F6FF]">
           <HeaderBasic
             type="usuario"
             links={[

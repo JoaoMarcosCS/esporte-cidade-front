@@ -204,11 +204,11 @@ const EditarPerfil: React.FC = () => {
                      className="mt-2 rounded w-32 h-32 object-cover border"
                 />
               )}
+              
               <input
                 type="file"
                 id="photo"
                 disabled={!isEditing}
-                className={`w-full mt-1 p-2 border border-gray-300 rounded ${!isEditing ? "bg-gray-100 text-gray-500" : ""}`}
                 onChange={async (e) => {
                   if (!isEditing) return;
                   const file = e.target.files?.[0];
@@ -231,7 +231,15 @@ const EditarPerfil: React.FC = () => {
                     toast.error("Erro ao fazer upload da imagem.");
                   }
                 }}
+                className="absolute opacity-0 w-full h-10 top-0 left-0 cursor-pointer z-10"
               />
+              <label
+                htmlFor="photo"
+                className={`relative bg-[#EB8317] border border-black rounded-sm hover:bg-[#EB8317]/75 text-sm text-white px-4 py-2 mt-2 inline-block cursor-pointer ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ pointerEvents: !isEditing ? 'none' : 'auto' }}
+              >
+                Escolha o arquivo
+              </label>
               
             </div>
             <div>

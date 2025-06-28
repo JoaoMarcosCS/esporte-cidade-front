@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export const RedirecionarHome: React.FC = () => {
     return (
         <div>
-            <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
+            <div className="min-h-screen bg-[#F4F6FF] flex flex-col pb-16">
                 <HeaderBasic 
                     logo="hide" />
                 <main className="flex flex-col justify-center  items-center flex-1">

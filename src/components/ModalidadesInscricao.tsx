@@ -71,11 +71,11 @@ export default function ModalidadesInscricao() {
     }
   };
 
-  if (loading) return <div>Carregando modalidades...</div>;
+  
 
   return (
     <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
-      <h2 className="text-2xl font-bold mb-8 text-left text-[#EB8317]">
+      <h2 className="text-2xl font-bold mb-8 text-left ml-4">
         Modalidades Disponíveis
       </h2>
       {mensagem && (
@@ -139,7 +139,7 @@ export default function ModalidadesInscricao() {
       {
         modalidadesAprovadas.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold mb-8 text-left text-[#EB8317] mt-12">
+            <h2 className="text-2xl font-bold mb-8 text-left ml-4 mt-12">
               Modalidades Inscritas
             </h2>
             <div className="flex flex-col lg:flex-row  gap-4 mb-4">

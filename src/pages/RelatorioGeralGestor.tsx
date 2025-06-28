@@ -72,7 +72,7 @@ export const RelatorioGeralGestor: React.FC = () => {
       />
 
       <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <div className="max-w-4xl mx-auto bg-[#F4F6FF] rounded-lg shadow-md p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Relatório Geral
           </h1>

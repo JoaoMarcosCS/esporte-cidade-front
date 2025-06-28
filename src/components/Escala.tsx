@@ -190,7 +190,7 @@ export const Escala = () => {
         </div>
       </div>
       {/* Versão mobile */}
-      <div className="block md:hidden p-4 border border-black bg-[#d9d9d9]">
+      <div className="block md:hidden bg-[#d9d9d9] p-4 border border-black w-screen max-w-sm overflow-x-hidden">
         <EscalaMobile />
       </div>
 

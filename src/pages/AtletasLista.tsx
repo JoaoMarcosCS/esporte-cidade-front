@@ -21,7 +21,7 @@ const AtletasLista: React.FC = () => {
         <SidebarProvider>
             <AppSidebar type="professor" />
             <SidebarInset>
-                <div className="min-h-screen pb-24 bg-gray-100">
+                <div className="min-h-screen pb-24 bg-[#F4F6FF]">
                     <HeaderBasic
                         type="usuario"
                         links={[

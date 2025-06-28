@@ -21,7 +21,7 @@ const HomeGestor = () => {
     <SidebarProvider>
       <AppSidebar type="gestor" />
       <SidebarInset>
-        <div className="min-h-screen flex flex-col  bg-white pb-16">
+        <div className="min-h-screen flex flex-col bg-[#F4F6FF] pb-16">
           <HeaderBasic
             type="visitante"
             links={[

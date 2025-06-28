@@ -9,6 +9,7 @@ import api from "../services/api";
 export interface AtletaAtivos {
   id: number;
   name: string;
+  email: string;
   faltas: number;
   presente: boolean;
   photo_url: string;
@@ -45,9 +46,10 @@ const Chamada: React.FC = () => {
           `modality/${userModalityId}/athletes-available`
         );
 
-        const atletasFormatados = response.data.map((atleta: AtletaAtivos) => ({
+        const atletasFormatados = response.data.map((atleta: any) => ({
           id: atleta.id,
           name: atleta.name,
+          email: atleta.email,
           photo_url: atleta.photo_url,
           faltas: atleta.faltas || 0,
           status: "PRESENTE",
@@ -71,7 +73,7 @@ const Chamada: React.FC = () => {
     <SidebarProvider>
       <AppSidebar type="professor" />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#F4F6FF]">
           <HeaderBasic
             type="usuario"
             user={user}

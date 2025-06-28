@@ -28,7 +28,7 @@ const HomeAtleta = () => {
     <SidebarProvider>
       <AppSidebar type="atleta" />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#F4F6FF]">
           <HeaderBasic
             type="usuario"
             links={[
@@ -39,7 +39,7 @@ const HomeAtleta = () => {
           />
 
           <main className="w-full lg:w-3/4 mx-auto mt-8 p-4">
-            <h2 className="text-2xl font-bold mb-4 text-left">
+            <h2 className="text-2xl font-bold mb-4 text-left ml-4">
               Olá, <span className="text-[#EB8317]">{userData?.name}</span>!
             </h2>
 
@@ -62,6 +62,7 @@ const HomeAtleta = () => {
               </div>
             </div>
           </main>
+          <FooterMobile />
         </div>
       </SidebarInset>
     </SidebarProvider>

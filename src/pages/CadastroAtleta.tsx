@@ -316,7 +316,7 @@ const CadastroAtleta: React.FC = () => {
     }
 
     try {
-      const response = await api.post("/validate-cpf", {
+      const response = await api.post("/validation/cpf", {
         cpf: cleanedCpf
       });
 
@@ -708,7 +708,7 @@ const CadastroAtleta: React.FC = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="font-semibold block text-sm">Senha (deve conter letras e numeros, minimo de 6 caracteres)</label>
+            <label className="font-semibold block text-sm">Senha</label>
             <input
               type="password"
               name="password"

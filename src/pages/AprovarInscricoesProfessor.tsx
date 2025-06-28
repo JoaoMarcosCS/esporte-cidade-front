@@ -88,7 +88,7 @@ const AprovarInscricoesProfessor: React.FC = () => {
     <SidebarProvider>
       <AppSidebar type="professor" />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100 pb-24">
+        <div className="min-h-screen bg-[#F4F6FF] pb-24">
           <HeaderBasic
             type="usuario"
             links={[

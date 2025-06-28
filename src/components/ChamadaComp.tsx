@@ -181,6 +181,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
               <div className="flex-1">
 
                 <h3 className="font-semibold">{student.name}</h3>
+                <p className="text-xs text-gray-600 break-all">{student.email}</p>
                 <p
                   className={`  font-bold ${student.status === "PRESENTE"
                     ? "text-green-500 transition-all "

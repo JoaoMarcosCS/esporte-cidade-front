@@ -4,6 +4,7 @@ import { useDecodedToken } from '../hooks/useDecodedToken';
 import api from '../services/api';
 import { getScheduleAthlete } from '../services/schedule';
 import dayjs from 'dayjs';
+import { AgendaSemanalMobile } from './AgendaSemanalMobile';
 
 interface Modality {
   id: number;
@@ -137,39 +138,42 @@ const AgendaSemanal: React.FC = () => {
   ));
 
   return (
-    <div className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-4 w-full max-w-6xl mx-auto">
-      <div className="grid grid-cols-6 gap-2 lg:gap-6 font-semibold mb-2 border-b-2 border-black pb-2">
-        {daysOfWeek.map(day => (
-          <p key={day} className="text-start gap-1">{day}</p>
+    <>
+    <div className="hidden md:block w-full px-1 sm:px-2 md:px-4">
+      <div className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-2 sm:p-4 w-full max-w-6xl mx-auto overflow-x-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1 sm:gap-2 lg:gap-6 font-semibold mb-2 border-b-2 border-black pb-2">
+          {daysOfWeek.map(day => (
+            <p key={day} className="text-start gap-1 truncate">{day}</p>
+          ))}
+        </div>
+        {/* Render rows */}
+        {Array.from({ length: maxNotesPerDay }).map((_, rowIndex) => (
+          <div key={rowIndex} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1 sm:gap-2 lg:gap-6 py-2 border-t mb-2 border-gray-200">
+            {daysOfWeek.map(day => {
+              const dayNotes = notes.filter(note => note.day === day);
+              const note = dayNotes[rowIndex];
+              return (
+                <div key={day} className="space-y-1 min-w-0">
+                  {note ? (
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium truncate"><strong>{note.modality}</strong></div>
+                      <div className="text-sm text-gray-600 truncate">{note.schedule}</div>
+                      <div className="text-xs text-gray-600 truncate">Local: {note.address}</div>
+                    </div>
+                  ) : ""}
+                </div>
+              );
+            })}
+          </div>
         ))}
       </div>
-
-      {/* Determine the maximum number of notes per day for consistent row height */}
-
-
-      {/* Render rows */}
-      {Array.from({ length: maxNotesPerDay }).map((_, rowIndex) => (
-        <div key={rowIndex} className="grid grid-cols-6 gap-2 lg:gap-6 py-2 border-t mb-2 border-gray-200">
-          {daysOfWeek.map(day => {
-            const dayNotes = notes.filter(note => note.day === day);
-            const note = dayNotes[rowIndex];
-
-            return (
-              <div key={day} className="space-y-1  ">
-                {note ? (
-                  <div className="flex flex-col gap-1">
-                    <div className="font-medium"><strong>{note.modality}</strong></div>
-                    <div className="text-sm text-gray-600   ">{note.schedule}</div>
-                    <div className="text-xs text-gray-600   ">Local: {note.address}</div>
-                  </div>
-                ) : ""}
-              </div>
-            );
-          })}
-        </div>
-      ))}
     </div>
-  );
+    <div className="block md:hidden bg-[#d9d9d9] p-2 sm:p-4 w-full max-w-sm mx-auto overflow-x-hidden">
+      <AgendaSemanalMobile />
+    </div>
+    </>
+    
+);
 };
 
 export default AgendaSemanal;
