@@ -44,7 +44,7 @@ export const Lista: React.FC<PaginatedListProps> = ({
 
   return (
     <>
-    <div className="rounded-lg border border-black p-4 bg-[#d9d9d9] -mx-10 sm:-mx-10 md:mx-20">
+    <div className="rounded-lg border border-black p-4 bg-[#d9d9d9] max-w-7xl mx-10 sm:mx-10 md:mx-auto">
       <Contador total={items.length} />
       <div className=" max-w-7xl">
         <div className="bg-white opacity-100 p-4  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black">
@@ -115,7 +115,7 @@ export const Lista: React.FC<PaginatedListProps> = ({
 
 export const Contador: React.FC<{ total: number }> = ({ total }) => {
   return (
-    <div className="bg-white opacity-100 p-2  mb-6 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black">
+    <div className="bg-white opacity-100 p-2 mb-6 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black">
       <div className="flex flex-col justify-center">
         <p className="font-inter mt-4 mx-6 font-semibold mb-1">
           Quantidade de Atletas Inscritos

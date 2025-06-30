@@ -1,28 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Navigate } from 'react-router-dom';
+import React from "react";
 import AgendaSemanal from "../components/AgendaSemanal";
+import UltimasAtualizacoesAtleta from "../components/UltimasAtualizacoesAtleta";
 import FaltaAtleta from "../components/FaltaAtleta";
-import FaltaProfessor from "../components/FaltaProfessor";
-import CalendarioCompromissos from "../components/CalendarioCompromissos";
-import useNavigateTo from "../hooks/useNavigateTo";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
-import { useUser, useAuthStatus } from '../hooks/useAuth';
-import { useDecodedToken } from '../hooks/useDecodedToken';
+import { useUser } from '../hooks/useAuth';
 import { AppSidebar } from '../components/navigation/AppSidebar-prof';
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "../components/ui/sidebar"
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { checkProtectedRoute } from '../services/protectedRoutes'; // Importando o serviço
-import { Escala } from "../components/Escala";
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
+
 
 
 const HomeAtleta = () => {
-  const { user } = useAuth();
-
   const userData = useUser();
   return (
     <SidebarProvider>
@@ -44,6 +32,7 @@ const HomeAtleta = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-1 mb-4">
+              
               <div className="ml-4 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-8 md:mr-4">
                 <h3 className="font-semibold text-lg mb-2">HORÁRIO SEMANAL</h3>
                 <AgendaSemanal />
@@ -51,8 +40,7 @@ const HomeAtleta = () => {
 
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="ml-4 bg-[#d9d9d9] p-4 rounded border border-black shadow-md mb-4 md:mb-0 md:mr-4">
-                  <h3 className="font-semibold mb-2">AUSÊNCIA DE PROFESSOR</h3>
-                  <FaltaProfessor />
+                  <UltimasAtualizacoesAtleta />
                 </div>
 
                 <div className="bg-[#d9d9d9] p-4 rounded border border-black shadow-md md:mr-4">

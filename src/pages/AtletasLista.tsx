@@ -76,7 +76,7 @@ const AtletasLista: React.FC = () => {
                         </h1>
                     </div>
                     
-                    <div className='pt-8'>
+                    <div className='pt-8 '>
                         {loading ? (
                             <div>Carregando atletas...</div>
                         ) : error ? (

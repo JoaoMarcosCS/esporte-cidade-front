@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import PasswordRequirements from "./PasswordRequirements";
+import styles from "./SliderSwitch.module.css";
 import { Athlete } from "../types/Athlete";
+import { getEnrollmentsByAthlete, updateEnrollmentStatus, inscreverEmModalidade } from '../services/enrollment';
+import { getAllModalities } from '../services/modalityService';
+import { Modality } from '../types/Modality';
+import { Enrollment } from '../types/Enrollment';
 
 interface FormularioAtletasProps {
   athlete?: Athlete | null;
@@ -19,6 +23,9 @@ const emptyForm = {
 };
 
 const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit, onCancel }) => {
+  const [showModalitiesManager, setShowModalitiesManager] = useState(false);
+  const [allModalities, setAllModalities] = useState<Modality[]>([]);
+  const [enrollmentStates, setEnrollmentStates] = useState<Record<number, {enrollment: Enrollment|null, loading: boolean, error: string|null}>>({});
   const [form, setForm] = useState<any>(emptyForm);
   const [editMode, setEditMode] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -31,51 +38,70 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
       /[^A-Za-z0-9]/.test(password);
   }
   useEffect(() => {
-    if (athlete) {
-      console.log('[EDIT] Iniciando edição do atleta:', athlete);
-      // Cast temporário para acessar snake_case
-      const a: any = athlete;
-      const normalized = {
-        ...athlete,
-        fatherName: athlete.fatherName ?? a['father_name'] ?? '',
-        fatherPhoneNumber: formatPhone(athlete.fatherPhoneNumber ?? a['father_phone'] ?? ''),
-        motherName: athlete.motherName ?? a['mother_name'] ?? '',
-        motherPhoneNumber: formatPhone(athlete.motherPhoneNumber ?? a['mother_phone'] ?? ''),
-        bloodType: athlete.bloodType ?? a['blood_type'] ?? '',
-        foodAllergies: athlete.foodAllergies ?? a['allergy'] ?? '',
-        // Fotos: aceita tanto camelCase quanto snake_case
-        athletePhotoUrl: athlete.athletePhotoUrl ?? a['photo_url'] ?? '',
-        frontIdPhotoUrl: athlete.frontIdPhotoUrl ?? a['photo_url_cpf_front'] ?? '',
-        backIdPhotoUrl: athlete.backIdPhotoUrl ?? a['photo_url_cpf_back'] ?? '',
-        // Data: normaliza para yyyy-mm-dd se vier dd/mm/yyyy
-        birthday: (() => {
-          const val = athlete.birthday ?? a['birthday'] ?? '';
-          if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-          if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
-            const [day, month, year] = val.split('/');
-            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-          }
-          return val;
-        })(),
-        cpf: formatCPF(athlete.cpf ?? a['cpf'] ?? ''),
-        phone: formatPhone(athlete.phone ?? a['phone'] ?? ''),
-        rg: formatRG(athlete.rg ?? a['rg'] ?? ''),
-        // Endereço: espalha campos do objeto address, se existir
-        estado: a.address?.state ?? '',
-        cidade: a.address?.city ?? '',
-        bairro: a.address?.neighborhood ?? '',
-        rua: a.address?.street ?? '',
-        numeroDaCasa: a.address?.number ? a.address.number.toString() : '',
-        complemento: a.address?.complement ?? '',
-        referencia: a.address?.references ?? '',
-      };
-      setForm({ ...emptyForm, ...normalized, password: "" });
-      setEditMode(false);
-    } else {
-      setForm(emptyForm);
-      setEditMode(false);
-    }
+    const fetchData = async () => {
+      if (athlete) {
+        // Normalização do atleta
+        const a: any = athlete;
+        const normalized = {
+          ...athlete,
+          fatherName: athlete.fatherName ?? a['father_name'] ?? '',
+          fatherPhoneNumber: formatPhone(athlete.fatherPhoneNumber ?? a['father_phone'] ?? ''),
+          motherName: athlete.motherName ?? a['mother_name'] ?? '',
+          motherPhoneNumber: formatPhone(athlete.motherPhoneNumber ?? a['mother_phone'] ?? ''),
+          bloodType: athlete.bloodType ?? a['blood_type'] ?? '',
+          foodAllergies: athlete.foodAllergies ?? a['allergy'] ?? '',
+          athletePhotoUrl: athlete.athletePhotoUrl ?? a['photo_url'] ?? '',
+          frontIdPhotoUrl: athlete.frontIdPhotoUrl ?? a['photo_url_cpf_front'] ?? '',
+          backIdPhotoUrl: athlete.backIdPhotoUrl ?? a['photo_url_cpf_back'] ?? '',
+          birthday: (() => {
+            const val = athlete.birthday ?? a['birthday'] ?? '';
+            if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+              const [day, month, year] = val.split('/');
+              return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+            return val;
+          })(),
+          cpf: formatCPF(athlete.cpf ?? a['cpf'] ?? ''),
+          phone: formatPhone(athlete.phone ?? a['phone'] ?? ''),
+          rg: formatRG(athlete.rg ?? a['rg'] ?? ''),
+          estado: a.address?.state ?? '',
+          cidade: a.address?.city ?? '',
+          bairro: a.address?.neighborhood ?? '',
+          rua: a.address?.street ?? '',
+          numeroDaCasa: a.address?.number ? a.address.number.toString() : '',
+          complemento: a.address?.complement ?? '',
+          referencia: a.address?.references ?? '',
+        };
+        setForm({ ...emptyForm, ...normalized, password: "" });
+        setEditMode(false);
+      } else {
+        setForm(emptyForm);
+        setEditMode(false);
+      }
+      // Buscar todas as modalidades e inscrições do atleta
+      try {
+        const [modalities, enrollments] = await Promise.all([
+          getAllModalities(),
+          athlete?.id ? getEnrollmentsByAthlete(athlete.id) : Promise.resolve([])
+        ]);
+        setAllModalities(modalities);
+        // Montar estado inicial das checkboxes
+        const enrollmentStateObj: Record<number, {enrollment: Enrollment|null, loading: boolean, error: string|null}> = {};
+        modalities.forEach((mod: Modality) => {
+          const found = enrollments.find((e: Enrollment) => e.modality.id === mod.id);
+          enrollmentStateObj[mod.id] = { enrollment: found || null, loading: false, error: null };
+        });
+        setEnrollmentStates(enrollmentStateObj);
+      } catch (err) {
+        setAllModalities([]);
+        setEnrollmentStates({});
+      }
+    };
+    fetchData();
   }, [athlete]);
+
+  // Função handleDeactivateEnrollment removida. Toda lógica de ativar/desativar inscrição está nos checkboxes.
 
   // Funções de formatação
   const formatCPF = (value: string) => value
@@ -96,11 +122,7 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
     .replace(/(\d{5})(\d)/, "$1-$2")
     .replace(/(-\d{4})\d+?$/, "$1");
 
-  const formatDate = (value: string) => value
-    .replace(/\D/g, "")
-    .replace(/(\d{2})(\d)/, "$1/$2")
-    .replace(/(\d{2})(\d)/, "$1/$2")
-    .slice(0, 10);
+  // Função formatDate removida pois não é usada.
 
   const formatCEP = (value: string) => value
     .replace(/\D/g, "")
@@ -201,6 +223,12 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
       photo_url_cpf_front: form.frontIdPhotoUrl || '',
       photo_url_cpf_back: form.backIdPhotoUrl || ''
     };
+    // Só envia password se preenchido
+    if (form.password) {
+      payload.password = form.password;
+    } else {
+      delete payload.password;
+    }
     // Remove os campos camelCase do payload
     delete payload.fatherName;
     delete payload.fatherPhoneNumber;
@@ -277,19 +305,24 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
     onCancel();
   };
 
+  
+
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-4 bg-[#D9D9D9] border border-black rounded-lg p-4">
-      <div className="flex justify-between">
-      <h2 className="text-xl font-bold mb-4">Edição de Atleta</h2> 
-      <button
-        type="button"
-        onClick={handleCancel}
-        className="w-8 h-8 flex items-center justify-center rounded-md border border-black bg-[#D9D9D9] hover:bg-[#EB8317] transition-colors text-lg font-bold"
-        style={{ lineHeight: 1 }}
-        aria-label="Fechar"
-      >
-        ×
-      </button>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold mb-4">Edição de Atleta</h2>
+        <div className="flex gap-2">
+          {/* Botão editar (lápis) e lixeira (remover) podem ser adicionados aqui, se existirem */}
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="w-8 h-8 flex items-center justify-center rounded-md border border-black bg-[#D9D9D9] hover:bg-[#EB8317] transition-colors text-lg font-bold"
+            style={{ lineHeight: 1 }}
+            aria-label="Fechar"
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       {successMessage && (
@@ -439,6 +472,7 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         </div>
       </div>*/}
 
+
       {/* Fotos */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
   {[
@@ -457,8 +491,6 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
         onChange={e => handleImageUpload(e, name)}
         className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
       />
-
-      
 
       {value && (
         <img

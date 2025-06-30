@@ -8,6 +8,7 @@ export interface AtletasCadastradosProps {
   onEdit?: (athlete: Athlete) => void;
   onDelete?: (id: number) => void;
   selectedAthlete?: Athlete | null;
+  onEnrollmentClick?: (athlete: Athlete) => void;
 }
 
 function formatCpf(cpf?: string) {
@@ -36,6 +37,7 @@ export default function AtletasCadastrados({
   onEdit,
   onDelete,
   selectedAthlete,
+  onEnrollmentClick,
 }: AtletasCadastradosProps) {
   // Estado para atletas
   const [athletes, setAthletes] = useState<Athlete[]>([]);
@@ -177,22 +179,24 @@ export default function AtletasCadastrados({
           </select>
         </div>
       </div>
-      <div className={`grid grid-cols-1 md:grid-cols-3 gap-6`}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {paginatedAthletes.map((athlete, idx) => (
           <div
             key={athlete.id || idx}
             className={`bg-white border border-black rounded-lg p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center relative ${selectedAthlete && athlete.id === selectedAthlete.id ? 'ring-2 ring-[#EB8317]' : ''}`}
           >
-            <img
-              src={athlete.athletePhotoUrl || 'https://via.placeholder.com/80'}
-              alt={`Foto de ${athlete.name || 'atleta'}`}
-              className="h-20 w-20 border border-black cursor-pointer rounded-full mb-3 object-cover"
-            />
-            <div className="text-center w-full">
-              <h3 className="font-bold text-lg mb-1">{athlete.name}</h3>
-              <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">CPF:</span> {formatCpf(athlete.cpf)}</p>
-              <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">Email:</span> {athlete.email}</p>
-              <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">Telefone:</span> {formatPhone(athlete.phone)}</p>
+            <div className="flex flex-col items-center w-full">
+              <img
+                src={athlete.athletePhotoUrl || 'https://via.placeholder.com/80'}
+                alt={`Foto de ${athlete.name || 'atleta'}`}
+                className="h-20 w-20 border border-black rounded-full mb-3 object-cover"
+              />
+              <div className="text-center w-full">
+                <h3 className="font-bold text-lg mb-1">{athlete.name}</h3>
+                <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">CPF:</span> {formatCpf(athlete.cpf)}</p>
+                <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">Email:</span> {athlete.email}</p>
+                <p className="text-sm text-gray-700 mb-1"><span className="font-semibold">Telefone:</span> {formatPhone(athlete.phone)}</p>
+              </div>
             </div>
             <div className="flex gap-2 mt-3">
               {onEdit && (
@@ -202,6 +206,26 @@ export default function AtletasCadastrados({
                   title="Editar"
                 >
                   <img src="/icon/pencil.svg" alt="Editar" className="w-5 h-5" />
+                </button>
+              )}
+              {onEnrollmentClick ? (
+                <button
+                  className="w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform fill-blue-500"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Impede a propagação do evento
+                    onEnrollmentClick(athlete);
+                  }}
+                  title="Gerenciar Modalidades"
+                >
+                  <img src="/icon/modality.svg" alt="Modalidades" className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  className="w-8 h-8 flex items-center justify-center opacity-50 cursor-not-allowed"
+                  disabled
+                  title="Gerenciar Modalidades"
+                >
+                  <img src="/icon/basketball.svg" alt="Modalidades" className="w-5 h-5" />
                 </button>
               )}
               <button
