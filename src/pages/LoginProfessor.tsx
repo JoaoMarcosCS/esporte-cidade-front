@@ -50,12 +50,12 @@ export const LoginProfessor: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-[#F4F6FF] flex flex-col pb-16">
+      <div className="min-h-screen bg-[#F4F6FF] flex flex-col ">
         <h1 className="absolute top-7 left-1/2 -translate-x-1/2 md:left-10 md:translate-x-0 text-2xl mb-10 font-jockey text-black">
           ESPORTE NA CIDADE
         </h1>
         <main className="flex flex-col items-center flex-1 mt-20">
-          <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
+          <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-10 w-full max-w-5xl">
             <div className="text-start px-8 mb-8">
               <h2 className="text-4xl font-bold pb-2">
                 Olá, <span className="text-orange-600">Professor!</span>
@@ -158,7 +158,7 @@ export const LoginProfessor: React.FC = () => {
           </div>
         </main>
 
-        <footer className="w-full text-center mt-auto">
+        <footer className="w-full text-center mb-2">
           <p className="text-sm text-gray-500">
             2024 Esporte na cidade. All rights reserved.
           </p>

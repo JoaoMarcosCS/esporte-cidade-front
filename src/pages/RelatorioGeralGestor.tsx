@@ -60,28 +60,45 @@ export const RelatorioGeralGestor: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F4F6FF] pb-20">
+    <section className="bg-[#F4F6FF] h-screen">
       <HeaderBasic
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
       />
 
-      <div className="min-h-screen xl:px-36 md:px-11 px-5 py-6">
-        <div className="max-w-4xl mx-auto bg-[#F4F6FF] rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+      <div className="xl:px-36 md:px-11 px-5 mt-10">
+          <h1 className="font-bold text-3xl mb-10">
             Relatório Geral
           </h1>
-          <p className="text-gray-600 mb-6">
+      <div className="rounded-lg border border-black p-4 bg-[#d9d9d9]">
+        <div className="bg-white opacity-100 p-6  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border  border-black">
+          <p className="text-gray-600 mb-6 text-lg">
             Gere um relatório completo com todas as informações de atendimentos,
             presenças e faltas por modalidade.
           </p>
 
-          <button
+          
+          <div className="flex md:justify-between items-end">
+          <div className=" justify-start">
+            <h2 className="text-lg font-semibold text-gray-700 mb-3">
+              O que inclui o relatório:
+            </h2>
+            <ul className="list-disc pl-5 space-y-2 text-gray-600">
+              <li>Lista completa de todas as modalidades</li>
+              <li>Quantidade de alunos ativos por modalidade</li>
+              <li>Total de atendimentos realizados</li>
+              <li>Taxa de presença e faltas</li>
+              <li>Detalhamento mensal de cada modalidade</li>
+            </ul>
+            </div>
+            
+            
+
+            <button
             onClick={downloadRelatorio}
             disabled={loading}
             className={`px-6 py-3 rounded-lg font-medium text-white ${
@@ -116,22 +133,12 @@ export const RelatorioGeralGestor: React.FC = () => {
               "Baixar Relatório Completo"
             )}
           </button>
-
-          <div className="mt-8">
-            <h2 className="text-lg font-semibold text-gray-700 mb-3">
-              O que inclui o relatório:
-            </h2>
-            <ul className="list-disc pl-5 space-y-2 text-gray-600">
-              <li>Lista completa de todas as modalidades</li>
-              <li>Quantidade de alunos ativos por modalidade</li>
-              <li>Total de atendimentos realizados</li>
-              <li>Taxa de presença e faltas</li>
-              <li>Detalhamento mensal de cada modalidade</li>
-            </ul>
+           
+            
           </div>
         </div>
       </div>
-
+      </div>
       <ToastContainer
         position="bottom-right"
         autoClose={5000}

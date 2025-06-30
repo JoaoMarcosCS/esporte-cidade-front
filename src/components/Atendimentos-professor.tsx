@@ -220,7 +220,7 @@ export const VisualizarAtendimentos = () => {
 
                     <Card>
                         <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
-                            <p>sem aulas Hoje</p>
+                            <p>Sem aulas hoje!</p>
 
                         </CardContent>
                     </Card>
@@ -257,7 +257,7 @@ export const VisualizarAtendimentos = () => {
 
     return (
         <div className="mt-10 flex flex-col gap-8">
-            <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm">
+            <div className="bg-[#d9d9d9] border border-black p-4 rounded-lg">
                 <h1 className="text-lg font-bold">Horário</h1>
                 {loading ? (
                     <p>Carregando...</p>
@@ -356,7 +356,7 @@ export const AtendimentosAnteriores = () => {
    // console.log("currentItems:   ", currentItems)
 
     return (
-        <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
+        <div className="mt-10 w-full rounded-lg border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
             <div className="flex gap-4 mb-4 ">
                 <Popover>

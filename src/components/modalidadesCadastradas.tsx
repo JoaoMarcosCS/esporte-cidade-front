@@ -44,8 +44,8 @@ export const ModalidadesCadastradas: React.FC<ModalidadesCadastradasProps> = ({
 
     return (
         <div>
-            <h2 className="font-bold text-3xl m-4">Modalidades Cadastradas</h2>
-            <div className="bg-[#D9D9D9]  p-4 rounded-lg">
+            
+            <div className="rounded-lg border border-black p-4 bg-[#d9d9d9]">
                 {/* Dropdown de quantidade de cards por página */}
                 <select
                     className="transition-all  rounded-lg  mb-6 border border-black flex h-7 justify-between items-center font-normal"

@@ -109,10 +109,6 @@ export const CadastroModalidades: React.FC = () => {
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             {
-                                label: "Comunicados",
-                                path: "/home-gestor/cadastrar-comunicado",
-                            },
-                            {
                                 label: "Modalidades",
                                 path: "/home-gestor/cadastrar-modalidade",
                             },
@@ -131,7 +127,7 @@ export const CadastroModalidades: React.FC = () => {
                                     <h2 className="font-bold text-3xl mb-10">Modalidades Cadastradas</h2>
                                 </div>
 
-                                <div className="flex flex-col  border border-black md:pb-20 bg-[#D9D9D9]">
+                                
                                     <ModalidadesCadastradas
                                         modalidades={modalidades}
                                         onEdit={handleEditClick}
@@ -147,7 +143,7 @@ export const CadastroModalidades: React.FC = () => {
 
 
 
-                                </div>
+                                
                             </section>
 
                             <div className="flex justify-end">

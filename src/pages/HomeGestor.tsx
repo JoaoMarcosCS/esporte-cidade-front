@@ -27,10 +27,6 @@ const HomeGestor = () => {
             links={[
               { label: "Home", path: "/home-gestor" },
               {
-                label: "Comunicados",
-                path: "/home-gestor/cadastrar-comunicado",
-              },
-              {
                 label: "Modalidades",
                 path: "/home-gestor/cadastrar-modalidade",
               },
@@ -51,7 +47,7 @@ const HomeGestor = () => {
                 <Escala />
               </div>
               <div className="mt-12">
-                <CalendarioCompromissos type="DisableEdit" />
+                {/* <CalendarioCompromissos type="DisableEdit" /> */}
               </div>
             </div>
           </div>
