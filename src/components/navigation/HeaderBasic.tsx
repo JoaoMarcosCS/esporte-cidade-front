@@ -64,14 +64,14 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
     <header className="w-full bg-white flex items-center justify-between gap-4 px-6 py-4 shadow sticky top-0 z-50">
       <div className="flex items-center md:gap-0 gap-2">
         {type === "usuario" && <CustomSidebarTrigger />}
-        
-       
-          <img
-            src="https://lh3.googleusercontent.com/proxy/X-B99B9HsP3Lo4ae0nDQMozyMHTcxxdcPINH959IZlOUhqK7j0tdAK-sz09ISiS2c0ew2N4wyhXsHyR5EZ1vqwJKbh0VhZBj7gEfvT4DeFZkKw"
-            alt="Logo"
-            className="h-10 mr-4 hidden md:block"
-          />
-        
+
+
+        <img
+          src="https://lh3.googleusercontent.com/proxy/X-B99B9HsP3Lo4ae0nDQMozyMHTcxxdcPINH959IZlOUhqK7j0tdAK-sz09ISiS2c0ew2N4wyhXsHyR5EZ1vqwJKbh0VhZBj7gEfvT4DeFZkKw"
+          alt="Logo"
+          className="h-10 mr-4 hidden md:block"
+        />
+
         <h1
           className="text-xl font-jockey cursor-pointer"
           onClick={() => GoTo("/")}
@@ -107,6 +107,12 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
                 style={{ minWidth: 150 }}
               >
                 <button
+                  onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/cadastrar-modalidade"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Modalidades
+                </button>
+                <button
                   onClick={() => { setMenuOpenDropdown(false); GoTo("/home-gestor/atletas"); }}
                   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
@@ -131,20 +137,20 @@ const HeaderBasic: React.FC<HeaderBasicProps> = ({ links = [], type, logo = "sho
 
         {/* Foto de perfil do usuário */}
         <div className="relative dropdown-perfil">
-           {logo === "show" && (
-          <img
-            src={
-              user?.photo_url ||
-              user?.profilePicture ||
-              userData?.photo_url ||
-              userData?.profilePicture ||
-              "https://via.placeholder.com/40"
-            }
-            alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
-            className="h-10 w-10 border border-black cursor-pointer rounded-full"
-            onClick={handleMenuToggle}
-          />
-           )}
+          {logo === "show" && (
+            <img
+              src={
+                user?.photo_url ||
+                user?.profilePicture ||
+                userData?.photo_url ||
+                userData?.profilePicture ||
+                "https://via.placeholder.com/40"
+              }
+              alt={`${userData?.name || user?.name || 'Usuário'}'s profile`}
+              className="h-10 w-10 border border-black cursor-pointer rounded-full"
+              onClick={handleMenuToggle}
+            />
+          )}
           <div
             className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50 transform transition-all duration-200 origin-top ${menuOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
             style={{ minWidth: 180 }}

@@ -109,10 +109,6 @@ export const CadastroModalidades: React.FC = () => {
                         links={[
                             { label: "Home", path: "/home-gestor" },
                             {
-                                label: "Modalidades",
-                                path: "/home-gestor/cadastrar-modalidade",
-                            },
-                            {
                                 label: "Relatório Geral",
                                 path: "/home-gestor/relatorio-geral",
                             },

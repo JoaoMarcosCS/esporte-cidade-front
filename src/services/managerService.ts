@@ -19,3 +19,13 @@ export async function saveManager(manager: Manager): Promise<Manager> {
 export async function deleteManager(id: number): Promise<void> {
   await api.delete(`/manager/${id}`);
 }
+
+export async function graphData() {
+  try {
+    const response = await api.get("/manager/relatorio-graficos");
+    return response.data; 
+  } catch (error) {
+    console.error("Error fetching graph data:", error);
+    throw error; 
+  }
+}

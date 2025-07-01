@@ -78,7 +78,6 @@ const GestaoDeProfessor: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
       />
