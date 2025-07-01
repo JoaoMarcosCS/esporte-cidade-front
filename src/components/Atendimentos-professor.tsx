@@ -256,8 +256,8 @@ export const VisualizarAtendimentos = () => {
     );
 
     return (
-        <div className="mt-10 flex flex-col gap-8">
-            <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm">
+        <div className="mt-10 flex flex-col gap-8 sm:max-w-96 self-center md:self-start">
+            <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm sm:min-w-0">
                 <h1 className="text-lg font-bold">Horário</h1>
                 {loading ? (
                     <p>Carregando...</p>
@@ -356,17 +356,17 @@ export const AtendimentosAnteriores = () => {
    // console.log("currentItems:   ", currentItems)
 
     return (
-        <div className="mt-10 w-full rounded-sm border border-black p-4 min-h-[720px] bg-[#d9d9d9]">
+       <div className="mt-10 w-full max-w-screen-md border border-black p-4 min-h-[720px] bg-[#d9d9d9] rounded-sm">
             <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
-            <div className="flex gap-4 mb-4 ">
+           <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="transition-all bg-white rounded-lg hover:bg-slate-200   shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex w-40 justify-between items-center font-normal  border border-black">
+                        <Button variant="outline" className="transition-all w-full sm:w-40 bg-white rounded-lg hover:bg-slate-200   shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center font-normal  border border-black">
                             {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Data</span>}
                             <ChevronDown className="ml-2 h-4 w-4 hover:shadow-lg hover:shadow-slate-900" />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-full p-0" align="start">
                         <Calendar
                             mode="single"
                             locale={ptBR}
@@ -377,7 +377,7 @@ export const AtendimentosAnteriores = () => {
                     </PopoverContent>
                 </Popover>
                 <Select onValueChange={(value) => setSelectedLocation(value)}>
-                    <SelectTrigger className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-200  flex w-40 justify-between items-center font-normal h-[3.1rem] border border-black">
+                    <SelectTrigger className="transition-all bg-white w-full rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-200  flex justify-between items-center font-normal h-[3.1rem] border border-black">
                         <SelectValue placeholder="Local" />
                     </SelectTrigger>
 
@@ -418,13 +418,13 @@ export const AtendimentosAnteriores = () => {
 
 
 
-                <div className="grid grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
                     <p className="transition-all border-b-2 border-black pb-2">Data</p>
                     <p className="transition-all border-b-2 border-black pb-2">Local</p>
                     <p className="transition-all border-b-2 border-black pb-2">Descrição</p>
                 </div>
                 {currentItems.map((item: any) => (
-                    <div key={item.id} className="animate-slide-in-fade  transition-all grid grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200">
+                    <div key={item.id} className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200">
                         {/* data */}
                         <p>{new Date(item.created_at).toLocaleDateString("pt-BR")}</p>
                         {/* local */}
