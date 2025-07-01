@@ -62,8 +62,8 @@ export const RelatorioGeralGestor: React.FC = () => {
   };
 
   return (
-
     <section className="bg-[#F4F6FF]  transition-all pb-10  ">
+
       <HeaderBasic
         type="visitante"
         links={[
@@ -111,6 +111,7 @@ export const RelatorioGeralGestor: React.FC = () => {
                   disabled={loading}
                   className={`px-6 py-3 rounded-lg font-medium text-white ${loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
                     } transition-colors duration-200 flex items-center justify-center`}
+
                 >
                   {loading ? (
                     <>

@@ -39,7 +39,7 @@ const HomeGestor = () => {
               Olá, Gestor(a){" "}
               <span className="text-[#EB8317]">{userData?.name}</span>
             </h2>
-            <div className="xl:items-start items-center flex flex-col xl:flex-row">
+            <div className="items-center flex flex-col ">
               <div className="mt-12 pr-8">
                 <Escala />
               </div>

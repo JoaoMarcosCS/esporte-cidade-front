@@ -286,6 +286,7 @@ export const AtendimentosAnteriores = () => {
     const [locations, setLocations] = useState<string[]>([]);
 
     const userData = useUser();
+    console.log('userData:', userData);
 
     const teacherId = userData?.id
 
@@ -407,7 +408,9 @@ export const AtendimentosAnteriores = () => {
                 <CardContent className="p-5 flex justify-between items-center rounded-md">
                     <p>
                         <span className="font-inter">Modalidade:</span>{" "}
-                        <span className="font-semibold">Futebol</span>
+                        <span className="font-semibold">
+                            {userData?.modality?.name || 'Não informada'}
+                        </span>
                     </p>
                     <p className="text-orange-500 font-bold text-lg">{totalFiltered}</p>
                 </CardContent>

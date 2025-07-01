@@ -113,11 +113,19 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
-      const formattedValue = formatInputValue(name, value);
-      setFormData((prev) => ({
-        ...prev,
-        [name]: name === "modality" ? Number(value) : formattedValue,
-      }));
+      
+      if (name === 'modality') {
+        const selectedModality = modalities.find(m => m.id === Number(value)) || null;
+        setFormData(prev => ({
+          ...prev,
+          modality: selectedModality
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [name]: formatInputValue(name, value),
+        }));
+      }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -187,7 +195,13 @@ const FormularioProfessores = forwardRef<HTMLFormElement, Props>(
                 }}
               />
 
-              <Dropdown label="Modalidade" name="modality" onChange={handleChange} value={formData.modality != null ? formData.modality.id : 0} iconPath="/icon/soccer.svg">
+              <Dropdown 
+                label="Modalidade" 
+                name="modality" 
+                onChange={handleChange} 
+                value={formData.modality?.id || ""} 
+                iconPath="/icon/soccer.svg"
+              >
                 <option value="">Selecione a modalidade</option>
                 {modalities.map((modality) => (
                   <option key={modality.id} value={modality.id}>
