@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import api from "../services/api";
 import AuthContext from "../contexts/AuthContext";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,21 +12,22 @@ const FaltaAtleta = () => {
   useEffect(() => {
     const fetchAbsences = async () => {
       try {
-        //console.log("auth:", auth);
         const athleteName = auth?.user?.name;
         if (!athleteName) {
-          //console.log("Nome do usuário não disponível");
           return;
         }
-        const token = localStorage.getItem('token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const response = await axios.get(`http://localhost:3002/api/absences?athlete=${encodeURIComponent(athleteName)}`, { headers });
-        //console.log("Resposta da API (faltas):", response.data);
-        const absencesArray = Array.isArray(response.data)
+        const response = await api.get(`/absences?athlete=${encodeURIComponent(athleteName)}`);
+        let absencesArray = Array.isArray(response.data)
           ? response.data
-          : Array.isArray(response.data.absences)
+          : Array.isArray(response.data?.absences)
             ? response.data.absences
             : [];
+        
+        // Ordenar as faltas da mais recente para a mais antiga
+        absencesArray = [...absencesArray].sort((a, b) => {
+          return new Date(b.data).getTime() - new Date(a.data).getTime();
+        });
+        
         setAbsences(absencesArray);
       } catch (error: any) {
         if (error.response) {

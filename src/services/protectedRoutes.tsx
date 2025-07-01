@@ -1,21 +1,8 @@
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:3002/api/protect/';
+import api from './api';
 
 export const checkProtectedRoute = async () => {
   try {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('Token não encontrado');
-    }
-
-    const response = await axios.get(BASE_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
+    const response = await api.get('/protect/');
     console.log('Acesso autorizado:', response.data);
     return response.data;
   } catch (error: any) {

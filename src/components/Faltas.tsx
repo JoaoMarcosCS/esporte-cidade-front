@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import api from "../services/api";
 
 const AthleteAbsences = ({ modalityId }: { modalityId: number }) => {
   const [absences, setAbsences] = useState<any[]>([]);
@@ -8,10 +8,10 @@ const AthleteAbsences = ({ modalityId }: { modalityId: number }) => {
   useEffect(() => {
     const fetchAbsences = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/api/absences`);
+        const response = await api.get(`/absences`);
         setAbsences(response.data);
       } catch (error) {
-        console.error("Erro ao buscar faltas dos atletas:", error);
+        console.error("Erro ao carregar as faltas:", error);
       } finally {
         setLoading(false);
       }
