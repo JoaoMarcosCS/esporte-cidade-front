@@ -16,7 +16,7 @@ export interface Enrollment {
   updatedAt?: string;
 }
 
-interface State {
+export interface State {
   enrollment: Enrollment | null;
   loading: boolean;
   error: string | null;
@@ -47,6 +47,49 @@ const ModalitiesManager: React.FC<Props> = ({
 }) => {
   if (!show) return null;
 
+  // Log dos dados recebidos da API para depuração
+  if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line no-console
+    console.log("ModalitiesManager - allModalities recebidas da API:", allModalities);
+  }
+
+  // Proteção extra: filtra modalidades inválidas e ignora undefined
+  const validModalities = Array.isArray(allModalities)
+    ? allModalities.filter(
+        (mod): mod is Modality =>
+          !!mod &&
+          typeof mod === "object" &&
+          Object.prototype.hasOwnProperty.call(mod, "id") &&
+          typeof mod.id === "number" &&
+          typeof mod.name === "string"
+      )
+    : [];
+
+  // DEBUG: log para verificar se há algum problema com os dados recebidos
+  if (process.env.NODE_ENV !== "production") {
+    // Mostra se há algum item inválido em allModalities
+    const invalids = (allModalities || []).filter(
+      (mod) =>
+        !mod ||
+        typeof mod !== "object" ||
+        !Object.prototype.hasOwnProperty.call(mod, "id") ||
+        typeof mod.id !== "number" ||
+        typeof mod.name !== "string"
+    );
+    if (invalids.length > 0) {
+      // eslint-disable-next-line no-console
+      console.warn("ModalitiesManager: Modalidades inválidas recebidas:", invalids);
+    }
+  }
+
+  // Proteção extra: só inicializa estados para modalidades válidas
+  const safeEnrollmentStates: Record<number, State> = { ...enrollmentStates };
+  for (const mod of validModalities) {
+    if (!safeEnrollmentStates[mod.id]) {
+      safeEnrollmentStates[mod.id] = { enrollment: null, loading: false, error: null };
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-4 bg-[#D9D9D9] border border-black rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
@@ -63,13 +106,12 @@ const ModalitiesManager: React.FC<Props> = ({
 
       {isEditing && (
         <div className="bg-white border border-black rounded-lg p-4 mt-6 shadow-md">
-          
-          {Object.keys(enrollmentStates).length === 0 ? (
+          {validModalities.length === 0 ? (
             <div className="text-gray-500">Nenhuma modalidade encontrada.</div>
           ) : (
             <ul className="divide-y divide-gray-200">
-              {allModalities.map((mod) => {
-                const state = enrollmentStates[mod.id] || { enrollment: null, loading: false, error: null };
+              {validModalities.map((mod) => {
+                const state = safeEnrollmentStates[mod.id];
                 const isEnrolled = !!state.enrollment;
 
                 const handleToggle = async (field: "active" | "approved" | "enrolled") => {

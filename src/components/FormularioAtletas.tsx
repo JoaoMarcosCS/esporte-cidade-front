@@ -529,4 +529,3 @@ const FormularioAtletas: React.FC<FormularioAtletasProps> = ({ athlete, onSubmit
 };
 
 export default FormularioAtletas;
-

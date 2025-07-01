@@ -93,24 +93,23 @@ const ManagersCadastrados: React.FC<Props> = ({
                     className="w-5 h-5"
                   />
                 </button>
-
-                <button
-                  onClick={() => {
-                    if (typeof manager?.id === 'number') {
-                      onDelete(manager.id);
-                    }
-                  }}
-                  className={`w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform ${managerEdicao?.id === manager.id || String(user?.id) === String(manager.id) ? "hidden" : ""
-                    }`}
-
-                  title={String(user?.id) === String(manager.id) ? "Você não pode excluir o próprio cadastro." : "Excluir"}
-                >
-                  <img
-                    src="/icon/trash.svg"
-                    alt="Deletar"
-                    className="w-5 h-5"
-                  />
-                </button>
+                {String(manager.id) !== String(user?.id) && (
+                  <button
+                    onClick={() => {
+                      if (typeof manager.id === 'number') {
+                        onDelete(manager.id);
+                      }
+                    }}
+                    className="w-8 h-8 flex items-center justify-center hover:scale-150 transition-transform"
+                    title="Excluir"
+                  >
+                    <img
+                      src="/icon/trash.svg"
+                      alt="Excluir"
+                      className="w-5 h-5"
+                    />
+                  </button>
+                )}
               </div>
             </div>
           ))}

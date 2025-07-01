@@ -17,6 +17,13 @@ export async function saveManager(manager: Manager): Promise<Manager> {
 }
 
 export async function deleteManager(id: number): Promise<void> {
+  const response = await api.get('/auth/user');
+  const currentUser = response.data;
+  
+  if (currentUser.id === id) {
+    throw new Error('Não é possível excluir o próprio cadastro.');
+  }
+  
   await api.delete(`/manager/${id}`);
 }
 

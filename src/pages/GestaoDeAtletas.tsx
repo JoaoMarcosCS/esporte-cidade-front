@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Athlete } from "@/types/Athlete";
 import { Modality } from "../types/Modality";
+import { Enrollment } from "../types/Enrollment";
 import AtletasCadastrados from "../components/AtletasCadastrados";
 import FormularioAtletas from "../components/FormularioAtletas";
 import HeaderBasic from "../components/navigation/HeaderBasic";
@@ -8,6 +9,11 @@ import FooterMobile from "../components/navigation/FooterMobile";
 import { ConfirmModal } from "../components/ComfirmModal";
 import ModalitiesManager from "../components/ModalitiesManager";
 import api from '../services/api';
+import type { State } from "../components/ModalitiesManager";
+
+
+
+
 
 const GestaoDeAtletas: React.FC = () => {
   const [athletes, setAthletes] = useState<Athlete[]>([]);
@@ -21,34 +27,45 @@ const GestaoDeAtletas: React.FC = () => {
   const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
 
   const [showModalitiesManager, setShowModalitiesManager] = useState(false);
-  const [enrollmentStates, setEnrollmentStates] = useState<Record<number, any>>({});
+  const [enrollmentStates, setEnrollmentStates] = useState<Record<number, State>>({});
   const [editMode, setEditMode] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
   const modalitiesManagerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [athletesResp, enrollmentsResp, modalitiesResp] = await Promise.all([
+      const [athletesResp, modalitiesResp] = await Promise.all([
         api.get('/athletes/'),
-        api.get('/enrollment/'),
         api.get('/modality/')
       ]);
+      
+      // Carrega as inscrições apenas se houver um atleta selecionado
+      let enrollmentsResp = [];
+      if (selectedAthlete?.id) {
+        const enrollmentResp = await api.get('/enrollment', {
+          params: {
+            athleteId: selectedAthlete.id
+          }
+        });
+        enrollmentsResp = enrollmentResp.data;
+      }
+
       setAthletes(athletesResp.data);
-      setEnrollments(enrollmentsResp.data);
+      setEnrollments(enrollmentsResp);
       setModalities(modalitiesResp.data);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedAthlete]);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   const handleAddOrEdit = async (athlete: Athlete) => {
     try {
@@ -141,7 +158,7 @@ const GestaoDeAtletas: React.FC = () => {
       const athleteEnrollments = response.data || [];
       
       // Inicializa os estados das modalidades
-      const states: Record<number, any> = {};
+      const states: Record<number, State> = {};
       
       for (const modality of modalities) {
         const existing = athleteEnrollments.find((e: any) => e.modality.id === modality.id);
@@ -149,7 +166,9 @@ const GestaoDeAtletas: React.FC = () => {
           enrollment: existing ? {
             id: existing.id,
             active: existing.active,
-            approved: existing.approved
+            approved: existing.approved,
+            modalityId: modality.id,
+            athleteId: athlete.id
           } : null,
           loading: false,
           error: null
@@ -179,6 +198,7 @@ const GestaoDeAtletas: React.FC = () => {
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
+          { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
       />
@@ -253,10 +273,38 @@ const GestaoDeAtletas: React.FC = () => {
                 enrollmentStates={enrollmentStates}
                 setEnrollmentStates={setEnrollmentStates}
                 inscreverEmModalidade={async (modalityId) => {
-                  const res = await api.post('/enrollment', {
-                    modalityId: modalityId,
-                  });
-                  return res.data[0]; // Retorna o primeiro item do array
+                  if (!selectedAthlete?.id) {
+                    throw new Error('Atleta não selecionado');
+                  }
+                  try {
+                    console.log('Enviando inscrição para:', {
+                      modalityId,
+                      athleteId: selectedAthlete.id
+                    });
+                    const res = await api.post('/enrollment', {
+                      modalityId: modalityId,
+                      athleteId: selectedAthlete.id
+                    });
+                    console.log('Resposta do backend:', res.data);
+                    const newEnrollment = res.data;
+                    console.log('Nova inscrição:', {
+                      id: newEnrollment.id,
+                      active: newEnrollment.active,
+                      approved: newEnrollment.approved,
+                      modalityId: modalityId,
+                      athleteId: selectedAthlete.id
+                    });
+                    return {
+                      id: newEnrollment.id,
+                      active: newEnrollment.active,
+                      approved: newEnrollment.approved,
+                      modalityId: modalityId,
+                      athleteId: selectedAthlete.id
+                    };
+                  } catch (error) {
+                    console.error('Erro ao criar inscrição:', error);
+                    throw error;
+                  }
                 }}
                 updateEnrollmentStatus={async (enrollmentId, data) => {
                   const res = await api.put(`/enrollment/${enrollmentId}`, data);
