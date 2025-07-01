@@ -3,7 +3,7 @@ import React, { ChangeEvent, ReactNode } from "react";
 interface DropdownProps {
     label: string;
     name: string;
-    value: number;
+    value: number | string; // Aceita número ou string
     onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
     iconPath?: string; // Ícone opcional
     errorMessage?: string; // Mensagem de erro opcional
