@@ -63,7 +63,7 @@ const ModalitiesManager: React.FC<Props> = ({
 
       {isEditing && (
         <div className="bg-white border border-black rounded-lg p-4 mt-6 shadow-md">
-          <h3 className="font-bold mb-2 text-lg">Gerenciar inscrições em modalidades</h3>
+          
           {Object.keys(enrollmentStates).length === 0 ? (
             <div className="text-gray-500">Nenhuma modalidade encontrada.</div>
           ) : (

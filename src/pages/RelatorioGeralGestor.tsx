@@ -60,7 +60,7 @@ export const RelatorioGeralGestor: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F4F6FF] h-screen">
+    <section className="bg-[#F4F6FF] pb-[100px]">
       <HeaderBasic
         type="visitante"
         links={[
@@ -76,13 +76,13 @@ export const RelatorioGeralGestor: React.FC = () => {
           </h1>
       <div className="rounded-lg border border-black p-4 bg-[#d9d9d9]">
         <div className="bg-white opacity-100 p-6  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border  border-black">
-          <p className="text-gray-600 mb-6 text-lg">
+          <p className="text-gray-600 mb-4 text-lg">
             Gere um relatório completo com todas as informações de atendimentos,
             presenças e faltas por modalidade.
           </p>
 
           
-          <div className="flex md:justify-between items-end">
+          <div className="flex flex-col gap-5 md:flex-row md:justify-between md:items-end items-center">
           <div className=" justify-start">
             <h2 className="text-lg font-semibold text-gray-700 mb-3">
               O que inclui o relatório:
@@ -101,9 +101,7 @@ export const RelatorioGeralGestor: React.FC = () => {
             <button
             onClick={downloadRelatorio}
             disabled={loading}
-            className={`px-6 py-3 rounded-lg font-medium text-white ${
-              loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-            } transition-colors duration-200 flex items-center justify-center`}
+            className={`md:w-fit font-bold font-inter bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center`}
           >
             {loading ? (
               <>
