@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { format, addDays } from 'date-fns';
+import axios from 'axios';
 
 // Configuração da API
-const API_BASE_URL = 'http://localhost:5173/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
 
 // Lista de locais e horários para as aulas teste
 const LOCATIONS: string[] = [
