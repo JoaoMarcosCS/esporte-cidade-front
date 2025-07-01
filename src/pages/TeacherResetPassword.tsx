@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBasic from '../components/navigation/HeaderBasic';
 import PasswordRequirements from '../components/PasswordRequirements';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 
 const TeacherResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -11,6 +12,7 @@ const TeacherResetPassword: React.FC = () => {
   const [error, setError] = useState('');
   const { teacherId, token } = useParams<{ teacherId: string; token: string }>(); // Get teacherId and token from URL
   const navigate = useNavigate();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     if (!token || !teacherId) {
@@ -31,9 +33,9 @@ const TeacherResetPassword: React.FC = () => {
 
     // Validação de senha forte
     if (!(/[a-z]/.test(password) &&
-          /[A-Z]/.test(password) &&
-          /[0-9]/.test(password) &&
-          /[^A-Za-z0-9]/.test(password))) {
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password))) {
       setError('A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial.');
       return;
     }
@@ -50,12 +52,12 @@ const TeacherResetPassword: React.FC = () => {
 
     try {
       await api.post(`/teacher/password-reset/${teacherId}/${token}`, { password });
-      
+
 
       setMessage('Sua senha foi redefinida com sucesso! Você pode fazer login com sua nova senha.');
       setPassword('');
       setConfirmPassword('');
-      
+
       setTimeout(() => {
         navigate('/login-professor');
       }, 3000);
@@ -90,16 +92,35 @@ const TeacherResetPassword: React.FC = () => {
                     >
                       Nova Senha
                     </label>
-                    <input
-                      type="password"
-                      id="password"
-                      placeholder="Digite sua nova senha"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
-                      required
-                    />
+                    <div>
+                      <div className='relative'>
+
+                        <input
+                          type={isPasswordVisible ? "text" : "password"}
+                          id="password"
+                          placeholder="Digite sua nova senha"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
+                          required
+
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                          className="absolute right-3 top-3 text-gray-600"
+                        >
+                          {isPasswordVisible ? (
+                            <EyeIcon size={20} />
+                          ) : (
+                            <EyeOffIcon size={20} />
+                          )}
+                        </button>
+                      </div>
+
+                    </div>
                     <PasswordRequirements password={password} />
+
                   </div>
                   <div className="mb4">
                     <label
@@ -108,15 +129,29 @@ const TeacherResetPassword: React.FC = () => {
                     >
                       Confirmar Nova Senha
                     </label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      placeholder="Confirme sua nova senha"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
-                      required
-                    />
+                    <div className='relative'>
+
+                      <input
+                        type={isPasswordVisible ? "text" : "password"}
+                        id="confirmPassword"
+                        placeholder="Confirme sua nova senha"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                        className="absolute right-3 top-3 text-gray-600"
+                      >
+                        {isPasswordVisible ? (
+                          <EyeIcon size={20} />
+                        ) : (
+                          <EyeOffIcon size={20} />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   {error && (
                     <p className="text-xs text-red-400 mt-1">{error}</p>

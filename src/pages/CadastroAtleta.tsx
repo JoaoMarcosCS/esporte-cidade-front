@@ -8,6 +8,7 @@ import { Navigate } from "react-router-dom";
 import useNavigateTo from "../hooks/useNavigateTo";
 import { useNavigate } from 'react-router-dom';
 import api from "../services/api";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 
 const CadastroAtleta: React.FC = () => {
@@ -99,6 +100,7 @@ const CadastroAtleta: React.FC = () => {
   const [isValidating, setIsValidating] = useState(false);
   const [cpfValidationError, setCpfValidationError] = useState("");
   const [emailValidationError, setEmailValidationError] = useState("");
+   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({
     frontIdPhotoUrl: '',
     backIdPhotoUrl: '',
@@ -394,57 +396,57 @@ const CadastroAtleta: React.FC = () => {
   };
 
   const validatePassword = async (password: string): Promise<boolean> => {
-  console.log('[Password Validation] Starting validation for:', password);
+    console.log('[Password Validation] Starting validation for:', password);
 
-  if (!password) {
-    setErrors((prev) => ({
-      ...prev,
-      password: "A senha não pode estar vazia",
-    }));
-    return false;
-  }
-
-  if (password.length < 6) {
-    setErrors((prev) => ({
-      ...prev,
-      password: "A senha deve ter pelo menos 6 caracteres",
-    }));
-    return false;
-  }
-
-  const hasLetter = /[A-Za-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-
-  if (!hasLetter || !hasNumber) {
-    setErrors((prev) => ({
-      ...prev,
-      password: "A senha deve conter letras e números",
-    }));
-    return false;
-  }
-
-  try {
-    console.log('[Password Validation] Making API validation request');
-    const response = await api.post("/validation/password", { password });
-    console.log('[Password Validation] API response:', response.data);
-
-    if (response.data.valid) {
-      setErrors((prev) => ({ ...prev, password: "" }));
-      return true;
-    } else {
+    if (!password) {
       setErrors((prev) => ({
         ...prev,
-        password: response.data.message || "Senha inválida",
+        password: "A senha não pode estar vazia",
       }));
       return false;
     }
 
-  } catch (error: unknown) {
-    console.error("[Password Validation] Error during validation:", error);
+    if (password.length < 6) {
+      setErrors((prev) => ({
+        ...prev,
+        password: "A senha deve ter pelo menos 6 caracteres",
+      }));
+      return false;
+    }
 
-    return false;
-  }
-};
+    const hasLetter = /[A-Za-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (!hasLetter || !hasNumber) {
+      setErrors((prev) => ({
+        ...prev,
+        password: "A senha deve conter letras e números",
+      }));
+      return false;
+    }
+
+    try {
+      console.log('[Password Validation] Making API validation request');
+      const response = await api.post("/validation/password", { password });
+      console.log('[Password Validation] API response:', response.data);
+
+      if (response.data.valid) {
+        setErrors((prev) => ({ ...prev, password: "" }));
+        return true;
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          password: response.data.message || "Senha inválida",
+        }));
+        return false;
+      }
+
+    } catch (error: unknown) {
+      console.error("[Password Validation] Error during validation:", error);
+
+      return false;
+    }
+  };
 
 
   const validateRequiredFields = (): boolean => {
@@ -709,15 +711,39 @@ const CadastroAtleta: React.FC = () => {
           </div>
           <div className="mb-4">
             <label className="font-semibold block text-sm">Senha</label>
-            <input
-              type="password"
-              name="password"
-              value={athlete.password}
-              onChange={handleChange}
-              className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
-              placeholder="Crie uma senha"
-              required
-            />
+
+            <div>
+              <div className='relative'>
+
+                <input
+                  type={isPasswordVisible ? "text" : "password"}
+                  name="password"
+                  placeholder="Crie uma senha"
+                  value={athlete.password}
+                  onChange={handleChange}
+                  className="shadow-sm shadow-slate-500 px-4 py-3 bg-[#d9d9d9] mt-1 block w-full border border-black rounded-sm"
+                  required
+
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  className="absolute right-3 top-3 text-gray-600"
+                >
+                  {isPasswordVisible ? (
+                    <EyeIcon size={20} />
+                  ) : (
+                    <EyeOffIcon size={20} />
+                  )}
+                </button>
+              </div>
+
+            </div>
+
+
+
+
+
             <PasswordRequirements password={athlete.password} />
             {/* {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>} */}
           </div>

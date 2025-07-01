@@ -1,4 +1,5 @@
 import React from "react";
+import CustomButton from "./customButtom";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -19,19 +20,23 @@ const ModuloConfirmacao: React.FC<ConfirmationModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-[#d9d9d9] rounded p-6 w-80 shadow-md border border-black">
         <p className="text-center text-black font-bold">{message}</p>
-        <div className="mt-4 flex justify-around">
-          <button
+        <div className="mt-4 flex justify-around gap-4">
+
+          <CustomButton
+            variant="gray"
             onClick={onClose}
-            className="bg-gray-300 px-4 py-2 rounded text-black border border-black"
+            className=""
           >
-            Cancelar
-          </button>
-          <button
+           Cancelar
+          </CustomButton>
+
+           <CustomButton
+            variant="orange"
             onClick={onConfirm}
-            className="bg-[#EB8317] px-4 py-2 rounded text-white border border-black"
+            className=""
           >
-            Confirmar
-          </button>
+           Confirmar
+          </CustomButton>
         </div>
       </div>
     </div>

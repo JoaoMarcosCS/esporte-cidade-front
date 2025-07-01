@@ -48,6 +48,7 @@ export function GraficosRelatorio() {
 
         loadData();
     }, []);
+    console.log("data dos grafidco",data)
 
     if (loading) return <div className="text-center py-10">Carregando dados...</div>;
     if (error) return <div className="text-center py-10 text-red-500">Erro: {error}</div>;

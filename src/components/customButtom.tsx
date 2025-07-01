@@ -10,7 +10,6 @@ interface CustomButtonProps {
   height?: string;
   className?:string;
 }
-
 const CustomButton: React.FC<CustomButtonProps> = ({
   type = "button",
   onClick,
@@ -22,8 +21,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   className = "",
 }) => {
   const baseClasses =
-    "font-bold font-inter py-3 px-6 rounded-lg  shadow-sm shadow-slate-300 duration-300 ";
-    
+    "font-bold font-inter py-3 px-6 rounded-lg shadow-sm shadow-slate-300 duration-300 ";
 
   const variantClasses = {
     gray: "bg-gray-200 text-gray-700 hover:bg-gray-300",

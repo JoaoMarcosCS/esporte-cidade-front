@@ -31,6 +31,7 @@ import { useUser } from "../hooks/useAuth";
 import { useDecodedToken } from "../hooks/useDecodedToken";
 import { getAtendiments } from "../services/modality";
 import useNavigateTo from "../hooks/useNavigateTo";
+import { cn } from "../lib/utils";
 
 
 interface ScheduleItem {
@@ -210,8 +211,17 @@ export const VisualizarAtendimentos = () => {
     //console.log('aulasHoje:', aulasHoje);
     //console.log('aulasAmanha:', aulasAmanha);
 
+    const [animateTable, setAnimateTable] = useState(false)
+
+    useEffect(() => {
+        // Aciona a animação levemente após o componente montar
+        const timeout = setTimeout(() => setAnimateTable(true), 50)
+        return () => clearTimeout(timeout)
+    }, [])
+
+
     const renderCarousel = (aulas: any[], titulo: string) => (
-        <div className=" mt-4  items-center align-middle justify-center cursor-pointer" onClick={() => GoTo("/home-professor/horario")}>
+        <div className=" mt-4 items-center align-middle justify-center cursor-pointer transition-all" onClick={() => GoTo("/home-professor/horario")}>
             <h2 className="text-lg font-semibold text-start mb-4">{titulo}</h2>
             {aulas.length === 0 ? (
 
@@ -219,7 +229,7 @@ export const VisualizarAtendimentos = () => {
                 <>
 
                     <Card>
-                        <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
+                        <CardContent className="transition-all bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
                             <p>Sem aulas hoje!</p>
 
                         </CardContent>
@@ -231,10 +241,10 @@ export const VisualizarAtendimentos = () => {
                 </>
             ) : (
                 <>
-                    <Carousel opts={{ align: "start" }} className="w-full max-w-3xl">
-                        <CarouselContent>
+                    <Carousel opts={{ align: "start" }} className="transition-all w-full max-w-3xl">
+                        <CarouselContent className="transition-all">
                             {aulas.map((aula, index) => (
-                                <CarouselItem key={index} className="basis-1/2 min-w-36">
+                                <CarouselItem key={index} className="transition-all basis-1/2 min-w-36">
                                     <div className="p-1">
                                         <Card>
                                             <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black">
@@ -352,15 +362,22 @@ export const AtendimentosAnteriores = () => {
         (currentPage - 1) * pageMax,
         currentPage * pageMax
     );
+    const [animateTable, setAnimateTable] = useState(false)
+
+    useEffect(() => {
+        // Aciona a animação levemente após o componente montar
+        const timeout = setTimeout(() => setAnimateTable(true), 50)
+        return () => clearTimeout(timeout)
+    }, [currentPage])
 
 
-   // console.log("data:   ", Atendiments)
-   // console.log("currentItems:   ", currentItems)
+    // console.log("data:   ", Atendiments)
+    // console.log("currentItems:   ", currentItems)
 
     return (
-       <div className="mt-10 w-full max-w-screen-md border border-black p-4 min-h-[720px] bg-[#d9d9d9] rounded-sm">
-            <h2 className="text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
-           <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <div className=" transition-all mt-10 w-full max-w-[1000px] mx-auto min-h-[720px] border border-black p-4 bg-[#d9d9d9] rounded-sm">
+            <h2 className=" transition-all text-lg font-semibold mb-4">Atendimentos Anteriores</h2>
+            <div className=" transition-all flex flex-col sm:flex-row gap-4 mb-4">
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="transition-all w-full sm:w-40 bg-white rounded-lg hover:bg-slate-200   shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center font-normal  border border-black">
@@ -404,8 +421,8 @@ export const AtendimentosAnteriores = () => {
                 </Button>
             </div>
 
-            <Card className="mb-4 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black transition-colors">
-                <CardContent className="p-5 flex justify-between items-center rounded-md">
+            <Card className=" transition-all mb-4 bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black transition-colors">
+                <CardContent className=" transition-all p-5 flex justify-between items-center rounded-md">
                     <p>
                         <span className="font-inter">Modalidade:</span>{" "}
                         <span className="font-semibold">
@@ -418,19 +435,25 @@ export const AtendimentosAnteriores = () => {
 
 
             <div key={currentPage} // forçar a reinicialização da animação a cada página
-                className="min-h-[445px] bg-white opacity-100  translate-y-0  rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-4">
+                className={cn(
+                    "transition-all duration-500 ease-out min-h-[445px] bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border border-black p-4",
+                    animateTable
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4"
+                )}
+            >
 
 
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 font-semibold text-gray-700 mb-2 transition-all">
                     <p className="transition-all border-b-2 border-black pb-2">Data</p>
                     <p className="transition-all border-b-2 border-black pb-2">Local</p>
                     <p className="transition-all border-b-2 border-black pb-2">Descrição</p>
                 </div>
                 {currentItems.map((item: any) => (
-                    <div key={item.id} className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200">
+                    <div key={item.id} className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-10 py-2 border-t border-gray-200 transition-all">
                         {/* data */}
-                        <p>{new Date(item.created_at).toLocaleDateString("pt-BR")}</p>
+                        <p className=" transition-all">{new Date(item.created_at).toLocaleDateString("pt-BR")}</p>
                         {/* local */}
                         <Tooltip>
                             <TooltipTrigger asChild>
