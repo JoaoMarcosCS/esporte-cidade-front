@@ -35,7 +35,7 @@ const AthleteAbsences = ({ modalityId }: { modalityId: number }) => {
             <th>Faltas</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {absences.map((athlete) => (
             <tr key={athlete.athlete_id}>
               <td>{athlete.athlete_name}</td>

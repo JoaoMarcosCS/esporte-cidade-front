@@ -84,24 +84,24 @@ const HorarioProfessor = () => {
     <SidebarProvider>
       <AppSidebar type={userType} />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-[#F4F6FF]">
           <HeaderBasic
             type="usuario"
             links={[
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
+              { label: "Horário", path: "/home-professor/horario" },
               {
                 label: "Aprovar Inscrições",
                 path: "/home-professor/aprovar-inscricoes",
               },
-              { label: "Horário", path: "/home-professor/horario" },
             ]}
           />
           <div className="max-w-7xl w-3/4 mx-auto  mt-14 ">
-            <h1 className="text-2xl md:text-3xl font-bold mb-8 ">Horario Semanal</h1>
+            <h1 className="text-2xl font-bold mb-8 ">Horario Semanal</h1>
           
-          <div className="max-w-7xl mt-14 ">
+          <div className="max-w-7xl mt-10 rounded-lg border border-black p-4 bg-[#d9d9d9]">
             <AgendaProfessor />
           </div>
           </div>

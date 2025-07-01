@@ -8,9 +8,7 @@ export const getModalidades = async () => {
 export const getModalidadesInscritas = async (athleteId: number) => {
   const token = localStorage.getItem('token');
   const response = await api.get('/enrollment/', {
-    params: {
-      approved: false
-    },
+    
     headers: {
       Authorization: `Bearer ${token}`
     }

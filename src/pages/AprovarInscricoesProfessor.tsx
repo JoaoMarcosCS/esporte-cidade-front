@@ -88,19 +88,19 @@ const AprovarInscricoesProfessor: React.FC = () => {
     <SidebarProvider>
       <AppSidebar type="professor" />
       <SidebarInset>
-        <div className="min-h-screen bg-gray-100 pb-24">
+        <div className="min-h-screen bg-[#F4F6FF] pb-24">
           <HeaderBasic
             type="usuario"
             links={[
               { label: "Home", path: "/home-professor" },
               { label: "Chamada", path: "/home-professor/chamada" },
               { label: "Atletas", path: "/home-professor/lista-atletas" },
-              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" },
               { label: "Horário", path: "/home-professor/horario" },
+              { label: "Aprovar Inscrições", path: "/home-professor/aprovar-inscricoes" },
             ]}
           />
           <div className="max-w-7xl w-3/4 mx-auto pb-24 mt-14 ">
-            <h1 className="text-2xl md:text-3xl font-bold mb-8 text-[#EB8317]">Inscrições Pendentes</h1>
+            <h1 className="text-2xl  font-bold mb-8 ">Inscrições Pendentes</h1>
             {statusMsg && <div className="text-center text-red-600 mb-4">{statusMsg}</div>}
             {enrollments.length === 0 && (
               <div className="bg-white rounded shadow p-8 text-center text-gray-600 border border-black">

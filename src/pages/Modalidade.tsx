@@ -2,6 +2,7 @@ import HeaderBasic from "../components/navigation/HeaderBasic";
 import { AppSidebar } from "../components/navigation/AppSidebar-prof";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import ModalidadesInscricao from "../components/ModalidadesInscricao";
+import FooterMobile from "../components/navigation/FooterMobile";
 
 export const Modalidade = () => {
     return (
@@ -20,6 +21,7 @@ export const Modalidade = () => {
                     <div className="p-8">
                         <ModalidadesInscricao />
                     </div>
+                    <FooterMobile />
                 </div>
             </SidebarInset>
         </SidebarProvider>

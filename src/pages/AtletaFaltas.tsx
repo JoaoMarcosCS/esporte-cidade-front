@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import axios from "axios";
 import { useUser } from "../hooks/useAuth";
 import api from "../services/api";
+import FooterMobile from "../components/navigation/FooterMobile";
 
 
 interface Falta {
@@ -118,7 +119,7 @@ const AtletaFaltas = () => {
             ]}
           />
           <main className="px-4 py-6 md:px-8 w-3/4 m-auto">
-            <div className="text-4xl font-bold my-10">Suas Faltas</div>
+            <div className="text-2xl font-bold mb-4 ml-4 my-10">Suas Faltas</div>
 
             {loading && (
               <div className="text-center py-8">Carregando dados...</div>
@@ -251,6 +252,7 @@ const AtletaFaltas = () => {
               </>
             )}
           </main>
+          <FooterMobile />
         </div>
       </SidebarInset>
     </SidebarProvider>

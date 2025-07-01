@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBasic from '../components/navigation/HeaderBasic';
+import PasswordRequirements from '../components/PasswordRequirements';
 
 const TeacherResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -66,7 +67,7 @@ const TeacherResetPassword: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
+      <div className="min-h-screen bg-[#F4F6FF] flex flex-col pb-16">
         <HeaderBasic logo="hide" />
         <main className="flex flex-col items-center flex-1">
           <div className="flex flex-col m-4 md:mx-20 p-4 md:px-24 py-7 md:py-12 w-full max-w-5xl">
@@ -98,6 +99,7 @@ const TeacherResetPassword: React.FC = () => {
                       className="w-full pl-10 pr-3 bg-[#D9D9D9] opacity-70 placeholder-black h-12 p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-orange-600 focus:ring-opacity-40"
                       required
                     />
+                    <PasswordRequirements password={password} />
                   </div>
                   <div className="mb4">
                     <label

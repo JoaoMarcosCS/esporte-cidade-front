@@ -50,7 +50,7 @@ export const loginTeacher = async (credentials: TeacherLoginCredentials) => {
         throw new Error(response.data.message || "Erro ao fazer login");
     } catch (error: any) {
         if (error.response?.status === 401) {
-            throw new Error('Senha ou usuario incorreto');
+            throw new Error('Usuário ou senha incorretos');
         }
         throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
@@ -72,7 +72,7 @@ export const loginManager = async (credentials: { email: string; password: strin
     throw new Error(response.data.message || "Erro ao fazer login");
   } catch (error: any) {
     if (error.response?.status === 401) {
-      throw new Error('Email ou senha incorretos');
+      throw new Error('Usuário ou senha incorretos');
     }
     throw new Error(error.response?.data?.message || 'Erro ao fazer login');
   }

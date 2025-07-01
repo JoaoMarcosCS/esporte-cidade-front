@@ -19,6 +19,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
     date: "",
     time: "",
   });
+  const [observation, setObservation] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalityName, setModalityName] = useState("");
   const GoTo = useNavigateTo();
@@ -85,6 +86,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
         athleteId: student.id,
         present: student.status === "PRESENTE",
         created_at: formattedDateTime,
+        description: observation || undefined,
       }));
 
       const response = await api.post(
@@ -109,21 +111,9 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
 
       <h2 className="text-2xl font-bold pl-6 pt-8">Realizar Chamada</h2>
       <div className=" grid grid-cols-1 sm:grid-cols-2   gap-6 pt-8 ">
-        {/* <div className="bg-[#d9d9d9] flex p-4   items-center w-full border border-black rounded-lg">
-          <div className="bg-white opacity-100 p-2  min-w-48 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-row border-black ">
-            <label className="  text-gray-700 mb-1">Modalidade:</label>
-            <div className=" w-full pl-2 ">
-              {modalityName || "Carregando..."}
-            </div>
-          </div>
-        </div> */}
-
-
-
-
+        {/* ...modalidade e data... */}
         <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg ">
           <div className="bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black ">
-
             <label className="block text-gray-700 mb-1">
               Informe a data da chamada:
             </label>
@@ -136,13 +126,8 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
             />
           </div>
         </div>
-
-
-
         <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg">
-
           <div className="bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black ">
-
             <label className="block text-gray-700 mb-1">Informe o horário:</label>
             <input
               type="time"
@@ -153,19 +138,30 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
             />
           </div>
         </div>
+        <div className="bg-[#d9d9d9] p-4 border border-black rounded-lg col-span-1 sm:col-span-2">
+          <div className="bg-white opacity-100 p-2 rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black">
+            <label className="block text-gray-700 mb-1">Observações (opcional):</label>
+            <textarea
+              value={observation}
+              onChange={e => setObservation(e.target.value)}
+              placeholder="Digite observações gerais desta chamada..."
+              className="w-full p-2 min-h-[60px]"
+            />
+          </div>
+        </div>
       </div>
 
       {/* <button className="bg-[#EB8317] mb-6 text-black py-2 px-4 mt-6 rounded border border-black">
         Gerar Lista de Chamada
       </button> */}
 
-      <div className="space-y-4 mt-6 bg-[#d9d9d9] border border-black p-4  ">
+      <div className="space-y-4 mt-6 bg-[#d9d9d9] border border-black p-4 rounded-lg ">
         <p className="text-2xl font-semibold">Alunos da modalidade</p>
 
         {students.map((student) => (
           <div
             key={student.id}
-            className="p-4 animate-slide-in-fade   bg-[#d9d9d9] opacity-100  rounded-lg  border border-black flex flex-col cursor-pointer"
+            className="p-4 animate-slide-in-fade p-4 animate-slide-in-fade bg-white opacity-100 p-2    rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] border flex flex-col border-black cursor-pointer"
             onClick={() => toggleStatus(student.id)}
           >
             <div className="flex items-center">
@@ -181,6 +177,7 @@ const ChamadaComp: React.FC<AttendanceProps> = ({
               <div className="flex-1">
 
                 <h3 className="font-semibold">{student.name}</h3>
+                <p className="text-xs text-gray-600 break-all">{student.email}</p>
                 <p
                   className={`  font-bold ${student.status === "PRESENTE"
                     ? "text-green-500 transition-all "

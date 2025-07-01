@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Athlete } from "@/types/Athlete";
+import { Modality } from "../types/Modality";
 import AtletasCadastrados from "../components/AtletasCadastrados";
 import FormularioAtletas from "../components/FormularioAtletas";
-// import { getAthletes, saveAthlete, deleteAthlete } from "../services/athleteService";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
-import api from '../services/api';
-import { Modality } from "../types/Modality";
 import { ConfirmModal } from "../components/ComfirmModal";
+import ModalitiesManager from "../components/ModalitiesManager";
+import api from '../services/api';
 
 const GestaoDeAtletas: React.FC = () => {
   const [athletes, setAthletes] = useState<Athlete[]>([]);
-  const [enrollments, setEnrollments] = useState<any[]>([]); // each enrollment has athlete and modality
+  const [enrollments, setEnrollments] = useState<any[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [selectedAthlete, setSelectedAthlete] = useState<Athlete | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,15 +20,14 @@ const GestaoDeAtletas: React.FC = () => {
   const [modalAberto, setModalAberto] = useState(false);
   const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
 
-  const handleDeleteClick = (id: number) => {
-    setIdParaExcluir(id);
-    setModalAberto(true);
-  };
+  const [showModalitiesManager, setShowModalitiesManager] = useState(false);
+  const [enrollmentStates, setEnrollmentStates] = useState<Record<number, any>>({});
+  const [editMode, setEditMode] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
-
+  const modalitiesManagerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Fetch all data in parallel
   const fetchAllData = async () => {
     setLoading(true);
     try {
@@ -53,37 +52,25 @@ const GestaoDeAtletas: React.FC = () => {
 
   const handleAddOrEdit = async (athlete: Athlete) => {
     try {
-      if (athlete.id) {
-        // Atualizar
-        const formData = new FormData();
-        Object.entries(athlete).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            if (value instanceof File) {
-              formData.append(key, value);
-            } else if (typeof value === 'object') {
-              formData.append(key, JSON.stringify(value));
-            } else {
-              formData.append(key, String(value));
-            }
+      const formData = new FormData();
+      Object.entries(athlete).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (value instanceof File) {
+            formData.append(key, value);
+          } else if (typeof value === 'object') {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, String(value));
           }
-        });
+        }
+      });
+
+      if (athlete.id) {
         await api.put(`/athletes/${athlete.id}`, formData);
       } else {
-        // Criar novo
-        const formData = new FormData();
-        Object.entries(athlete).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            if (value instanceof File) {
-              formData.append(key, value);
-            } else if (typeof value === 'object') {
-              formData.append(key, JSON.stringify(value));
-            } else {
-              formData.append(key, String(value));
-            }
-          }
-        });
         await api.post('/athletes/', formData);
       }
+
       await fetchAllData();
       setSelectedAthlete(null);
     } catch (error) {
@@ -95,15 +82,18 @@ const GestaoDeAtletas: React.FC = () => {
   const handleEditClick = async (athlete: Athlete) => {
     try {
       const response = await api.get(`/athletes/${athlete.id}`);
-      setSelectedAthlete(response.data); // agora terá address
+      setSelectedAthlete(response.data);
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       console.error('Erro ao buscar atleta para edição:', error);
       alert('Erro ao buscar dados completos do atleta.');
     }
-  }
+  };
 
-
+  const handleDeleteClick = (id: number) => {
+    setIdParaExcluir(id);
+    setModalAberto(true);
+  };
 
   const handleDelete = async () => {
     if (idParaExcluir === null) return;
@@ -118,8 +108,6 @@ const GestaoDeAtletas: React.FC = () => {
     }
   };
 
-
-  // Join enrollments with athletes for filtering
   const getAthleteModalities = (athleteId: string | number) => {
     return enrollments
       .filter((enr) => enr.athlete && (enr.athlete.id?.toString() === athleteId?.toString()))
@@ -138,13 +126,59 @@ const GestaoDeAtletas: React.FC = () => {
     return athleteModalities.some((mod: any) => mod.id?.toString() === selectedModality);
   });
 
+  const handleEnrollmentClick = async (athlete: Athlete) => {
+    try {
+      setSelectedAthlete(athlete);
+      setIsEditing(true);
+      
+      // Busca as inscrições do atleta usando o endpoint correto
+      const response = await api.get('/enrollment', {
+        params: {
+          athleteId: athlete.id
+        }
+      });
+      
+      const athleteEnrollments = response.data || [];
+      
+      // Inicializa os estados das modalidades
+      const states: Record<number, any> = {};
+      
+      for (const modality of modalities) {
+        const existing = athleteEnrollments.find((e: any) => e.modality.id === modality.id);
+        states[modality.id] = {
+          enrollment: existing ? {
+            id: existing.id,
+            active: existing.active,
+            approved: existing.approved
+          } : null,
+          loading: false,
+          error: null
+        };
+      }
+      
+      setEnrollmentStates(states);
+      setShowModalitiesManager(true);
+      
+      // Rola a página até o gerenciador de modalidades
+      setTimeout(() => {
+        modalitiesManagerRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    } catch (error) {
+      console.error('Erro ao carregar inscrições do atleta:', error);
+      // Mostra uma mensagem de erro para o usuário
+      alert('Erro ao carregar as inscrições do atleta. Tente novamente.');
+    }
+  };
+
   return (
     <section className="bg-[#F4F6FF] pb-20">
       <HeaderBasic
         type="visitante"
         links={[
           { label: "Home", path: "/home-gestor" },
-          { label: "Comunicados", path: "/home-gestor/cadastrar-comunicado" },
           { label: "Modalidades", path: "/home-gestor/cadastrar-modalidade" },
           { label: "Relatório Geral", path: "/home-gestor/relatorio-geral" },
         ]}
@@ -156,11 +190,12 @@ const GestaoDeAtletas: React.FC = () => {
         <main className="space-y-8 mt-6">
           <ConfirmModal
             isOpen={modalAberto}
-            onClose={() => { setModalAberto(false); }}
+            onClose={() => setModalAberto(false)}
             onConfirm={handleDelete}
             message="Tem certeza que deseja excluir este atleta? Confirme com sua senha para continuar."
           />
-          <section>
+
+          <div>
             <h1 className="text-2xl font-bold mb-6">Gestão de Atletas</h1>
             <div className="flex flex-col md:flex-row gap-4 mb-4 bg-[#D9D9D9] border border-black rounded-lg p-4">
               <input
@@ -186,25 +221,51 @@ const GestaoDeAtletas: React.FC = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#EB8317]"></div>
               </div>
             ) : (
-              <AtletasCadastrados
-                athletes={filteredAthletes}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteClick}
-                selectedAthlete={selectedAthlete}
+              <div onClick={(e) => e.stopPropagation()}>
+                <AtletasCadastrados
+                  athletes={filteredAthletes}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
+                  selectedAthlete={selectedAthlete}
+                  onEnrollmentClick={handleEnrollmentClick}
+                />
+              </div>
+            )}
+          </div>
+
+          <section ref={formRef}>
+            {selectedAthlete && !showModalitiesManager && (
+              <FormularioAtletas
+                athlete={selectedAthlete}
+                onSubmit={handleAddOrEdit}
+                onCancel={() => setSelectedAthlete(null)}
               />
             )}
           </section>
 
-          <section ref={formRef} >
-            <h2 className="text-xl font-semibold mb-4">
-              {selectedAthlete ? <FormularioAtletas
-                athlete={selectedAthlete}
-                onSubmit={handleAddOrEdit}
-                onCancel={() => setSelectedAthlete(null)}
-              /> : ''}
-            </h2>
-
-          </section>
+          {selectedAthlete && (
+            <div ref={modalitiesManagerRef}>
+              <ModalitiesManager
+                show={showModalitiesManager}
+                setShow={setShowModalitiesManager}
+                isEditing={isEditing}
+                editMode={editMode}
+                allModalities={modalities}
+                enrollmentStates={enrollmentStates}
+                setEnrollmentStates={setEnrollmentStates}
+                inscreverEmModalidade={async (modalityId) => {
+                  const res = await api.post('/enrollment', {
+                    modalityId: modalityId,
+                  });
+                  return res.data[0]; // Retorna o primeiro item do array
+                }}
+                updateEnrollmentStatus={async (enrollmentId, data) => {
+                  const res = await api.put(`/enrollment/${enrollmentId}`, data);
+                  return res.data;
+                }}
+              />
+            </div>
+          )}
         </main>
       </div>
     </section>

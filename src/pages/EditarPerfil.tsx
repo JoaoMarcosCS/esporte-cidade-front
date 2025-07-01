@@ -10,6 +10,7 @@ import api from "../services/api";
 import HeaderBasic from "../components/navigation/HeaderBasic";
 import FooterMobile from "../components/navigation/FooterMobile";
 import ModuloConfirmacao from "../components/ModuloConfirmacao";
+import PasswordRequirements from "../components/PasswordRequirements";
 
 const athleteSchema = z
   .object({
@@ -119,7 +120,11 @@ const EditarPerfil: React.FC = () => {
   }, [user?.id, setValue]);
 
   const handleSave = () => setIsModalOpen(true);
-  const handleCancel = () => setIsEditing(false);
+  const handleCancel = () => {
+  setIsEditing(false);
+  setValue("password", "");
+  setValue("confirmPassword", "");
+};
   const handleConfirm = async () => {
     try {
       setLoading(true);
@@ -199,11 +204,11 @@ const EditarPerfil: React.FC = () => {
                      className="mt-2 rounded w-32 h-32 object-cover border"
                 />
               )}
+              
               <input
                 type="file"
                 id="photo"
                 disabled={!isEditing}
-                className={`w-full mt-1 p-2 border border-gray-300 rounded ${!isEditing ? "bg-gray-100 text-gray-500" : ""}`}
                 onChange={async (e) => {
                   if (!isEditing) return;
                   const file = e.target.files?.[0];
@@ -226,7 +231,15 @@ const EditarPerfil: React.FC = () => {
                     toast.error("Erro ao fazer upload da imagem.");
                   }
                 }}
+                className="absolute opacity-0 w-full h-10 top-0 left-0 cursor-pointer z-10"
               />
+              <label
+                htmlFor="photo"
+                className={`relative bg-[#EB8317] border border-black rounded-sm hover:bg-[#EB8317]/75 text-sm text-white px-4 py-2 mt-2 inline-block cursor-pointer ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ pointerEvents: !isEditing ? 'none' : 'auto' }}
+              >
+                Escolha o arquivo
+              </label>
               
             </div>
             <div>
@@ -377,11 +390,8 @@ const EditarPerfil: React.FC = () => {
                   !isEditing ? "bg-gray-100 text-gray-500" : ""
                 }`}
               />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message as string}
-                </p>
-              )}
+              <PasswordRequirements password={getValues("password") || ""} />
+              
             </div>
             <div>
               <label className="block text-gray-700 mt-1">
@@ -401,13 +411,16 @@ const EditarPerfil: React.FC = () => {
                   {errors.confirmPassword.message as string}
                 </p>
               )}
+            
             </div>
             <div className="flex justify-between mt-6">
               {isEditing ? (
                 <>
                   <button
                     onClick={handleSave}
-                    className="bg-[#10375C] text-white py-2 px-4 rounded-md shadow-sm hover:scale-105 transition-transform border border-black"
+                    className={`bg-[#10375C] text-white py-2 px-4 rounded-md shadow-sm border border-black transition-transform ${getValues('password') !== getValues('confirmPassword') ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                    type="button"
+                    disabled={getValues('password') !== getValues('confirmPassword')}
                   >
                     Salvar
                   </button>

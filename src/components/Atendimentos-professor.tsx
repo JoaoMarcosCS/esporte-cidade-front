@@ -220,7 +220,7 @@ export const VisualizarAtendimentos = () => {
 
                     <Card>
                         <CardContent className="bg-white rounded-lg shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] min-h-32 p-6 border min-w-52 border-black ">
-                            <p>sem aulas Hoje</p>
+                            <p>Sem aulas hoje!</p>
 
                         </CardContent>
                     </Card>
@@ -258,6 +258,7 @@ export const VisualizarAtendimentos = () => {
     return (
         <div className="mt-10 flex flex-col gap-8 sm:max-w-96 self-center md:self-start">
             <div className="bg-[#d9d9d9] border border-black p-4 rounded-sm sm:min-w-0">
+
                 <h1 className="text-lg font-bold">Horário</h1>
                 {loading ? (
                     <p>Carregando...</p>
